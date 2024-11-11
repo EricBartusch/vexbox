@@ -1,0 +1,159 @@
+[gd_scene load_steps=7 format=3 uid="uid://d1a1s0x7tsi1i"]
+
+[ext_resource type="Script" path="res://Main.gd" id="1_nfgpe"]
+[ext_resource type="PackedScene" uid="uid://bhinpp6ankmnj" path="res://Tooltip.tscn" id="2_atu00"]
+[ext_resource type="PackedScene" uid="uid://dx3j5aid1cguw" path="res://Badge.tscn" id="3_44gwx"]
+[ext_resource type="AudioStream" uid="uid://b5axhmdnxxtj3" path="res://sfx/open.mp3" id="4_g0kiw"]
+[ext_resource type="AudioStream" uid="uid://fir740pf70l4" path="res://sfx/boiler.mp3" id="4_h80uj"]
+[ext_resource type="AudioStream" uid="uid://1cpcn0db4c2j" path="res://activate.mp3" id="6_3d66k"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_nfgpe")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 1504.0
+offset_bottom = 996.0
+color = Color(0.310617, 0.310617, 0.310617, 1)
+
+[node name="Tooltip" parent="." instance=ExtResource("2_atu00")]
+top_level = true
+layout_mode = 1
+offset_left = 884.0
+offset_top = 9.0
+offset_right = -216.0
+offset_bottom = -740.0
+
+[node name="StatusList" type="VBoxContainer" parent="."]
+z_index = 50
+layout_mode = 0
+offset_left = 16.0
+offset_top = 22.0
+offset_right = 310.0
+offset_bottom = 458.0
+theme_override_constants/separation = 100
+
+[node name="RestartButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 1309.0
+offset_top = 17.0
+offset_right = 1450.0
+offset_bottom = 65.0
+text = "Restart Game
+"
+
+[node name="GameStatusText" type="Label" parent="."]
+layout_mode = 0
+offset_left = 601.0
+offset_top = 15.0
+offset_right = 823.0
+offset_bottom = 84.0
+theme_override_font_sizes/font_size = 50
+text = "You won!"
+horizontal_alignment = 1
+
+[node name="TriggerPostClicksTimer" type="Timer" parent="."]
+wait_time = 0.2
+one_shot = true
+
+[node name="NumWinsText" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1282.0
+offset_top = 73.0
+offset_right = 1479.0
+offset_bottom = 100.0
+text = "Wins: 0"
+horizontal_alignment = 1
+
+[node name="WinstreakText" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1300.0
+offset_top = 99.0
+offset_right = 1464.0
+offset_bottom = 128.0
+text = "Winstreak: 0"
+horizontal_alignment = 1
+
+[node name="BestWinstreakText" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1295.0
+offset_top = 125.0
+offset_right = 1459.0
+offset_bottom = 154.0
+text = "Best Winstreak: 0"
+horizontal_alignment = 1
+
+[node name="CurOpenText" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1296.0
+offset_top = 153.0
+offset_right = 1460.0
+offset_bottom = 182.0
+text = "Currently Open: 0
+"
+horizontal_alignment = 1
+
+[node name="CurDestroyedText" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1295.0
+offset_top = 177.0
+offset_right = 1470.0
+offset_bottom = 206.0
+text = "Currently Destroyed: 0"
+horizontal_alignment = 1
+
+[node name="BadgeList" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 1337.0
+offset_top = 290.0
+offset_right = 1430.0
+offset_bottom = 734.0
+theme_override_constants/separation = 100
+
+[node name="TwoReveals" parent="BadgeList" instance=ExtResource("3_44gwx")]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="LossesToWins" parent="BadgeList" instance=ExtResource("3_44gwx")]
+layout_mode = 2
+type = 1
+
+[node name="Eclipse" parent="BadgeList" instance=ExtResource("3_44gwx")]
+layout_mode = 2
+type = 2
+
+[node name="Shrunken" parent="BadgeList" instance=ExtResource("3_44gwx")]
+layout_mode = 2
+type = 3
+
+[node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_h80uj")
+
+[node name="OpenFXPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_g0kiw")
+volume_db = -6.933
+pitch_scale = 1.29
+
+[node name="ActivateFXPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_3d66k")
+
+[node name="TextureRect" type="ColorRect" parent="."]
+layout_mode = 2
+offset_left = 30.0
+offset_top = 565.0
+offset_right = 395.0
+offset_bottom = 941.0
+color = Color(0, 0, 0, 0.305882)
+
+[node name="LogContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+offset_left = 45.0
+offset_top = 574.0
+offset_right = 389.0
+offset_bottom = 941.0
+theme_override_constants/separation = 35
+
+[connection signal="button_up" from="RestartButton" to="." method="_on_restart_button_button_up"]
+[connection signal="timeout" from="TriggerPostClicksTimer" to="." method="_on_trigger_post_clicks_timer_timeout"]

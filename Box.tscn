@@ -1,0 +1,83 @@
+[gd_scene load_steps=5 format=3 uid="uid://d1cud1o2dtcnp"]
+
+[ext_resource type="Script" path="res://Box.gd" id="1_rmg7f"]
+[ext_resource type="Texture2D" uid="uid://btp1ixn3wimn2" path="res://boxImgs/boxUnknown.png" id="2_cggt8"]
+[ext_resource type="Texture2D" uid="uid://clyb6vyg758qp" path="res://boxImgs/outlineClosed.png" id="3_f7hyl"]
+[ext_resource type="FontFile" uid="uid://drxqa43mwcvwa" path="res://Comic Sans MS.ttf" id="4_2kelp"]
+
+[node name="Box" type="Control"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_rmg7f")
+
+[node name="Sprite2D" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -37.5
+offset_top = -37.5
+offset_right = 37.5
+offset_bottom = 37.5
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_cggt8")
+
+[node name="Outline" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -37.5
+offset_top = -37.5
+offset_right = 37.5
+offset_bottom = 37.5
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_f7hyl")
+
+[node name="Button" type="Button" parent="."]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -37.0
+offset_top = -37.5
+offset_right = 37.0
+offset_bottom = 37.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Number" type="Label" parent="."]
+visible = false
+layout_mode = 0
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 34.0
+offset_bottom = 34.0
+theme_override_colors/font_color = Color(1, 0, 0.54902, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0.336608, 0.336608, 0.336608, 1)
+theme_override_constants/shadow_offset_x = 3
+theme_override_constants/shadow_offset_y = 2
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("4_2kelp")
+theme_override_font_sizes/font_size = 40
+text = "15"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="button_up" from="Button" to="." method="_on_button_button_up"]
