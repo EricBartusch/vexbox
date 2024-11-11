@@ -35,6 +35,18 @@ func destroyBox():
 		elif type == BoxTypes.WORLDBEARER and open:
 			lg("The Worldbearer has fallen!")
 			get_parent().lose()
+	else:
+		var will_be_destroyed = false
+		for box in get_parent().boxes:
+			if box.type == BoxTypes.METEOR and box.open:
+				will_be_destroyed = true
+				break
+		if will_be_destroyed:
+			destroyed = true
+			visible = false
+			hide_custom_num()
+			lg("The Bedrock was destroyed!")
+			get_parent().win()
 
 func reviveBox():
 	if destroyed:
@@ -195,7 +207,7 @@ func load_text():
 			tooltipText = "After you open 3 boxes, destroy this and all but the outer rim of boxes."
 		BoxTypes.BEDROCK:
 			nameText = "Bedrock Box"
-			tooltipText = "Can't be destroyed."
+			tooltipText = "Can't be destroyed, but if you do, win."
 		BoxTypes.CLOAK:
 			nameText = "Cloak Box"
 			tooltipText = "On Open: If the Wand and Hat Boxes are open, win."
@@ -279,7 +291,7 @@ func load_text():
 			tooltipText = "On Open: If you don't have a Badge equipped, transform the Empty Box into a Winner Box."
 		BoxTypes.CRUMBLING:
 			nameText = "Crumbling Box"
-			tooltipText = "After you open a box, destroy the top box (left to right)."
+			tooltipText = "After you open a box, destroy the top box (right to left)."
 		BoxTypes.TRIPLEPLAY:
 			nameText = "Three Box"
 			tooltipText = "On Open: If this is the third time you've opened this box, win."
@@ -289,7 +301,45 @@ func load_text():
 		BoxTypes.ALLSEEINGEYE:
 			nameText = "All Seeing Box"
 			tooltipText = "On Open: Reveal 10 random boxes. After you open 3 boxes, lose."
-
+		BoxTypes.WATERFALL:
+			nameText = "Waterfall Box"
+			tooltipText = "On Open: If in the bottom row, win. Otherwise, transform a random box in the row below into a Waterfall Box."
+		BoxTypes.METEOR:
+			nameText = "Meteor Box"
+			tooltipText = "The Bedrock Box can be destroyed."
+		BoxTypes.PAINT:
+			nameText = "Paint Box"
+			tooltipText = "On Open: Paint the background a random color."
+		BoxTypes.ICE:
+			nameText = "Ice Box"
+			tooltipText = "On Open: You can't open boxes in this row for 3 opens."
+		BoxTypes.BULLSEYE:
+			nameText = "Bullseye Box"
+			tooltipText = "On Open: If no adjacent boxes are revealed, reveal all adjacent boxes."
+		BoxTypes.CONFIDENTIAL:
+			nameText = "Espionage Box"
+			tooltipText = "On Open: If 18 or more boxes are revealed, win."
+		BoxTypes.FISHING_ROD:
+			nameText = "Fishing Box"
+			tooltipText = "On Open: Transform 3 random unrevealed boxes into Fish Boxes."
+		BoxTypes.IMPATIENT:
+			nameText = "Impatient Box"
+			tooltipText = "Whenever you reveal a box in this row, open it."
+		BoxTypes.TRANSMOG:
+			nameText = "Transmog Box"
+			tooltipText = "On Open: The next 2 times you click a revealed box, transform it into a random other box instead of opening or using it."
+		BoxTypes.STUCK:
+			nameText = "Softlock Box"
+			tooltipText = "If you can't open any boxes, you win."
+		BoxTypes.FISH:
+			nameText = "Fish Box"
+			tooltipText = "On Open: If 3 or more Fish Boxes are open, win."
+		BoxTypes.DNA:
+			nameText = "DNA Box"
+			tooltipText = "On Open: Transform all adjacent boxes into the same random box."
+		BoxTypes.DAREDEVIL:
+			nameText = "Daredevil Box"
+			tooltipText = "On Click: 20% chance to win. 30% chance to lose."
 
 func load_img():
 	match type:
@@ -449,6 +499,32 @@ func load_img():
 			revealedImg = load("res://boxImgs/foodBox.png")
 		BoxTypes.ALLSEEINGEYE:
 			revealedImg = load("res://boxImgs/boxAllSeeingEye.png")
+		BoxTypes.WATERFALL:
+			revealedImg = load("res://boxImgs/boxWaterfall.png")
+		BoxTypes.METEOR:
+			revealedImg = load("res://boxImgs/boxMeteors.png")
+		BoxTypes.DAREDEVIL:
+			revealedImg = load("res://boxImgs/daredevilBox.png")
+		BoxTypes.PAINT:
+			revealedImg = load("res://boxImgs/boxPaint.png")
+		BoxTypes.ICE:
+			revealedImg = load("res://boxImgs/boxIce.png")
+		BoxTypes.BULLSEYE:
+			revealedImg = load("res://boxImgs/bullseyeBox.png")
+		BoxTypes.CONFIDENTIAL:
+			revealedImg = load("res://boxImgs/classifiedBox.png")
+		BoxTypes.FISHING_ROD:
+			revealedImg = load("res://boxImgs/fishingBox.png")
+		BoxTypes.IMPATIENT:
+			revealedImg = load("res://boxImgs/impatientBox.png")
+		BoxTypes.TRANSMOG:
+			revealedImg = load("res://boxImgs/alchemyBox.png")
+		BoxTypes.STUCK:
+			revealedImg = load("res://boxImgs/stuckBox.png")
+		BoxTypes.FISH:
+			revealedImg = load("res://boxImgs/fishBox.png")
+		BoxTypes.DNA:
+			revealedImg = load("res://boxImgs/boxDNA.png")
 		
 	if revealed:
 		$Sprite2D.texture = revealedImg
@@ -475,6 +551,13 @@ func revealBox():
 			$Outline.texture = load("res://boxImgs/outlineRevealed.png")
 		if !was_already_revealed:
 			lg(nameText + " was revealed!")
+			var willOpen = false
+			for box in get_parent().rows[row]:
+				if box.type == BoxTypes.IMPATIENT and !box.destroyed and box.open:
+					willOpen = true
+			if willOpen:
+				get_parent().logToLog(null, "Impatient Box opens the revealed box!")
+				openBox()
 
 func openBox():
 	if !destroyed and !open:
@@ -789,6 +872,60 @@ func activateEffects():
 			for i in 10:
 				get_parent().reveal_random()
 			set_custom_num(3)
+		BoxTypes.WATERFALL:
+			if row == get_parent().totalRows:
+				get_parent().win()
+			else:
+				var valids = []
+				for box in get_parent().rows[row+1]:
+					if !box.destroyed:
+						valids.append(box)
+				var toChange = valids.pick_random()
+				toChange.loadType(BoxTypes.WATERFALL)
+		BoxTypes.PAINT:
+			var result = Color(get_parent().rng.randf_range(0, 1), get_parent().rng.randf_range(0, 1), get_parent().rng.randf_range(0, 1), 1)
+			get_parent().get_node("ColorRect").color = result
+		BoxTypes.ICE:
+			set_custom_num(3)
+		BoxTypes.BULLSEYE:
+			var will_reveal = true
+			for box in get_adjacent_boxes(false, false):
+				if box.revealed:
+					will_reveal = false
+					break
+			if will_reveal:
+				for box in get_adjacent_boxes(true, true):
+					box.revealBox()
+		BoxTypes.CONFIDENTIAL:
+			var count = 0
+			for box in get_parent().boxes:
+				if box.revealed and not box.destroyed:
+					count += 1
+			if count >= 18:
+				lg("Espionage victory!")
+				get_parent().win()
+		BoxTypes.FISHING_ROD:
+			for i in 3:
+				var list = []
+				for box in get_parent().boxes:
+					if box.type != BoxTypes.FISH and !box.destroyed and !box.revealed:
+						list.append(box)
+				var toChange = list.pick_random()
+				toChange.loadType(BoxTypes.FISH)
+		BoxTypes.TRANSMOG:
+			get_parent().add_status(StatusTypes.TRANSMOG, 2)
+		BoxTypes.FISH:
+			var count = 0
+			for box in get_parent().boxes:
+				if box.open and !box.destroyed and box.type == BoxTypes.FISH:
+					count += 1
+			if count >= 3:
+				get_parent().win()
+		BoxTypes.DNA:
+			var newType = get_parent().rng.randi_range(0, BoxTypes.MAX-1)
+			for box in get_adjacent_boxes(false, false):
+				box.loadType(newType)
+		
 
 func updateTooltipForMe():
 	var curName = "Unknown Box"
@@ -918,7 +1055,7 @@ func on_click():
 							hide_custom_num()
 			BoxTypes.CRUMBLING:
 				for box in get_parent().boxes:
-					if !box.destroyed():
+					if !box.destroyed:
 						get_parent().destroy_box(box)
 						break
 			BoxTypes.ALLSEEINGEYE:
@@ -929,6 +1066,44 @@ func on_click():
 					set_custom_num(customNum - 1)
 					if get_parent().gameRunning and customNum == 0:
 							hide_custom_num()
+			BoxTypes.ICE:
+				if customNum > 0:
+					if customNum == 1:
+						lg("Ice Box has thawed!")
+					set_custom_num(customNum - 1)
+					if customNum == 0:
+							hide_custom_num()
+			BoxTypes.STUCK:
+				# better later
+				var willWin = true
+				var territoryCheck = get_parent().has_status(StatusTypes.TERRITORY)
+				for box in get_parent().boxes:
+					if !box.open:
+						if territoryCheck:
+							var unclickable = true
+							for other in box.get_adjacent_boxes(false, false):
+								if other.open:
+									unclickable = false
+							if !unclickable:
+								for other in get_parent().rows[box.row]:
+									if other.type == BoxTypes.ICE and other.customNum > 0:
+										unclickable = true
+										break
+								if !unclickable:
+									willWin = false
+									break
+						else:
+							var unclickable = false
+							for other in get_parent().rows[box.row]:
+								if other.type == BoxTypes.ICE and other.customNum > 0:
+									unclickable = true
+									break
+							if !unclickable:
+								willWin = false
+								break
+				if willWin:
+					lg("You've softlocked! Softlock Box activates!")
+					get_parent().win()
 	just_opened = false
 
 func on_self_clicked():
@@ -970,6 +1145,16 @@ func on_self_clicked():
 				get_parent().get_node("ActivateFXPlayer").play()
 				get_parent().change_status_amount(StatusTypes.GOLD, -1)
 				get_parent().reveal_random()
+		BoxTypes.DAREDEVIL:
+			var result = get_parent().rng.randi_range(0, 9)
+			if result <= 1:
+				lg("Lucky! Daredevil Box made you win!")
+				get_parent().win()
+			elif result <= 4:
+				lg("Daredevil Box made you lose!")
+				get_parent().lose()
+			else:
+				lg("Daredevil Box didn't do anything!")
 			
 	get_parent().update_stat_texts()
 
@@ -1024,9 +1209,21 @@ func tryOpen():
 				canContinue = true
 				break
 		if canContinue:
-			innerOpen()
+			var canOpen = true
+			for box in get_parent().rows[row]:
+				if box.type == BoxTypes.ICE and box.customNum > 0 and !box.destroyed:
+					canOpen = false
+					break
+			if canOpen:		
+				innerOpen()
 	else:
-		innerOpen()
+		var canOpen = true
+		for box in get_parent().rows[row]:
+			if box.type == BoxTypes.ICE and box.customNum > 0 and !box.destroyed:
+				canOpen = false
+				break
+		if canOpen:	
+			innerOpen()
 
 func _on_button_button_up() -> void:
 	if get_parent().gameRunning && !get_parent().awaiting_post_click:
@@ -1035,21 +1232,30 @@ func _on_button_button_up() -> void:
 			get_parent().destroy_box(self)
 			owned.change_status_amount(StatusTypes.DEMOLISH, -1)
 		else:
-			if !open:
-				if get_parent().has_status(StatusTypes.SAFETY):
-					if not revealed:
-						revealBox()
-						get_parent().change_status_amount(StatusTypes.SAFETY, -1)
+			if get_parent().has_status(StatusTypes.TRANSMOG) and revealed:
+				var valids = []
+				for newType in BoxTypes.MAX:
+					if newType != type:
+						valids.append(newType)
+				var typeToAdd = valids.pick_random()
+				loadType(typeToAdd)
+				get_parent().change_status_amount(StatusTypes.TRANSMOG, -1)
+			else:
+				if !open:
+					if get_parent().has_status(StatusTypes.SAFETY):
+						if not revealed:
+							revealBox()
+							get_parent().change_status_amount(StatusTypes.SAFETY, -1)
+						else:
+							tryOpen()
 					else:
 						tryOpen()
 				else:
-					tryOpen()
-			else:
-				if get_parent().has_status(StatusTypes.CLOSENEXT) and type != BoxTypes.CLOSENEXT:
-					closeBox()
-					get_parent().change_status_amount(StatusTypes.CLOSENEXT, -1)
-				else:
-					on_self_clicked()
+					if get_parent().has_status(StatusTypes.CLOSENEXT) and type != BoxTypes.CLOSENEXT:
+						closeBox()
+						get_parent().change_status_amount(StatusTypes.CLOSENEXT, -1)
+					else:
+						on_self_clicked()
 
 func close_random_other():
 	var valids = []
@@ -1059,9 +1265,6 @@ func close_random_other():
 	if valids.size() > 0:
 		var toClose = valids.pick_random()
 		toClose.closeBox()
-
-func enable_3D():
-	$ThreeDeeBacking.visible = true
 
 func lg(text):
 	get_parent().logToLog($Sprite2D.texture, text)

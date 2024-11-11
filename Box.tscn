@@ -62,7 +62,6 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Number" type="Label" parent="."]
-visible = false
 layout_mode = 0
 offset_left = -32.0
 offset_top = -32.0

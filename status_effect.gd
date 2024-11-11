@@ -39,6 +39,8 @@ func load_image():
 			$Image.texture = load("res://statusImgs/key.png")
 		StatusTypes.TERRITORY:
 			$Image.texture = load("res://statusImgs/territory.png")
+		StatusTypes.TRANSMOG:
+			$Image.texture = load("res://statusImgs/transmog.png")
 
 func setupText():
 	match (type):
@@ -64,6 +66,8 @@ func setupText():
 			$Description.text = "If the next " + str(value) + " box you open is a Lock Box, win."
 		StatusTypes.TERRITORY:
 			$Description.text = "For the next " + str(value) + " opens, you can only open boxes adjacent to an open box."
+		StatusTypes.TRANSMOG:
+			$Description.text = "The next " + str(value) + " times you click a revealed box, transform it into a random box."
 
 func on_click():
 	if !justApplied:

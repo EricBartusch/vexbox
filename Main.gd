@@ -5,7 +5,7 @@ var statusScene = preload("res://StatusEffect.tscn")
 var logEntryScene = preload("res://LogEntry.tscn")
 
 var PYRAMID_START_X = 760
-var PYRAMID_START_Y = 125
+var PYRAMID_START_Y = 105
 
 var boxes = []
 var rows = []
