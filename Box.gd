@@ -1,5 +1,6 @@
 extends Control
 
+var id: String
 var revealed = false
 var just_opened = false
 var open = false
@@ -17,6 +18,14 @@ var origPosX
 var origPosY
 var starScene = preload("res://vfx/vfxStar.tscn")
 var flyingBoxScene = preload("res://vfx/vfxFlyingBoxImitator.tscn")
+
+func _init() -> void:
+	id = get_class().to_lower()
+	nameText = tr_local("name")
+	tooltip_text = tr_local("desc")
+
+func tr_local(key: String) -> String:
+	return tr("box." + id + "." + key)
 
 func set_custom_num(val):
 	customNum = val
@@ -67,331 +76,13 @@ func loadType(new_type):
 		hide_custom_num()
 		var oldType = type
 		type = new_type
-		load_text()
 		load_img()
 		if open and oldType == BoxTypes.BoxType.BUTTERFLY:
 			lg("The Butterfly has evolved!")
 			main().win()
 
-func load_text():
-	match type:
-		BoxTypes.BoxType.WINNER:
-			nameText = "Winner Box"
-			tooltipText = "On Open: Win."
-		BoxTypes.BoxType.LOSS:
-			nameText = "Loser Box"
-			tooltipText = "On Open: Lose."
-		BoxTypes.BoxType.EMPTY:
-			nameText = "Empty Box"
-			tooltipText = "This box is empty!"
-		BoxTypes.BoxType.REVEAL_RANDOM:
-			nameText = "Seer Box"
-			tooltipText = "On Open: Reveal a random other box."
-		BoxTypes.BoxType.REVEAL_ROW:
-			nameText = "Horizontal Sight Box"
-			tooltipText = "On Open: Reveal all boxes in this row."
-		BoxTypes.BoxType.ONE_GOLD:
-			nameText = "Cheap Box"
-			tooltipText = "On Open: Gain 1 Gold."
-		BoxTypes.BoxType.POISON:
-			nameText = "Poison Box"
-			tooltipText = "On Open: Become Poisoned. After you open 8 boxes, lose."
-		BoxTypes.BoxType.ANTIDOTE:
-			nameText = "Antidote Box"
-			tooltipText = "On Open: If you're Poisoned, remove your Poison. If this is adjacent to an open Viral Box, win."
-		BoxTypes.BoxType.EXPLODING:
-			nameText = "Boom Box"
-			tooltipText = "After you open a box, explodes, destroying itself and adjacent boxes."
-		BoxTypes.BoxType.PAY_FOR_REVEALS:
-			nameText = "Deposit Box"
-			tooltipText = "On Click: Spend 1 Gold to reveal a random adjacent box."
-		BoxTypes.BoxType.TWO_GOLD:
-			nameText = "Change Box"
-			tooltipText = "On Open: Gain 2 Gold."
-		BoxTypes.BoxType.SAFETY:
-			nameText = "Safety Box"
-			tooltipText = "On Open: The next time you click an unrevealed box, reveal it instead of opening it."
-		BoxTypes.BoxType.STAR:
-			nameText = "Star Box"
-			tooltipText = "On Open: If you've opened every adjacent box, win."
-		BoxTypes.BoxType.SHADOW:
-			nameText = "Shadow Box"
-			tooltipText = "On Open: Close a random other opened box."
-		BoxTypes.BoxType.JUMPSCARE:
-			nameText = "Jumpscare Box"
-			tooltipText = "On Open: If this was the first box you opened this game, lose."
-		BoxTypes.BoxType.FIRE:
-			nameText = "Flaming Box"
-			tooltipText = "On Open: Transform a random adjacent closed box into a Flaming Box."
-		BoxTypes.BoxType.THREE_GOLD:
-			nameText = "Golden Box"
-			tooltipText = "On Open: Gain 3 Gold."
-		BoxTypes.BoxType.SPEND_TO_WIN:
-			nameText = "Crown Box"
-			tooltipText = "On Click: Spend 6 Gold to win."
-		BoxTypes.BoxType.REVEAL_CORNERS:
-			nameText = "Tri-Gaze Box"
-			tooltipText = "On Open: Reveal the corner boxes."
-		BoxTypes.BoxType.SWORD:
-			nameText = "Sword Box"
-			tooltipText = "Lets you slay the Dragon."
-		BoxTypes.BoxType.DRAGON:
-			nameText = "Dragon Box"
-			tooltipText = "On Open: If the Sword is open, win. Otherwise, lose."
-		BoxTypes.BoxType.THREE_D:
-			nameText = "3D Box"
-			tooltipText = "On Open: Reveal 3 random boxes."
-		BoxTypes.BoxType.BOOKS:
-			nameText = "Book Box"
-			tooltipText = "On Open: If 11 or more boxes are open, win."
-		BoxTypes.BoxType.CLOCK:
-			nameText = "Clock Box"
-			tooltipText = "On Open: In 20 seconds, lose."
-		BoxTypes.BoxType.CLOSE_ADJACENT:
-			nameText = "Collapse Box"
-			tooltipText = "On Open: Close all adjacent boxes."
-		BoxTypes.BoxType.GHOST:
-			nameText = "Ghost Box"
-			tooltipText = "On Open: Transform 2 random boxes into Loser Boxes."
-		BoxTypes.BoxType.POVERTY:
-			nameText = "Bankrupt Box"
-			tooltipText = "On Open: Lose all your Gold."
-		BoxTypes.BoxType.SACRIFICE:
-			nameText = "Sacrifical Box"
-			tooltipText = "On Click: Destroy a random box, then reveal a random box. Usable 5 times."
-		BoxTypes.BoxType.INCOME:
-			nameText = "Bank Box"
-			tooltipText = "Whenever you open another box, 1/3 chance to gain 1 Gold."
-		BoxTypes.BoxType.BOSS:
-			nameText = "Boss Box"
-			tooltipText = "On Open: After you open 12 boxes, win."
-		BoxTypes.BoxType.SHY:
-			nameText = "Shy Box"
-			tooltipText = "Whenever you open another box, 1/3 chance to close this."
-		BoxTypes.BoxType.MIMIC:
-			nameText = "Mimic Box"
-			tooltipText = "If revealed, is revealed as a random other box. On Open: 1/3 chance to lose."
-		BoxTypes.BoxType.CURSE:
-			nameText = "Curse Box"
-			tooltipText = "On Open: The next time you would win, you don't."
-		BoxTypes.BoxType.PAY_FOR_SHIELD:
-			nameText = "Close Spender Box"
-			tooltipText = "On Click: Spend 1 Gold to close a random open box."
-		BoxTypes.BoxType.HEART:
-			nameText = "Heart Box"
-			tooltipText = "On Open: For 3 opens, you can't lose."
-		BoxTypes.BoxType.MUSIC:
-			nameText = "Music Box"
-			tooltipText = "On Open: Play the music."
-		BoxTypes.BoxType.SUS:
-			nameText = "Sus Box"
-			tooltipText = "On Open: Transform 2 random boxes into Mimic Boxes."
-		BoxTypes.BoxType.SPEEDRUN:
-			nameText = "Speedrun Box"
-			tooltipText = "On Open: If this was the first box you opened this game, win."
-		BoxTypes.BoxType.DEMOLITION:
-			nameText = "Demolition Box"
-			tooltipText = "On Open: Destroy the next box you click instead of opening or using it."
-		BoxTypes.BoxType.HEARTBREAK:
-			nameText = "Heartbreak Box"
-			tooltipText = "Whenever you open another box, 1/10 chance to lose."
-		BoxTypes.BoxType.ROWBOMB:
-			nameText = "Rowbomb Box"
-			tooltipText = "After you open a box, explodes, destroying all boxes in its row."
-		BoxTypes.BoxType.CLOSENEXT:
-			nameText = "Tape Box"
-			tooltipText = "On Open: Close the next open non-Tape box you click."
-		BoxTypes.BoxType.AUTOOPEN:
-			nameText = "Auto-Box"
-			tooltipText = "Whenever you open another box, opens a random adjacent box."
-		BoxTypes.BoxType.ROWWIN:
-			nameText = "Rowwin Box"
-			tooltipText = "On Open: If all boxes in this row are opened, win."
-		BoxTypes.BoxType.TEACHER:
-			nameText = "Big Brain Box"
-			tooltipText = "Whenever you open another box, reveal a random adjacent box."
-		BoxTypes.BoxType.ARMAGEDDON:
-			nameText = "Armageddon Box"
-			tooltipText = "After you open 3 boxes, destroy this and all but the outer rim of boxes."
-		BoxTypes.BoxType.BEDROCK:
-			nameText = "Bedrock Box"
-			tooltipText = "Can't be destroyed."
-		BoxTypes.BoxType.CLOAK:
-			nameText = "Cloak Box"
-			tooltipText = "On Open: If the Wand and Hat Boxes are open, win."
-		BoxTypes.BoxType.DESERT:
-			nameText = "Deserted Box"
-			tooltipText = "On Open: If 11 or more boxes are destroyed, win."
-		BoxTypes.BoxType.FAIRY:
-			nameText = "Fairy in a Box"
-			tooltipText = "On Open: Transform a random unrevealed box into a Fairy Box. If 4 Fairy Boxes are open, win."
-		BoxTypes.BoxType.HAT:
-			nameText = "Hat Box"
-			tooltipText = "On Open: If the Cloak and Wand Boxes are open, win."
-		BoxTypes.BoxType.INVERT:
-			nameText = "Inversion Box"
-			tooltipText = "On Open: Invert winning and losing for the rest of the game."
-		BoxTypes.BoxType.SELFDESTRUCT:
-			nameText = "Self-Destruct Box"
-			tooltipText = "After you open a box, destroys itself."
-		BoxTypes.BoxType.WAND:
-			nameText = "Wand Box"
-			tooltipText = "On Open: If the Hat and Cloak Boxes are open, win."
-		BoxTypes.BoxType.INSTAOPEN:
-			nameText = "Insta-Opener Box"
-			tooltipText = "On Open: Open the boxes right and left of this."
-		BoxTypes.BoxType.BLACKJACK:
-			nameText = "Blackjack Box"
-			tooltipText = "On Open: If 21 boxes are open, win. If more than 21 are open, lose."
-		BoxTypes.BoxType.EGG:
-			nameText = "Egg Box"
-			tooltipText = "If this box is destroyed while open, win."
-		BoxTypes.BoxType.INFERNO:
-			nameText = "Inferno Box"
-			tooltipText = "On Click: If 10 or more boxes are open Fire Boxes, win."
-		BoxTypes.BoxType.KEY:
-			nameText = "Key Box"
-			tooltipText = "On Open: If the next box you open is a Lock Box, win."
-		BoxTypes.BoxType.LOCK:
-			nameText = "Lock Box"
-			tooltipText = "Maybe a key could open this..?"
-		BoxTypes.BoxType.MATCH:
-			nameText = "Matchbox"
-			tooltipText = "On Open: Transform a random other box into a Fire Box."
-		BoxTypes.BoxType.PANDORAS:
-			nameText = "Pandora's Box"
-			tooltipText = "On Open: Transform all other revealed boxes into Loser Boxes."
-		BoxTypes.BoxType.REVIVAL:
-			nameText = "Revival Box"
-			tooltipText = "On Open: Revive 5 random destroyed boxes. (Boxes are revived closed.)"
-		BoxTypes.BoxType.SMARTBOMB:
-			nameText = "Smart Bomb Box"
-			tooltipText = "On Open: Reveal all adjacent boxes. After you open a box, explodes, destroying itself and adjacent boxes."
-		BoxTypes.BoxType.TERRITORY:
-			nameText = "Territory Box"
-			tooltipText = "On Open: For the next 4 opens, you can only open boxes adjacent to open boxes."
-		BoxTypes.BoxType.WORLDBEARER:
-			nameText = "Worldbearer Box"
-			tooltipText = "If this box is destroyed while open, lose."
-		BoxTypes.BoxType.PRINCESS:
-			nameText = "Princess Box"
-			tooltipText = "On Open: If the Dragon is revealed, lose. Otherwise, gain 3 Gold."
-		BoxTypes.BoxType.MINE:
-			nameText = "Mine Box"
-			tooltipText = "Whenever you open an adjacent box, gain 1 Gold."
-		BoxTypes.BoxType.CLONE:
-			nameText = "Clone Box"
-			tooltipText = "After you open 3 boxes, becomes a closed copy of a random box."
-		BoxTypes.BoxType.GAMER:
-			nameText = "Gamer Box"
-			tooltipText = "On Open: If you won the last run, win."
-		BoxTypes.BoxType.MAGNIFYING:
-			nameText = "Magnifying Box"
-			tooltipText = "On Click: Spend 1 Gold to reveal a random box."
-		BoxTypes.BoxType.VIRUS:
-			nameText = "Viral Box"
-			tooltipText = "After you open a box, transform adjacent open boxes into Viral Boxes."
-		BoxTypes.BoxType.STARVE:
-			nameText = "Hungry Box"
-			tooltipText = "On Open: Transform 5 random unrevealed boxes into Food Boxes. After you open 6 boxes without opening a Food Box, lose."
-		BoxTypes.BoxType.SPIRE:
-			nameText = "Ascended Box"
-			tooltipText = "On Open: If you don't have a Badge equipped, transform the Empty Box into a Winner Box."
-		BoxTypes.BoxType.CRUMBLING:
-			nameText = "Crumbling Box"
-			tooltipText = "After you open a box, destroy the top box (right to left)."
-		BoxTypes.BoxType.TRIPLEPLAY:
-			nameText = "Three Box"
-			tooltipText = "On Open: If this is the third time you've opened this box, win."
-		BoxTypes.BoxType.FOOD:
-			nameText = "Food Box"
-			tooltipText = "Yum."
-		BoxTypes.BoxType.ALLSEEINGEYE:
-			nameText = "All Seeing Box"
-			tooltipText = "On Open: Reveal 10 random boxes. After you open 3 boxes, lose."
-		BoxTypes.BoxType.WATERFALL:
-			nameText = "Waterfall Box"
-			tooltipText = "On Open: If in the bottom row, win. Otherwise, transform a random box in the row below into a Waterfall Box."
-		BoxTypes.BoxType.METEOR:
-			nameText = "Meteor Box"
-			tooltipText = "On Open: If adjacent to an open Bedrock Box, win."
-		BoxTypes.BoxType.PAINT:
-			nameText = "Paint Box"
-			tooltipText = "On Open: Paint the background a random color."
-		BoxTypes.BoxType.ICE:
-			nameText = "Ice Box"
-			tooltipText = "On Open: You can't open adjacent boxes for 3 opens."
-		BoxTypes.BoxType.BULLSEYE:
-			nameText = "Bullseye Box"
-			tooltipText = "On Open: If no adjacent boxes are revealed, reveal all adjacent boxes."
-		BoxTypes.BoxType.CONFIDENTIAL:
-			nameText = "Espionage Box"
-			tooltipText = "On Open: If 18 or more boxes are revealed, win."
-		BoxTypes.BoxType.FISHING_ROD:
-			nameText = "Fishing Box"
-			tooltipText = "On Open: Transform 3 random unrevealed boxes into Fish Boxes."
-		BoxTypes.BoxType.IMPATIENT:
-			nameText = "Impatient Box"
-			tooltipText = "Whenever you reveal a box in this row, open it."
-		BoxTypes.BoxType.TRANSMOG:
-			nameText = "Transmog Box"
-			tooltipText = "On Open: The next 2 times you click a revealed box, transform it into a random other box instead of opening or using it."
-		BoxTypes.BoxType.STUCK:
-			nameText = "Softlock Box"
-			tooltipText = "If you can't open any boxes, you win."
-		BoxTypes.BoxType.FISH:
-			nameText = "Fish Box"
-			tooltipText = "On Open: If 3 or more Fish Boxes are open, win."
-		BoxTypes.BoxType.DNA:
-			nameText = "DNA Box"
-			tooltipText = "On Open: Transform all adjacent boxes into the same random box."
-		BoxTypes.BoxType.DAREDEVIL:
-			nameText = "Daredevil Box"
-			tooltipText = "On Click: 20% chance to win. 30% chance to lose."
-		BoxTypes.BoxType.GUARDIAN:
-			nameText = "Extra Life Box"
-			tooltipText = "When you would lose, if this box is open, destroy it instead."
-		BoxTypes.BoxType.PAINTTWO:
-			nameText = "Rainblob Box"
-			tooltipText = "On Open: Paint unrevealed boxes rainbow."
-		BoxTypes.BoxType.MOON:
-			nameText = "Lunar Box"
-			tooltipText = "On Click: Close 5 other random boxes. Then destroy this."
-		BoxTypes.BoxType.BUTTERFLY:
-			nameText = "Butterfly Box"
-			tooltipText = "If this box is transformed while open, win."
-		BoxTypes.BoxType.MAP:
-			nameText = "Treasure Map Box"
-			tooltipText = "On Open: Reveal the X Box."
-		BoxTypes.BoxType.TREASURE:
-			nameText = "X Box"
-			tooltipText = "On Open: If there's a contiguous line of open boxes to the Treasure Map Box, win."
-		BoxTypes.BoxType.CHECKBOX:
-			nameText = "Checkbox"
-			tooltipText = "Whenever you open an unrevealed box, reveal a random box."
-		BoxTypes.BoxType.STELLAR:
-			nameText = "Stellar Box"
-			tooltipText = "When you open a box, stars fly out!"
-		BoxTypes.BoxType.FLYING:
-			nameText = "Flying Box"
-			tooltipText = "Whenever you destroy a box, it flies away!"
-		BoxTypes.BoxType.UNDERWORLD:
-			nameText = "Underworld Box"
-			tooltipText = "On Open: Lose. Then, if you didn't lose, win."
-		BoxTypes.BoxType.PROGRAM:
-			nameText = "Programmed Box"
-			tooltipText = "You can only open the highest possible boxes."
-		BoxTypes.BoxType.SLEEPY:
-			nameText = "Sleepy Box"
-			tooltipText = "On Open: Destroy the Winner and Loser boxes."
-		BoxTypes.BoxType.EXP:
-			nameText = "EXP Box"
-			tooltipText = "On Open: After you open 9 unrevealed boxes, win."
-		BoxTypes.BoxType.IVY:
-			nameText = "Ivy Box"
-			tooltipText = "On Open: Transform the boxes above this into Ivy Boxes."
-
 func load_img():
+	revealedImg = load("res://boxImgs/"+id+".ng")
 	match type:
 		BoxTypes.BoxType.WINNER:
 			revealedImg = load("res://boxImgs/WINNER.png")
