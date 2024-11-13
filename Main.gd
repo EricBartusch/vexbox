@@ -5,11 +5,15 @@ var statusScene = preload("res://StatusEffect.tscn")
 var logEntryScene = preload("res://LogEntry.tscn")
 
 var PYRAMID_START_X = 760
-var PYRAMID_START_Y = 105
+var PYRAMID_START_Y = 100
 
 var boxes = []
 var rows = []
-var totalRows = ((-1 + sqrt(1+(BoxTypes.MAX * 8))) / 2) - 1
+var MAX_ROWS = ((-1 + sqrt(1+(BoxTypes.BoxType.MAX * 8))) / 2) - 1
+var unlockedRows = 1
+var unlockedBoxes = (unlockedRows * (unlockedRows + 1)) / 2
+var winsToNext = 1
+var vfxList = []
 
 var gameRunning = true
 var won = false
@@ -22,11 +26,72 @@ var instantLosses = 0
 var rng = RandomNumberGenerator.new()
 var resetTimer = 0
 var last_opened
+var pan_x = 0
+var pan_y = 0
+
+var PAN_MIN_X = -500
+var PAN_MIN_Y = -500
+var PAN_MAX_X = 500
+var PAN_MAX_Y = 500
+
+func addVfx(vfx):
+	add_child(vfx)
+	vfxList.append(vfx)
+
+func removeVfx(vfx):
+	remove_child(vfx)
+	vfxList.erase(vfx)
+
+func save():
+	var save_file = FileAccess.open("user://savegame.save", FileAccess.WRITE)
+	var unlocked_badges = {}
+	for badge in $BadgeList.get_children():
+		if badge.unlocked:
+			unlocked_badges[badge.type] = true
+	var save_dict = {
+		"wins": wins,
+		"winstreak": winstreak,
+		"bestWinstreak": bestWinstreak,
+		"unlockedRows": unlockedRows,
+		"winsToNext": winsToNext,
+		"unlocked_badges": unlocked_badges
+	}
+	var json_string = JSON.stringify(save_dict)
+	save_file.store_line(json_string)
+
+func load_save():
+	if not FileAccess.file_exists("user://savegame.save"):
+		return
+	
+	var save_file = FileAccess.open("user://savegame.save", FileAccess.READ)
+	var line = save_file.get_line()
+	var json = JSON.new()
+	
+	var parse_result = json.parse(line)
+	
+	var data = json.data
+	for key in data.keys():
+		if key == "unlocked_badges":
+			for second in data[key]:
+				for badge in $BadgeList.get_children():
+					if int(second) == badge.type:
+						badge.unlocked = true
+						badge.refreshOutline()
+						break
+		else:	
+			set(key, data[key])
+	
+	unlockedBoxes = BoxTypes.BoxType.values()[((unlockedRows * (unlockedRows + 1)) / 2)]
 
 func _ready():
+	load_save()
 	startGame()
+	$WinsToNextText.text = "Reach " + str(winsToNext) + " wins for a NEW ROW."
 
 func startGame():
+	for item in vfxList:
+		removeVfx(item)
+	$GameStatusSubtext.visible = false
 	last_opened = null
 	won = false
 	lost = false
@@ -48,7 +113,7 @@ func startGame():
 		$StatusList.remove_child(node)
 		node.queue_free()
 	var list = []
-	for i in BoxTypes.MAX:
+	for i in unlockedBoxes:
 		list.append(i)
 	randomize()
 	list.shuffle()
@@ -63,6 +128,10 @@ func startGame():
 		boxes.append(instance)
 		curRow.append(instance)
 		(instance as Control).global_position = Vector2(PYRAMID_START_X - ((column * 75)) + (75/2 * row-1), PYRAMID_START_Y + (row * 75))
+		instance.origPosX = instance.global_position.x
+		instance.origPosY = instance.global_position.y
+		instance.global_position.x += pan_x
+		instance.global_position.y += pan_y
 		column += 1
 		if column > row:
 			column = 0
@@ -90,7 +159,7 @@ func reveal_row(row):
 
 func reveal_corners():
 	boxes[0].revealBox()
-	var bottomrow = totalRows
+	var bottomrow = unlockedRows - 1
 	var made_change = true
 	while made_change:
 		var valid_corner = true
@@ -119,6 +188,9 @@ func trigger_on_click():
 		status.on_click()
 	for box in boxes:
 		box.on_click()
+	for box in boxes:
+		if box.type == BoxTypes.BoxType.VIRUS:
+			box.special = 0
 
 func has_status(type):
 	for status in $StatusList.get_children():
@@ -183,7 +255,15 @@ func update_destroyed_text():
 			destroyed += 1
 	$CurDestroyedText.text = "Currently Destroyed: " + str(destroyed)
 
+func after_game_over():
+	save()
+	$GameStatusSubtext.visible = true
+
+func fib(idx):
+	return idx
+
 func internal_win():
+	$WinFXPlayer.play()
 	won = true
 	$ColorRect.color = Color(0.2, 0.33, 0.2, 1)
 	logToLog(null, "You won!")
@@ -191,6 +271,11 @@ func internal_win():
 	instantLosses = 0
 	$GameStatusText.text = "You won!"
 	wins += 1
+	if wins >= winsToNext and unlockedRows < MAX_ROWS + 1:
+		unlockedRows += 1
+		winsToNext += fib(unlockedRows)
+		unlockedBoxes = BoxTypes.BoxType.values()[(unlockedRows * (unlockedRows + 1)) / 2]
+	$WinsToNextText.text = "Reach " + str(winsToNext) + " wins for the next row."
 	winstreak += 1
 	$NumWinsText.text = "Wins: " + str(wins)
 	$WinstreakText.text = "Winstreak: " + str(winstreak)
@@ -199,12 +284,14 @@ func internal_win():
 		$BestWinstreakText.text = "Best Winstreak: " + str(bestWinstreak)
 	for badge in $BadgeList.get_children():
 		badge.checkWins()
+	after_game_over()
 
 func reset_winstreak():
 	winstreak = 0
 	$WinstreakText.text = "Winstreak: " + str(winstreak)
 
 func internal_loss():
+	$LossFXPlayer.play()
 	lost = true
 	$ColorRect.color = Color(0.33, 0.2, 0.2, 1)
 	logToLog(null, "You lost!")
@@ -217,6 +304,7 @@ func internal_loss():
 			$BadgeList/LossesToWins.unlockBadge()
 	else:
 		instantLosses = 0
+	after_game_over()
 
 func win():
 	if gameRunning:
@@ -233,17 +321,34 @@ func win():
 func lose():
 	if gameRunning:
 		if !has_status(StatusTypes.HEART):
-			if has_status(StatusTypes.INVERSION):
-				qLog("You lose - but it's inverted to a win!")
-				internal_win()
+			var willDie = true
+			for box in boxes:
+				if box.type == BoxTypes.BoxType.GUARDIAN and !box.destroyed and box.open:
+					willDie = false
+					box.destroyBox()
+					break
+			if willDie:
+				if has_status(StatusTypes.INVERSION):
+					qLog("You lose - but it's inverted to a win!")
+					internal_win()
+				else:
+					internal_loss()
 			else:
-				internal_loss()
+				qLog("The Extra Life Box saved you!")
 		else:
 			logToLog(null, "Heart prevented your loss!")
 
+var dragCursor = load("res://cursorDrag.png")
+var normalCursor = load("res://cursorNormal.png")
+
 func _process(delta: float) -> void:
+	already_played.clear()
 	if resetTimer > 0:
 		resetTimer -= delta
+	if Input.is_action_pressed("pan"):
+		Input.set_custom_mouse_cursor(dragCursor)
+	else:
+		Input.set_custom_mouse_cursor(normalCursor)
 
 func logToLog(sourceImg, sourceText):
 	var newLogEntry = logEntryScene.instantiate()
@@ -283,9 +388,40 @@ func _input(event: InputEvent) -> void:
 			startGame()
 		else:
 			resetGame()
+	if event is InputEventMouseMotion and Input.is_action_pressed("pan"):
+		var result = event.relative
+		pan_x += result.x
+		pan_y += result.y
+		for item in vfxList:
+			item.global_position.x += result.x
+			item.global_position.y += result.y
+		if pan_x > PAN_MAX_X:
+			pan_x = PAN_MAX_X
+		if pan_x < PAN_MIN_X:
+			pan_x = PAN_MIN_X
+		if pan_y > PAN_MAX_Y:
+			pan_y = PAN_MAX_Y
+		if pan_y < PAN_MIN_Y:
+			pan_y = PAN_MIN_Y
+		for box in boxes:
+			box.global_position.x = box.origPosX + pan_x
+			box.global_position.y = box.origPosY + pan_y
 
-func destroy_bottom_two_rows():
-	for box in rows[totalRows]:
-		destroy_box(box)
-	for box in rows[totalRows-1]:
-		destroy_box(box)
+var already_played = []
+
+func play_sfx(type):
+	if !already_played.has(type):
+		match (type):
+			SFXTypes.CLOSE:
+				$CloseFXPlayer.play()
+			SFXTypes.ACTIVATE:
+				$ActivateFXPlayer.play()
+			SFXTypes.DESTROY:
+				$DestroyFXPlayer.play()
+			SFXTypes.OPEN:
+				$OpenFXPlayer.play()
+			SFXTypes.REVEAL:
+				$RevealFXPlayer.play()
+			SFXTypes.TRANSMOG:
+				$TransmogFXPlayer.play()
+	already_played.append(type)

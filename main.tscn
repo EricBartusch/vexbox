@@ -1,11 +1,17 @@
-[gd_scene load_steps=7 format=3 uid="uid://d1a1s0x7tsi1i"]
+[gd_scene load_steps=13 format=3 uid="uid://d1a1s0x7tsi1i"]
 
 [ext_resource type="Script" path="res://Main.gd" id="1_nfgpe"]
 [ext_resource type="PackedScene" uid="uid://bhinpp6ankmnj" path="res://Tooltip.tscn" id="2_atu00"]
 [ext_resource type="PackedScene" uid="uid://dx3j5aid1cguw" path="res://Badge.tscn" id="3_44gwx"]
 [ext_resource type="AudioStream" uid="uid://b5axhmdnxxtj3" path="res://sfx/open.mp3" id="4_g0kiw"]
 [ext_resource type="AudioStream" uid="uid://fir740pf70l4" path="res://sfx/boiler.mp3" id="4_h80uj"]
-[ext_resource type="AudioStream" uid="uid://1cpcn0db4c2j" path="res://activate.mp3" id="6_3d66k"]
+[ext_resource type="AudioStream" uid="uid://1cpcn0db4c2j" path="res://sfx/activate.mp3" id="6_3d66k"]
+[ext_resource type="AudioStream" uid="uid://dlh2o1xmv11si" path="res://sfx/reveal.ogg" id="6_fuucm"]
+[ext_resource type="AudioStream" uid="uid://dq8shbylq3j85" path="res://sfx/loss.ogg" id="7_r535k"]
+[ext_resource type="AudioStream" uid="uid://dkcqj6no51i2s" path="res://sfx/destroy.ogg" id="7_xg3pp"]
+[ext_resource type="AudioStream" uid="uid://0qg5d7lm0d3o" path="res://sfx/transmog.ogg" id="8_cvdy0"]
+[ext_resource type="AudioStream" uid="uid://cbwjhibu6vyf4" path="res://sfx/win.ogg" id="8_gn4mg"]
+[ext_resource type="AudioStream" uid="uid://bu618sdf1vbi0" path="res://sfx/close.ogg" id="9_ydiek"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -14,17 +20,17 @@ script = ExtResource("1_nfgpe")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 0
-offset_right = 1504.0
-offset_bottom = 996.0
-color = Color(0.310617, 0.310617, 0.310617, 1)
+offset_right = 1920.0
+offset_bottom = 1080.0
+color = Color(0.548963, 0.548963, 0.548963, 1)
 
 [node name="Tooltip" parent="." instance=ExtResource("2_atu00")]
 top_level = true
 layout_mode = 1
-offset_left = 884.0
-offset_top = 9.0
-offset_right = -216.0
-offset_bottom = -740.0
+offset_left = 870.0
+offset_top = 10.0
+offset_right = -647.0
+offset_bottom = -816.0
 
 [node name="StatusList" type="VBoxContainer" parent="."]
 z_index = 50
@@ -37,71 +43,102 @@ theme_override_constants/separation = 100
 
 [node name="RestartButton" type="Button" parent="."]
 layout_mode = 0
-offset_left = 1309.0
-offset_top = 17.0
-offset_right = 1450.0
-offset_bottom = 65.0
+offset_left = 997.0
+offset_top = 275.0
+offset_right = 1138.0
+offset_bottom = 323.0
 text = "Restart Game
 "
 
 [node name="GameStatusText" type="Label" parent="."]
 layout_mode = 0
-offset_left = 601.0
+offset_left = 468.0
 offset_top = 15.0
-offset_right = 823.0
+offset_right = 690.0
 offset_bottom = 84.0
 theme_override_font_sizes/font_size = 50
 text = "You won!"
 horizontal_alignment = 1
 
+[node name="GameStatusSubtext" type="Label" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 470.0
+offset_top = 74.0
+offset_right = 699.0
+offset_bottom = 102.0
+theme_override_colors/font_color = Color(0.89059, 0.89059, 0.89059, 1)
+theme_override_font_sizes/font_size = 20
+text = "Click any box to restart."
+horizontal_alignment = 1
+
 [node name="TriggerPostClicksTimer" type="Timer" parent="."]
-wait_time = 0.2
+wait_time = 0.1
 one_shot = true
 
 [node name="NumWinsText" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1282.0
-offset_top = 73.0
-offset_right = 1479.0
-offset_bottom = 100.0
+offset_left = 1286.0
+offset_top = 8.0
+offset_right = 1483.0
+offset_bottom = 35.0
 text = "Wins: 0"
+horizontal_alignment = 1
+
+[node name="WinsToNextText" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1273.0
+offset_top = 29.0
+offset_right = 1501.0
+offset_bottom = 56.0
+text = "Reach 5 wins for a NEW ROW"
 horizontal_alignment = 1
 
 [node name="WinstreakText" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1300.0
-offset_top = 99.0
-offset_right = 1464.0
-offset_bottom = 128.0
+offset_left = 1302.0
+offset_top = 57.0
+offset_right = 1466.0
+offset_bottom = 86.0
 text = "Winstreak: 0"
 horizontal_alignment = 1
 
 [node name="BestWinstreakText" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1295.0
-offset_top = 125.0
-offset_right = 1459.0
-offset_bottom = 154.0
+offset_left = 1299.0
+offset_top = 87.0
+offset_right = 1463.0
+offset_bottom = 116.0
 text = "Best Winstreak: 0"
 horizontal_alignment = 1
 
 [node name="CurOpenText" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1296.0
-offset_top = 153.0
-offset_right = 1460.0
-offset_bottom = 182.0
+offset_left = 1298.0
+offset_top = 118.0
+offset_right = 1462.0
+offset_bottom = 147.0
 text = "Currently Open: 0
 "
 horizontal_alignment = 1
 
 [node name="CurDestroyedText" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1295.0
-offset_top = 177.0
-offset_right = 1470.0
-offset_bottom = 206.0
+offset_left = 1297.0
+offset_top = 150.0
+offset_right = 1472.0
+offset_bottom = 179.0
 text = "Currently Destroyed: 0"
+horizontal_alignment = 1
+
+[node name="BadgeHeader" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1296.0
+offset_top = 226.0
+offset_right = 1471.0
+offset_bottom = 255.0
+text = "Badges
+"
 horizontal_alignment = 1
 
 [node name="BadgeList" type="VBoxContainer" parent="."]
@@ -124,20 +161,51 @@ type = 1
 layout_mode = 2
 type = 2
 
-[node name="Shrunken" parent="BadgeList" instance=ExtResource("3_44gwx")]
-layout_mode = 2
-type = 3
-
 [node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4_h80uj")
+volume_db = -33.429
+pitch_scale = 1.52
 
 [node name="OpenFXPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4_g0kiw")
 volume_db = -6.933
 pitch_scale = 1.29
+max_polyphony = 5
+
+[node name="RevealFXPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_fuucm")
+volume_db = -6.933
+pitch_scale = 1.29
+max_polyphony = 5
 
 [node name="ActivateFXPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("6_3d66k")
+max_polyphony = 5
+
+[node name="DestroyFXPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_xg3pp")
+pitch_scale = 0.77
+max_polyphony = 5
+
+[node name="TransmogFXPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8_cvdy0")
+volume_db = -10.4
+pitch_scale = 1.11
+max_polyphony = 5
+
+[node name="CloseFXPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("9_ydiek")
+max_polyphony = 5
+
+[node name="LossFXPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_r535k")
+volume_db = -4.952
+max_polyphony = 3
+
+[node name="WinFXPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8_gn4mg")
+volume_db = -7.429
+max_polyphony = 3
 
 [node name="TextureRect" type="ColorRect" parent="."]
 layout_mode = 2
@@ -151,8 +219,8 @@ color = Color(0, 0, 0, 0.305882)
 layout_mode = 2
 offset_left = 45.0
 offset_top = 574.0
-offset_right = 389.0
-offset_bottom = 941.0
+offset_right = 381.0
+offset_bottom = 932.0
 theme_override_constants/separation = 35
 
 [connection signal="button_up" from="RestartButton" to="." method="_on_restart_button_button_up"]

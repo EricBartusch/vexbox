@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://cn4a14tr8k8dn"]
+
+[ext_resource type="Texture2D" uid="uid://dqx63vd3waqe8" path="res://vfx/vfxImgs/star.png" id="1_pkq0l"]
+[ext_resource type="Script" path="res://vfx/vfx_star.gd" id="2_iamt7"]
+
+[node name="VfxStar" type="TextureRect"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1890.0
+offset_bottom = -1050.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_pkq0l")
+stretch_mode = 2
+script = ExtResource("2_iamt7")

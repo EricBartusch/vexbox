@@ -1,0 +1,2 @@
+class_name SFXTypes
+enum {OPEN, REVEAL, ACTIVATE, DESTROY, TRANSMOG, CLOSE }

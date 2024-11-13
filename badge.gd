@@ -101,8 +101,8 @@ func onRunStart():
 				get_parent().get_parent().reveal_random()
 			BadgeTypes.BadgeType.LOSSES_TO_WINS:
 				for box in get_parent().get_parent().boxes:
-					if box.type == BoxTypes.LOSS or box.type == BoxTypes.JUMPSCARE:
-						box.loadType(BoxTypes.BOOKS)
+					if box.type == BoxTypes.BoxType.LOSS or box.type == BoxTypes.BoxType.JUMPSCARE:
+						box.loadType(BoxTypes.BoxType.BOOKS)
 			BadgeTypes.BadgeType.ECLIPSE:
 				get_parent().get_parent().add_status(StatusTypes.ECLIPSE, 3)
 			BadgeTypes.BadgeType.SHRUNKEN:
