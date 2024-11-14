@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://d1a1s0x7tsi1i"]
+[gd_scene load_steps=17 format=3 uid="uid://d1a1s0x7tsi1i"]
 
 [ext_resource type="Script" path="res://Main.gd" id="1_nfgpe"]
 [ext_resource type="PackedScene" uid="uid://bhinpp6ankmnj" path="res://Tooltip.tscn" id="2_atu00"]
@@ -15,6 +15,7 @@
 [ext_resource type="AudioStream" uid="uid://bu618sdf1vbi0" path="res://sfx/close.ogg" id="9_ydiek"]
 [ext_resource type="Texture2D" uid="uid://cevl2ucm1pjq6" path="res://uiImgs/trophy.png" id="14_uxwyn"]
 [ext_resource type="Texture2D" uid="uid://0h76v7rapjil" path="res://uiImgs/orb.png" id="15_tsn6f"]
+[ext_resource type="PackedScene" uid="uid://dx3j5aid1cguw" path="res://Badge.tscn" id="16_w7hqe"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -30,10 +31,10 @@ color = Color(0.548963, 0.548963, 0.548963, 1)
 [node name="Tooltip" parent="." instance=ExtResource("2_atu00")]
 top_level = true
 layout_mode = 1
-offset_left = 870.0
-offset_top = 10.0
-offset_right = -647.0
-offset_bottom = -816.0
+offset_left = 1110.0
+offset_top = 2.0
+offset_right = -407.0
+offset_bottom = -824.0
 
 [node name="StatusList" type="VBoxContainer" parent="."]
 z_index = 50
@@ -198,14 +199,6 @@ offset_right = 395.0
 offset_bottom = 941.0
 color = Color(0, 0, 0, 0.305882)
 
-[node name="LogContainer" type="VBoxContainer" parent="."]
-layout_mode = 2
-offset_left = 45.0
-offset_top = 574.0
-offset_right = 381.0
-offset_bottom = 932.0
-theme_override_constants/separation = 35
-
 [node name="Trophy" type="TextureRect" parent="."]
 layout_mode = 0
 offset_left = 1803.0
@@ -281,6 +274,21 @@ offset_top = 175.0
 offset_right = 1281.0
 offset_bottom = 1028.0
 columns = 5
+
+[node name="RandomReveal" parent="AchievementsCanvas/CheevosContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "reveal"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 0
+offset_left = 37.0
+offset_top = 572.0
+offset_right = 389.0
+offset_bottom = 934.0
+
+[node name="LogContainer" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+theme_override_constants/separation = 35
 
 [connection signal="button_up" from="RestartButton" to="." method="_on_restart_button_button_up"]
 [connection signal="timeout" from="TriggerPostClicksTimer" to="." method="_on_trigger_post_clicks_timer_timeout"]

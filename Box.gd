@@ -349,7 +349,7 @@ func close_random_other():
 		toClose.closeBox()
 
 func lg(text):
-	main.logToLog($Sprite2D.texture, text)
+	main.logToLog($Sprite2D.texture, text, id)
 
 func _on_button_pressed() -> void:
 	if main.gameRunning && !main.awaiting_post_click:

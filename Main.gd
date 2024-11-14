@@ -39,6 +39,7 @@ var PAN_MAX_Y = 500
 
 func _init() -> void:
 	Box.main = self
+	Badge.main = self
 
 func addVfx(vfx):
 	add_child(vfx)
@@ -75,6 +76,19 @@ func load_save():
 	
 	var parse_result = json.parse(line)
 	
+	var data = json.data
+	for key in data.keys():
+		if key == "unlocked_badges":
+			for second in data[key]:
+				for badge in $BadgeList.get_children():
+					if int(second) == badge.type:
+						badge.unlocked = true
+						badge.refreshOutline()
+						break
+		else:	
+			set(key, data[key])
+	
+	
 	unlockedBoxes = (unlockedRows * (unlockedRows + 1)) / 2
 
 func _ready():
@@ -90,8 +104,8 @@ func startGame():
 	won = false
 	lost = false
 	$ColorRect.color = Color("4f4f4f")
-	for node in $LogContainer.get_children():
-		$LogContainer.remove_child(node)
+	for node in $ScrollContainer/LogContainer.get_children():
+		$ScrollContainer/LogContainer.remove_child(node)
 		node.queue_free()
 	$MusicPlayer.stop()
 	awaiting_post_click = false
@@ -260,7 +274,7 @@ func internal_win():
 	$WinFXPlayer.play()
 	won = true
 	$ColorRect.color = Color(0.2, 0.33, 0.2, 1)
-	logToLog(null, "You won!")
+	logToLog(null, "You won!", null)
 	gameRunning = false
 	instantLosses = 0
 	$GameStatusText.text = "You won!"
@@ -277,7 +291,7 @@ func internal_win():
 		bestWinstreak = winstreak;
 		$BestWinstreakText.text = "Best Winstreak: " + str(bestWinstreak)
 	for badge in $AchievementsCanvas/CheevosContainer.get_children():
-		badge.checkWins()
+		badge.postGameEnd()
 	after_game_over()
 
 func reset_winstreak():
@@ -288,22 +302,16 @@ func internal_loss():
 	$LossFXPlayer.play()
 	lost = true
 	$ColorRect.color = Color(0.33, 0.2, 0.2, 1)
-	logToLog(null, "You lost!")
+	qLog("You lost!")
 	gameRunning = false
 	$GameStatusText.text = "You lost."
 	reset_winstreak()
-	if opens == 0:
-		instantLosses += 1
-		if instantLosses == 2:
-			$BadgeList/LossesToWins.unlockBadge()
-	else:
-		instantLosses = 0
 	after_game_over()
 
 func win():
 	if gameRunning:
 		if has_status(StatusTypes.CURSE):
-			logToLog(null, "Curse prevented your victory.")
+			qLog("Curse prevented your victory.")
 			change_status_amount(StatusTypes.CURSE, -1)
 		else:
 			if has_status(StatusTypes.INVERSION):
@@ -330,7 +338,7 @@ func lose():
 			else:
 				qLog("The Extra Life Box saved you!")
 		else:
-			logToLog(null, "Heart prevented your loss!")
+			qLog("Heart prevented your loss!")
 
 var dragCursor = load("res://cursorDrag.png")
 var normalCursor = load("res://cursorNormal.png")
@@ -343,13 +351,13 @@ func _process(delta: float) -> void:
 		if slide_amount < 1700:
 			slide_amount += 10
 			for node in get_children():
-				if node is Control:
+				if node is Control and node != $Tooltip:
 					node.global_position.x -= 10
 	else:
 		if slide_amount > 0 and !sliding_achievement_panel:
 			slide_amount -= 10
 			for node in get_children():
-				if node is Control:
+				if node is Control and node != $Tooltip:
 					node.global_position.x += 10
 		else:
 			if Input.is_action_pressed("pan"):
@@ -357,16 +365,16 @@ func _process(delta: float) -> void:
 			else:
 				Input.set_custom_mouse_cursor(normalCursor)
 
-func logToLog(sourceImg, sourceText):
+func logToLog(sourceImg, sourceText, ID):
 	var newLogEntry = logEntryScene.instantiate()
-	newLogEntry.load(sourceImg, sourceText)
-	var prevEntries = $LogContainer.get_children()
+	newLogEntry.load(sourceImg, sourceText, ID)
+	var prevEntries = $ScrollContainer/LogContainer.get_children()
 	if prevEntries.size() >= 10:
-		$LogContainer.remove_child(prevEntries[0])
-	$LogContainer.add_child(newLogEntry)
+		$ScrollContainer/LogContainer.remove_child(prevEntries[0])
+	$ScrollContainer/LogContainer.add_child(newLogEntry)
 
 func qLog(sourceText):
-	logToLog(null, sourceText)
+	logToLog(null, sourceText, null)
 
 func get_random_box():
 	var valids = []

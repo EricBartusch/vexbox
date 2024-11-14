@@ -32,19 +32,19 @@ static func init_properties() -> Array[String]:
 	return properties
 
 func loadText() -> void:
-	var text := load_box_text(id)
+	var text := load_badge_text(id)
 	hoverName = text[0]
 	hoverDesc = text[1]
 	unlockText = text[2]
 
-static func load_box_text(type: String) -> Array[String]:
-	return [tr_badge(type, "name"), tr_badge(type, "desc")]
+static func load_badge_text(type: String) -> Array[String]:
+	return [tr_badge(type, "name"), tr_badge(type, "desc"), tr_badge(type, "unlock")]
 
 func tr_local(key: String) -> String:
 	return tr_badge(id, key)
 
 static func tr_badge(type: String, key: String) -> String:
-	return main.tr("box." + type + "." + key)
+	return main.tr("badge." + type + "." + key)
 
 func loadImg():
 	$Sprite2D.texture = get_badge_img(id)
@@ -54,23 +54,15 @@ static func get_badge_img(type: String) -> Texture2D:
 
 func _process(delta):
 	var mousePos = get_viewport().get_mouse_position()
-	if mousePos.x >= global_position.x  and mousePos.x <= global_position.x + 75 and mousePos.y >= global_position.y - 32 and mousePos.y <= global_position.y + 32:
+	if mousePos.x >= global_position.x - 37.5 and mousePos.x <= global_position.x + 37.5 and mousePos.y >= global_position.y - 37.5 and mousePos.y <= global_position.y + 37.5:
 		updateTooltipForMe()
 
 func updateTooltipForMe():
-	var curStatus
-	if unlocked:
-		curStatus = "Selected" if enabled else "Not Selected"
-	else:
-		curStatus = "Locked. " + unlockText
-	get_parent().get_parent().get_node("Tooltip").setup(hoverName, curStatus, hoverDesc)
+	main.get_node("Tooltip").setup(hoverName, unlockText, hoverDesc)
 
-func unlockBadge():
+func unlock():
 	unlocked = true
 	refreshOutline()
-
-func postGameEnd() -> void:
-	pass
 		
 func refreshOutline():
 	if unlocked:
@@ -95,4 +87,7 @@ func _on_button_button_up() -> void:
 					badge.refreshOutline()
 
 func onRunStart() -> void:
+	pass
+
+func postGameEnd() -> void:
 	pass
