@@ -2,6 +2,7 @@ name: Build and Upload to itch.io
 
 env:
     GAME_NAME: VexBox
+    GODOT_VERSION: 4.3
 
 on:
   push:
@@ -22,7 +23,7 @@ jobs:
       - name: Setup Godot
         run: |
           mkdir -v -p ~/.local/share/godot/templates
-          mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+          mv /root/.local/share/godot/templates/${{ env.GODOT_VERSION }}.stable ~/.local/share/godot/templates/${{ env.GODOT_VERSION }}.stable
 
       - name: Setup Butler
         run: |
