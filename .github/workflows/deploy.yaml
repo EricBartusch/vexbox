@@ -1,0 +1,34 @@
+name: Build and Upload to itch.io
+
+env:
+    GAME_NAME: VexBox
+
+on:
+  push:
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Butler
+        run: |
+          curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+          unzip butler.zip
+          chmod +x butler
+          ./butler -V
+
+      - name: Build
+        id: build
+        uses: krynv/build-godot-action@v1
+        with:
+          name: ${{ env.GAME_NAME }}
+          preset: Web
+
+      - name: Upload to itch.io
+        run: butler push ${{ github.workspace }}/${{ steps.build.outputs.build }} ${{ secrets.USER }}/${{ env.GAME_NAME }}:html5
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}  
