@@ -2,7 +2,7 @@ extends Box
 
 var starScene = preload("res://vfx/vfxStar.tscn")
 
-func on_other_box_opened(box: Box, _box_was_revealed: bool) -> void:
+func on_other_box_opened_immediate(box: Box) -> void:
     for i in 3:
         var newStar = starScene.instantiate()
         newStar.global_position.x = box.global_position.x

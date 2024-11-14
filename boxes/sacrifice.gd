@@ -1,5 +1,8 @@
 extends Box
 
+func on_open() -> void:
+    set_custom_num(5)
+
 func can_use() -> bool:
     return customNum > 0
 

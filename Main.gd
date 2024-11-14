@@ -9,7 +9,7 @@ var PYRAMID_START_Y = 100
 
 var boxes = []
 var rows = []
-var MAX_ROWS = ((-1 + sqrt(1+(BoxTypes.BoxType.MAX * 8))) / 2) - 1
+var MAX_ROWS = ((-1 + sqrt(1+(len(all_boxes) * 8))) / 2) - 1
 var unlockedRows = 1
 var unlockedBoxes = (unlockedRows * (unlockedRows + 1)) / 2
 @export var all_boxes: Array[String] = load("res://boxes.tres").boxes
@@ -26,7 +26,7 @@ var bestWinstreak = 0
 var instantLosses = 0
 var rng = RandomNumberGenerator.new()
 var resetTimer = 0
-var last_opened
+var last_opened: Box
 var pan_x = 0
 var pan_y = 0
 
@@ -190,11 +190,11 @@ func trigger_on_click():
         status.on_click()
     for box in boxes:
         if box.open and not box.just_opened and not box.destroyed and gameRunning:
-            box.trigger_on_click()
+            box.on_other_box_opened()
         box.just_opened = false
     for box in boxes:
         if box.id == "virus":
-            box.special = 0
+            box.thing = 0
 
 func has_status(type):
     for status in $StatusList.get_children():

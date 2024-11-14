@@ -3,7 +3,7 @@ extends Box
 func can_use() -> bool:
     var count = 0
     for box in main.boxes:
-        if box.type == BoxTypes.BoxType.FIRE and box.open:
+        if box.id == "fire" and box.open:
             count += 1
     if count >= 10:
         return true
