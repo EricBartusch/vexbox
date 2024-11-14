@@ -9,10 +9,10 @@ var PYRAMID_START_Y = 100
 
 var boxes = []
 var rows = []
+var all_boxes: Array[String] = load("res://boxes.tres").boxes
 var MAX_ROWS = ((-1 + sqrt(1+(len(all_boxes) * 8))) / 2) - 1
 var unlockedRows = 1
 var unlockedBoxes = (unlockedRows * (unlockedRows + 1)) / 2
-@export var all_boxes: Array[String] = load("res://boxes.tres").boxes
 var winsToNext = 1
 var vfxList = []
 

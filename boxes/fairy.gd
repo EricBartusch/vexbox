@@ -3,7 +3,7 @@ extends Box
 func on_open() -> void:
     var valids = []
     for box in main.boxes:
-        if !box.destroyed and !box.revealed and box.type != "fairy":
+        if !box.destroyed and !box.revealed and box.id != "fairy":
             valids.append(box)
     if valids.size() > 0:
         var toChange = valids.pick_random()

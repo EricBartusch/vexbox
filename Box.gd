@@ -20,7 +20,7 @@ static var control_properties := Control.new().get_property_list()
 func load_text() -> void:
     var text := load_box_text(id)
     nameText = text[0]
-    tooltip_text = text[1]
+    tooltipText = text[1]
 
 static func load_box_text(type: String) -> Array[String]:
     return [tr_box(type, "name"), tr_box(type, "desc")]

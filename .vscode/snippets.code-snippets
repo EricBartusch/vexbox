@@ -4,7 +4,8 @@
         "body": [
             "extends Box",
             "",
-            "func on_open() -> void:$0"
+            "func on_open() -> void:",
+            "    $0"
         ],
     },
 }
