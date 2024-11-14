@@ -23,7 +23,7 @@ jobs:
 
       - name: Build
         id: build
-        uses: krynv/build-godot-action@v1
+        uses: krynv/build-godot-action@v1.0.0
         with:
           name: ${{ env.GAME_NAME }}
           preset: Web
