@@ -15,6 +15,7 @@ var origPosX
 var origPosY
 var was_revealed_when_opened: bool
 static var main: Main
+static var control_properties := Control.new().get_property_list()
 
 func load_text() -> void:
     var text := load_box_text(id)
@@ -125,8 +126,16 @@ func loadType(new_type: String) -> void:
         id = new_type
         var properties := {}
         for i in get_property_list():
+            var found := false
+            for j in control_properties:
+                if i.name == j.name:
+                    found = true
+                    break
+            if found:
+                continue
             properties[i.name] = get(i.name)
         set_script(get_box_script(id))
+        set_process(true)
         for i in properties:
             set(i, properties[i])
         load_text()
