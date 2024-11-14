@@ -15,7 +15,22 @@ var origPosX
 var origPosY
 var was_revealed_when_opened: bool
 static var main: Main
-static var control_properties := Control.new().get_property_list()
+static var propery_names := init_properties()
+
+static func init_properties() -> Array[String]:
+    var control_properties := Control.new().get_property_list()
+    var box_properties = Box.new().get_property_list()
+    var properties: Array[String] = []
+    for i in box_properties:
+        var found := false
+        for j in control_properties:
+            if i.name == j.name:
+                found = true
+                break
+        if found:
+            continue
+        properties.push_back(i.name)
+    return properties
 
 func load_text() -> void:
     var text := load_box_text(id)
@@ -125,15 +140,8 @@ func loadType(new_type: String) -> void:
         on_type_about_to_change(new_type)
         id = new_type
         var properties := {}
-        for i in get_property_list():
-            var found := false
-            for j in control_properties:
-                if i.name == j.name:
-                    found = true
-                    break
-            if found:
-                continue
-            properties[i.name] = get(i.name)
+        for i in propery_names:
+            properties[i] = get(i)
         set_script(get_box_script(id))
         set_process(true)
         for i in properties:
