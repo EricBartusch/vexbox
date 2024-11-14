@@ -7,7 +7,7 @@ func _ready() -> void:
 	vX = get_parent().rng.randf_range(-10, 10)
 	vY = get_parent().rng.randf_range(-20, -6)
 
-func loadFromBox(box):
+func _init(box):
 	global_position = box.global_position
 	$Sprite2D.texture = box.get_node("Sprite2D").texture
 	$Outline.texture = box.get_node("Outline").texture

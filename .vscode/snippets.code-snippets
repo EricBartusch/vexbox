@@ -1,0 +1,11 @@
+{
+    "Box": {
+        "prefix": "box",
+        "body": [
+            "extends Box",
+            "",
+            "func on_open() -> void:",
+            "    $0"
+        ],
+    },
+}
