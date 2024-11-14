@@ -29,6 +29,7 @@ jobs:
           preset: Web
 
       - name: Upload to itch.io
+        env: 
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
         run: ./butler push ${{ github.workspace }}/${{ steps.build.outputs.build }} ${{ secrets.USER }}/${{ env.GAME_NAME }}:html5
-        env:
-          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}  
+
