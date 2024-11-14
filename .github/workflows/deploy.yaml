@@ -26,7 +26,7 @@ jobs:
         uses: krynv/build-godot-action@v1.0.0
         with:
           name: index
-          preset: FOO
+          preset: Workflow-Web
 
       - name: Upload to itch.io
         run: ./butler push ${{ github.workspace }}/${{ steps.build.outputs.build }} ${{ secrets.USER }}/${{ env.GAME_NAME }}:html5
