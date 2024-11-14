@@ -19,6 +19,12 @@ jobs:
         with:
           lfs: true
 
+      - name: Lint Setup
+        uses: Scony/godot-gdscript-toolkit@4.3.3
+  
+      - name: Lint
+        run: gdlint .
+
       - name: Install curl 
         run: apt-get update && apt-get install -y curl   
 
