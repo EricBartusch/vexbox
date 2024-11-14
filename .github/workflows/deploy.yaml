@@ -9,10 +9,17 @@ on:
 jobs:
   build-and-upload:
     runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:3.3.3
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Setup Godot
+        run: |
+          mkdir -v -p ~/.local/share/godot/templates
+          mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
 
       - name: Setup Butler
         run: |
@@ -22,17 +29,15 @@ jobs:
           ./butler -V
 
       - name: Build
-        id: build
-        uses: krynv/build-godot-action@v1.0.0
-        with:
-          name: index
-          preset: Web
+        run: |
+          mkdir -v -p build/web
+          godot -v --export "HTML5" ./build/web/index.html
 
       - name: Debug Build Path 
         run: |
           echo "Build path: ${{ steps.build.outputs.build }}"    
 
       - name: Upload to itch.io
-        run: ./butler push ${{ github.workspace }}/${{ steps.build.outputs.build }} ${{ secrets.USER }}/${{ env.GAME_NAME }}:html5
+        run: ./butler push build/web ${{ secrets.USER }}/${{ env.GAME_NAME }}:html5
         env:
           BUTLER_API_KEY: ${{ secrets.API_KEY }}  
