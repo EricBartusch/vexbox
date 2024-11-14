@@ -1,10 +1,11 @@
-[gd_scene load_steps=13 format=3 uid="uid://d1a1s0x7tsi1i"]
+[gd_scene load_steps=16 format=3 uid="uid://d1a1s0x7tsi1i"]
 
 [ext_resource type="Script" path="res://Main.gd" id="1_nfgpe"]
 [ext_resource type="PackedScene" uid="uid://bhinpp6ankmnj" path="res://Tooltip.tscn" id="2_atu00"]
-[ext_resource type="PackedScene" uid="uid://dx3j5aid1cguw" path="res://Badge.tscn" id="3_44gwx"]
+[ext_resource type="Texture2D" uid="uid://c6o8s2wiymnp0" path="res://uiImgs/wins.png" id="3_8voak"]
 [ext_resource type="AudioStream" uid="uid://b5axhmdnxxtj3" path="res://sfx/open.mp3" id="4_g0kiw"]
 [ext_resource type="AudioStream" uid="uid://fir740pf70l4" path="res://sfx/boiler.mp3" id="4_h80uj"]
+[ext_resource type="FontFile" uid="uid://drxqa43mwcvwa" path="res://Comic Sans MS.ttf" id="4_ito2v"]
 [ext_resource type="AudioStream" uid="uid://1cpcn0db4c2j" path="res://sfx/activate.mp3" id="6_3d66k"]
 [ext_resource type="AudioStream" uid="uid://dlh2o1xmv11si" path="res://sfx/reveal.ogg" id="6_fuucm"]
 [ext_resource type="AudioStream" uid="uid://dq8shbylq3j85" path="res://sfx/loss.ogg" id="7_r535k"]
@@ -12,6 +13,8 @@
 [ext_resource type="AudioStream" uid="uid://0qg5d7lm0d3o" path="res://sfx/transmog.ogg" id="8_cvdy0"]
 [ext_resource type="AudioStream" uid="uid://cbwjhibu6vyf4" path="res://sfx/win.ogg" id="8_gn4mg"]
 [ext_resource type="AudioStream" uid="uid://bu618sdf1vbi0" path="res://sfx/close.ogg" id="9_ydiek"]
+[ext_resource type="Texture2D" uid="uid://cevl2ucm1pjq6" path="res://uiImgs/trophy.png" id="14_uxwyn"]
+[ext_resource type="Texture2D" uid="uid://0h76v7rapjil" path="res://uiImgs/orb.png" id="15_tsn6f"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -20,7 +23,7 @@ script = ExtResource("1_nfgpe")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 0
-offset_right = 1920.0
+offset_right = 3870.0
 offset_bottom = 1080.0
 color = Color(0.548963, 0.548963, 0.548963, 1)
 
@@ -76,90 +79,70 @@ horizontal_alignment = 1
 wait_time = 0.1
 one_shot = true
 
+[node name="WinsIcon" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 1593.0
+offset_top = 5.0
+offset_right = 1633.0
+offset_bottom = 45.0
+texture = ExtResource("3_8voak")
+
 [node name="NumWinsText" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1286.0
-offset_top = 8.0
-offset_right = 1483.0
-offset_bottom = 35.0
-text = "Wins: 0"
+offset_left = 1631.0
+offset_top = 4.0
+offset_right = 1688.0
+offset_bottom = 47.0
+theme_override_fonts/font = ExtResource("4_ito2v")
+theme_override_font_sizes/font_size = 30
+text = ": 0"
 horizontal_alignment = 1
 
 [node name="WinsToNextText" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1273.0
-offset_top = 29.0
-offset_right = 1501.0
-offset_bottom = 56.0
+offset_left = 1521.0
+offset_top = 49.0
+offset_right = 1749.0
+offset_bottom = 76.0
 text = "Reach 5 wins for a NEW ROW"
 horizontal_alignment = 1
 
 [node name="WinstreakText" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1302.0
-offset_top = 57.0
-offset_right = 1466.0
-offset_bottom = 86.0
+offset_left = 1555.0
+offset_top = 76.0
+offset_right = 1719.0
+offset_bottom = 105.0
 text = "Winstreak: 0"
 horizontal_alignment = 1
 
 [node name="BestWinstreakText" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1299.0
-offset_top = 87.0
-offset_right = 1463.0
-offset_bottom = 116.0
+offset_left = 1556.0
+offset_top = 101.0
+offset_right = 1720.0
+offset_bottom = 130.0
 text = "Best Winstreak: 0"
 horizontal_alignment = 1
 
 [node name="CurOpenText" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1298.0
-offset_top = 118.0
-offset_right = 1462.0
-offset_bottom = 147.0
+offset_left = 1551.0
+offset_top = 123.0
+offset_right = 1715.0
+offset_bottom = 152.0
 text = "Currently Open: 0
 "
 horizontal_alignment = 1
 
 [node name="CurDestroyedText" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1297.0
-offset_top = 150.0
-offset_right = 1472.0
-offset_bottom = 179.0
+offset_left = 1553.0
+offset_top = 147.0
+offset_right = 1728.0
+offset_bottom = 176.0
 text = "Currently Destroyed: 0"
 horizontal_alignment = 1
-
-[node name="BadgeHeader" type="Label" parent="."]
-layout_mode = 0
-offset_left = 1296.0
-offset_top = 226.0
-offset_right = 1471.0
-offset_bottom = 255.0
-text = "Badges
-"
-horizontal_alignment = 1
-
-[node name="BadgeList" type="VBoxContainer" parent="."]
-layout_mode = 0
-offset_left = 1337.0
-offset_top = 290.0
-offset_right = 1430.0
-offset_bottom = 734.0
-theme_override_constants/separation = 100
-
-[node name="TwoReveals" parent="BadgeList" instance=ExtResource("3_44gwx")]
-layout_mode = 2
-size_flags_vertical = 0
-
-[node name="LossesToWins" parent="BadgeList" instance=ExtResource("3_44gwx")]
-layout_mode = 2
-type = 1
-
-[node name="Eclipse" parent="BadgeList" instance=ExtResource("3_44gwx")]
-layout_mode = 2
-type = 2
 
 [node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4_h80uj")
@@ -223,5 +206,82 @@ offset_right = 381.0
 offset_bottom = 932.0
 theme_override_constants/separation = 35
 
+[node name="Trophy" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 1803.0
+offset_top = 11.0
+offset_right = 1906.0
+offset_bottom = 120.0
+texture = ExtResource("14_uxwyn")
+
+[node name="AchievementsPageButton" type="Button" parent="Trophy"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 0
+offset_left = -2.0
+offset_top = 3.0
+offset_right = 97.0
+offset_bottom = 105.0
+
+[node name="AchievementsCanvas" type="Control" parent="."]
+anchors_preset = 0
+offset_left = 1920.0
+offset_top = 1.0
+offset_right = 3475.0
+offset_bottom = 1081.0
+
+[node name="BadgesLabel" type="Label" parent="AchievementsCanvas"]
+layout_mode = 0
+offset_left = 179.0
+offset_top = 40.0
+offset_right = 383.0
+offset_bottom = 111.0
+theme_override_fonts/font = ExtResource("4_ito2v")
+theme_override_font_sizes/font_size = 50
+text = "BADGES
+"
+
+[node name="CheevosCount" type="Label" parent="AchievementsCanvas"]
+layout_mode = 0
+offset_left = 435.0
+offset_top = 34.0
+offset_right = 870.0
+offset_bottom = 77.0
+theme_override_fonts/font = ExtResource("4_ito2v")
+theme_override_font_sizes/font_size = 30
+text = "Achievements Unlocked: 0
+"
+
+[node name="ToNextBPCount" type="Label" parent="AchievementsCanvas"]
+layout_mode = 0
+offset_left = 433.0
+offset_top = 69.0
+offset_right = 868.0
+offset_bottom = 112.0
+theme_override_fonts/font = ExtResource("4_ito2v")
+theme_override_font_sizes/font_size = 30
+text = "To Next BP: 0
+"
+
+[node name="BPContainer" type="HBoxContainer" parent="AchievementsCanvas"]
+layout_mode = 0
+offset_left = 832.0
+offset_top = 34.0
+offset_right = 896.0
+offset_bottom = 95.0
+
+[node name="BP1" type="TextureRect" parent="AchievementsCanvas/BPContainer"]
+layout_mode = 2
+texture = ExtResource("15_tsn6f")
+expand_mode = 2
+
+[node name="CheevosContainer" type="GridContainer" parent="AchievementsCanvas"]
+layout_mode = 2
+offset_left = 138.0
+offset_top = 175.0
+offset_right = 1281.0
+offset_bottom = 1028.0
+columns = 5
+
 [connection signal="button_up" from="RestartButton" to="." method="_on_restart_button_button_up"]
 [connection signal="timeout" from="TriggerPostClicksTimer" to="." method="_on_trigger_post_clicks_timer_timeout"]
+[connection signal="pressed" from="Trophy/AchievementsPageButton" to="." method="_on_achievements_page_button_pressed"]

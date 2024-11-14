@@ -10,6 +10,7 @@ func _ready() -> void:
 func _init(box):
 	global_position = box.global_position
 	$Sprite2D.texture = box.get_node("Sprite2D").texture
+	$Sprite2D.modulate = box.get_node("Sprite2D").modulate
 	$Outline.texture = box.get_node("Outline").texture
 
 func _process(delta: float) -> void:
