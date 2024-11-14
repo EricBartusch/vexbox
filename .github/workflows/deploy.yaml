@@ -19,9 +19,9 @@ jobs:
         with:
           lfs: true
 
-      - name: Lint Setup
-        uses: Scony/godot-gdscript-toolkit@4.3.3
-  
+      - name: Setup gdtoolkit
+        uses: Scony/godot-gdscript-toolkit@master
+    
       - name: Lint
         run: gdlint .
 
