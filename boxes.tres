@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://v1s5muj37lro"]
+
+[sub_resource type="GDScript" id="GDScript_1ra6m"]
+script/source = "extends Resource
+
+@export var boxes: Array[String]
+"
+
+[resource]
+script = SubResource("GDScript_1ra6m")
+boxes = Array[String](["winner", "empty", "loss", "revealrandom", "revealrow", "onegold", "poison", "antidote", "exploding", "payforreveals", "star", "shadow", "jumpscare", "safety", "twogold", "fire", "threegold", "spendtowin", "revealcorners", "dragon", "sword", "ghost", "clock", "books", "sacrifice", "poverty", "closeadjacent", "threed", " income", "boss", "shy", "mimic", "curse", "payforshield", "heart", "music", " sus", "speedrun", "demolition", "heartbreak", "rowbomb", "closenext", "autoopen", "rowwin", "teacher", " armageddon", "bedrock", "cloak", "desert", "fairy", "hat", "invert", "selfdestruct", "wand", "instaopen", " blackjack", "egg", "inferno", "key", "lock", "match", "pandoras", "revival", "smartbomb", "territory", "worldbearer", " princess", "mine", "clone", "gamer", "magnifying", "virus", "starve", "spire", "crumbling", "tripleplay", "food", "allseeingeye", " waterfall", "meteor", "daredevil", "paint", "ice", "bullseye", "confidential", "fishingrod", "impatient", "transmog", "stuck", "fish", "dna", " guardian", "painttwo", "moon", "butterfly", "map", "treasure", "checkbox", "stellar", "flying", "underworld", "program", "sleepy", "exp", "ivy", "max"])
