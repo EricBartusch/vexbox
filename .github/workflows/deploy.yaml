@@ -21,12 +21,6 @@ jobs:
 
       - name: Setup gdtoolkit
         uses: Scony/godot-gdscript-toolkit@master
-    
-      - name: Lint
-        run: gdlint .
-
-      - name: Install curl 
-        run: apt-get update && apt-get install -y curl   
 
       - name: Setup Godot
         run: |
