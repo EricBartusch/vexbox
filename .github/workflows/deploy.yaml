@@ -27,7 +27,7 @@ jobs:
 
       - name: Lint
         run: |
-          gdlint .
+          (gdformat --diff .; gdlint .)
         continue-on-error: true  
 
       - name: Install curl 
