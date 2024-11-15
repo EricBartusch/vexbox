@@ -6,6 +6,8 @@ env:
 
 on:
   push:
+    branches:
+      - main
 
 jobs:
   build-and-upload:
@@ -46,8 +48,6 @@ jobs:
         unzip butler.zip
         chmod +x butler
         ./butler -V
-
-    - run: ls /github/home/.local/share/godot/export_templates/4.3.stable
 
     - name: Build
       run: |
