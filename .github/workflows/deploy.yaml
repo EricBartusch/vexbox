@@ -47,7 +47,7 @@ jobs:
         chmod +x butler
         ./butler -V
 
-    run: ls /github/home/.local/share/godot/export_templates/4.3.stable
+    - run: ls /github/home/.local/share/godot/export_templates/4.3.stable
 
     - name: Build
       run: |
