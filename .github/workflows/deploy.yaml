@@ -1,4 +1,4 @@
-name: Build and Upload to itch.io
+name: Build and Upload to itch.io 
 
 env:
     GAME_NAME: VexBox
