@@ -209,3 +209,6 @@ box.exp.name;EXP Box
 box.exp.desc;On Open: After you open 9 unrevealed boxes, win.
 box.ivy.name;Ivy Box
 box.ivy.desc;On Open: Transform the boxes above this into Ivy Boxes.
+badge.reveal.name;Reveal One
+badge.reveal.desc;Start Of Run: Reveal a random box.
+badge.reveal.unlock;Win 5 times.
