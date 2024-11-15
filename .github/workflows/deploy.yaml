@@ -33,7 +33,7 @@ jobs:
         EXPORT_DIR="$(readlink -f build)"
         godot --headless --verbose --export-release "Web" "$EXPORT_DIR/web/index.html"  
 
-    - name: Upload to itch.io
+    - name: Upload to itch.io 
       run: butler push build/web ${{ secrets.USER }}/${{ env.GAME_NAME }}:html5
       env:
         BUTLER_API_KEY: ${{ secrets.API_KEY }}  
