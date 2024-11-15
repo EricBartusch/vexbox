@@ -11,7 +11,7 @@ jobs:
   build-and-upload:
     runs-on: ubuntu-latest
     container:
-        image: ghcr.io/ericbartusch/godot-container-builder:latest
+        image: ghcr.io/ericbartusch/godot-container-builder:latest 
     
     steps:
     - name: Checkout code
