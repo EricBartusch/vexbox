@@ -20,6 +20,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           lfs: true
+     
+      - name: Install Linter
+        run: apt-get update && apt-get install -y gdscript-linter
+        
+      - name: Lint
+        run: gdscript-linter .
 
       - name: Install curl 
         run: apt-get update && apt-get install -y curl   
