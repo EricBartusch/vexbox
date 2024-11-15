@@ -27,7 +27,7 @@ jobs:
       run: gdlint .
       continue-on-error: true         
 
-    - run: ls -al /github/home
+    - run: ls -al /root/.local/share/godot/export_templates
 
     - name: Build
       run: |
