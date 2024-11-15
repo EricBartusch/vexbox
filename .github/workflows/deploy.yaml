@@ -21,7 +21,9 @@ jobs:
           lfs: true
      
       - name: Install Linter
-        uses: Scony/godot-gdscript-toolkit@master
+        run: | 
+          apt-get update && apt-get install -y python3 python3-pip lsb-release 
+          pip3 install gdtoolkit
 
       - name: Lint
         run: |
