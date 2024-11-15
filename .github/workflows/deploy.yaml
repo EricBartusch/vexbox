@@ -21,10 +21,12 @@ jobs:
           lfs: true
      
       - name: Install Linter
-        run: apt-get update && apt-get install -y gdscript-linter
-        
+        uses: Scony/godot-gdscript-toolkit@master
+
       - name: Lint
-        run: gdscript-linter .
+        run: |
+          gdformat --check .
+          gdlint .
 
       - name: Install curl 
         run: apt-get update && apt-get install -y curl   
