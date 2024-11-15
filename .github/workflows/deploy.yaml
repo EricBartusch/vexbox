@@ -12,18 +12,13 @@ jobs:
   build-and-upload:
     runs-on: ubuntu-latest
     container:
-      image: barichello/godot-ci:4.3
+      image: ghcr.io/ericbartusch/godot-ci-custom:latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           lfs: true
-     
-      - name: Install Linter
-        run: | 
-          apt-get update && apt-get install -y python3 python3-pip lsb-release 
-          pip3 install gdtoolkit
 
       - name: Format
         run: gdformat --check .
@@ -32,21 +27,6 @@ jobs:
       - name: Lint
         run: gdlint .
         continue-on-error: true
-
-      - name: Install curl 
-        run: apt-get update && apt-get install -y curl   
-
-      - name: Setup Godot
-        run: |
-          mkdir -v -p ~/.local/share/godot/export_templates/
-          mv /root/.local/share/godot/export_templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
-
-      - name: Setup Butler
-        run: |
-          curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
-          unzip butler.zip
-          chmod +x butler
-          ./butler -V
 
       - name: Build
         run: |
