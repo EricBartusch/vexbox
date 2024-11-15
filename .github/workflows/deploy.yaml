@@ -1,7 +1,7 @@
 name: Build and Upload to itch.io
 
 env:
-    GAME_NAME: VexBox
+    GAME_NAME: VexBox 
     GODOT_VERSION: 4.3
 
 on:
