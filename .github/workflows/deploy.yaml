@@ -25,10 +25,13 @@ jobs:
           apt-get update && apt-get install -y python3 python3-pip lsb-release 
           pip3 install gdtoolkit
 
+      - name: Format
+        run: gdformat --check .
+        continue-on-error: true
+      
       - name: Lint
-        run: |
-          (gdformat --diff .; gdlint .)
-        continue-on-error: true  
+        run: gdlint .
+        continue-on-error: true
 
       - name: Install curl 
         run: apt-get update && apt-get install -y curl   
