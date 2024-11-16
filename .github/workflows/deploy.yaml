@@ -1,44 +1,13 @@
-name: Build and Upload to itch.io
-
-env:
-    GAME_NAME: VexBox 
-    GODOT_VERSION: 4.3
+name: Build and Upload VexBox to itch.io
 
 on:
   push:
 
 jobs:
-  build-and-upload:
-    runs-on: ubuntu-latest
-    container:
-        image: ghcr.io/ericbartusch/godot-container-builder:latest 
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        lfs: true
-
-    - name: Format
-      run: gdformat --check .
-      continue-on-error: true
-    
-    - name: Lint
-      run: gdlint .
-      continue-on-error: true         
-
-    - name: Setup Godot
-      run: |
-        mkdir -v -p ~/.local/share/godot/export_templates/
-        mv /root/.local/share/godot/export_templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable   
-
-    - name: Build
-      run: |
-        mkdir -v -p build/web
-        EXPORT_DIR="$(readlink -f build)"
-        godot --headless --verbose --export-release "Web" "$EXPORT_DIR/web/index.html"  
-
-    - name: Upload to itch.io 
-      run: butler push build/web ${{ secrets.USER }}/${{ env.GAME_NAME }}:html5
-      env:
-        BUTLER_API_KEY: ${{ secrets.API_KEY }}  
+  call-build-and-upload:
+    uses: ericbartusch/godot-container-builder/.github/workflows/reusable-godot-deploy.yaml@v1
+    with:
+      GAME_NAME: VexBox
+    secrets:
+      USER: ${{ secrets.USER }}
+      API_KEY: ${{ secrets.API_KEY }}
