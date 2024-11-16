@@ -1,7 +1,7 @@
 name: Build and Upload VexBox to itch.io
 
 on:
-  push:
+  push: 
 
 jobs:
   call-build-and-upload:
