@@ -101,4 +101,4 @@ func changeValue(mod):
 		setupText()
 
 func lg(text):
-	get_parent().get_parent().logToLog($Image.texture, text)
+	get_parent().get_parent().logToLog($Image.texture, text, null)

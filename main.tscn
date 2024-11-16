@@ -1,11 +1,11 @@
-[gd_scene load_steps=17 format=3 uid="uid://d1a1s0x7tsi1i"]
+[gd_scene load_steps=20 format=3 uid="uid://d1a1s0x7tsi1i"]
 
 [ext_resource type="Script" path="res://Main.gd" id="1_nfgpe"]
 [ext_resource type="PackedScene" uid="uid://bhinpp6ankmnj" path="res://Tooltip.tscn" id="2_atu00"]
 [ext_resource type="Texture2D" uid="uid://c6o8s2wiymnp0" path="res://uiImgs/wins.png" id="3_8voak"]
 [ext_resource type="AudioStream" uid="uid://b5axhmdnxxtj3" path="res://sfx/open.mp3" id="4_g0kiw"]
-[ext_resource type="AudioStream" uid="uid://fir740pf70l4" path="res://sfx/boiler.mp3" id="4_h80uj"]
 [ext_resource type="FontFile" uid="uid://drxqa43mwcvwa" path="res://Comic Sans MS.ttf" id="4_ito2v"]
+[ext_resource type="AudioStream" uid="uid://dh0xjm2irjbus" path="res://sfx/boiler.ogg" id="4_x00mb"]
 [ext_resource type="AudioStream" uid="uid://1cpcn0db4c2j" path="res://sfx/activate.mp3" id="6_3d66k"]
 [ext_resource type="AudioStream" uid="uid://dlh2o1xmv11si" path="res://sfx/reveal.ogg" id="6_fuucm"]
 [ext_resource type="AudioStream" uid="uid://dq8shbylq3j85" path="res://sfx/loss.ogg" id="7_r535k"]
@@ -13,9 +13,12 @@
 [ext_resource type="AudioStream" uid="uid://0qg5d7lm0d3o" path="res://sfx/transmog.ogg" id="8_cvdy0"]
 [ext_resource type="AudioStream" uid="uid://cbwjhibu6vyf4" path="res://sfx/win.ogg" id="8_gn4mg"]
 [ext_resource type="AudioStream" uid="uid://bu618sdf1vbi0" path="res://sfx/close.ogg" id="9_ydiek"]
-[ext_resource type="Texture2D" uid="uid://cevl2ucm1pjq6" path="res://uiImgs/trophy.png" id="14_uxwyn"]
-[ext_resource type="Texture2D" uid="uid://0h76v7rapjil" path="res://uiImgs/orb.png" id="15_tsn6f"]
+[ext_resource type="AudioStream" uid="uid://bm4u5iei70q6d" path="res://sfx/battle/shadowspike.ogg" id="13_3mmjw"]
+[ext_resource type="AudioStream" uid="uid://bunp8ymlvhklu" path="res://sfx/battle/spawn.ogg" id="14_exug3"]
+[ext_resource type="AudioStream" uid="uid://0cnrrcwsdcqf" path="res://sfx/battle/zap.mp3" id="16_djc8j"]
 [ext_resource type="PackedScene" uid="uid://dx3j5aid1cguw" path="res://Badge.tscn" id="16_w7hqe"]
+[ext_resource type="AudioStream" uid="uid://dhkk0qhxn18n" path="res://sfx/battle/shot.ogg" id="17_hs86g"]
+[ext_resource type="AudioStream" uid="uid://c7ivejmduc7kc" path="res://sfx/battle/summon.ogg" id="18_fi0cd"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -24,17 +27,9 @@ script = ExtResource("1_nfgpe")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 layout_mode = 0
-offset_right = 3870.0
+offset_right = 1920.0
 offset_bottom = 1080.0
-color = Color(0.548963, 0.548963, 0.548963, 1)
-
-[node name="Tooltip" parent="." instance=ExtResource("2_atu00")]
-top_level = true
-layout_mode = 1
-offset_left = 1110.0
-offset_top = 2.0
-offset_right = -407.0
-offset_bottom = -824.0
+color = Color(0.423651, 0.423651, 0.423651, 1)
 
 [node name="StatusList" type="VBoxContainer" parent="."]
 z_index = 50
@@ -146,7 +141,7 @@ text = "Currently Destroyed: 0"
 horizontal_alignment = 1
 
 [node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("4_h80uj")
+stream = ExtResource("4_x00mb")
 volume_db = -33.429
 pitch_scale = 1.52
 
@@ -160,7 +155,7 @@ max_polyphony = 5
 stream = ExtResource("6_fuucm")
 volume_db = -6.933
 pitch_scale = 1.29
-max_polyphony = 5
+max_polyphony = 30
 
 [node name="ActivateFXPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("6_3d66k")
@@ -168,6 +163,7 @@ max_polyphony = 5
 
 [node name="DestroyFXPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("7_xg3pp")
+volume_db = -2.0
 pitch_scale = 0.77
 max_polyphony = 5
 
@@ -179,7 +175,7 @@ max_polyphony = 5
 
 [node name="CloseFXPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("9_ydiek")
-max_polyphony = 5
+max_polyphony = 20
 
 [node name="LossFXPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("7_r535k")
@@ -191,6 +187,37 @@ stream = ExtResource("8_gn4mg")
 volume_db = -7.429
 max_polyphony = 3
 
+[node name="ShadowSpikeSoundPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("13_3mmjw")
+volume_db = -15.0
+max_polyphony = 20
+
+[node name="SpawnSoundPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("14_exug3")
+pitch_scale = 0.94
+max_polyphony = 20
+
+[node name="ZapSoundPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("16_djc8j")
+volume_db = -5.185
+pitch_scale = 1.15
+max_polyphony = 20
+
+[node name="ShotSoundPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("17_hs86g")
+volume_db = 3.355
+pitch_scale = 1.02
+max_polyphony = 20
+
+[node name="SummonSoundPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("18_fi0cd")
+pitch_scale = 1.02
+max_polyphony = 20
+
+[node name="OneshotSoundPlayer" type="AudioStreamPlayer" parent="."]
+volume_db = 3.66
+pitch_scale = 1.41
+
 [node name="TextureRect" type="ColorRect" parent="."]
 layout_mode = 2
 offset_left = 30.0
@@ -198,86 +225,6 @@ offset_top = 565.0
 offset_right = 395.0
 offset_bottom = 941.0
 color = Color(0, 0, 0, 0.305882)
-
-[node name="Trophy" type="TextureRect" parent="."]
-layout_mode = 0
-offset_left = 1803.0
-offset_top = 11.0
-offset_right = 1906.0
-offset_bottom = 120.0
-texture = ExtResource("14_uxwyn")
-
-[node name="AchievementsPageButton" type="Button" parent="Trophy"]
-modulate = Color(1, 1, 1, 0)
-layout_mode = 0
-offset_left = -2.0
-offset_top = 3.0
-offset_right = 97.0
-offset_bottom = 105.0
-
-[node name="AchievementsCanvas" type="Control" parent="."]
-anchors_preset = 0
-offset_left = 1920.0
-offset_top = 1.0
-offset_right = 3475.0
-offset_bottom = 1081.0
-
-[node name="BadgesLabel" type="Label" parent="AchievementsCanvas"]
-layout_mode = 0
-offset_left = 179.0
-offset_top = 40.0
-offset_right = 383.0
-offset_bottom = 111.0
-theme_override_fonts/font = ExtResource("4_ito2v")
-theme_override_font_sizes/font_size = 50
-text = "BADGES
-"
-
-[node name="CheevosCount" type="Label" parent="AchievementsCanvas"]
-layout_mode = 0
-offset_left = 435.0
-offset_top = 34.0
-offset_right = 870.0
-offset_bottom = 77.0
-theme_override_fonts/font = ExtResource("4_ito2v")
-theme_override_font_sizes/font_size = 30
-text = "Achievements Unlocked: 0
-"
-
-[node name="ToNextBPCount" type="Label" parent="AchievementsCanvas"]
-layout_mode = 0
-offset_left = 433.0
-offset_top = 69.0
-offset_right = 868.0
-offset_bottom = 112.0
-theme_override_fonts/font = ExtResource("4_ito2v")
-theme_override_font_sizes/font_size = 30
-text = "To Next BP: 0
-"
-
-[node name="BPContainer" type="HBoxContainer" parent="AchievementsCanvas"]
-layout_mode = 0
-offset_left = 832.0
-offset_top = 34.0
-offset_right = 896.0
-offset_bottom = 95.0
-
-[node name="BP1" type="TextureRect" parent="AchievementsCanvas/BPContainer"]
-layout_mode = 2
-texture = ExtResource("15_tsn6f")
-expand_mode = 2
-
-[node name="CheevosContainer" type="GridContainer" parent="AchievementsCanvas"]
-layout_mode = 2
-offset_left = 138.0
-offset_top = 175.0
-offset_right = 1281.0
-offset_bottom = 1028.0
-columns = 5
-
-[node name="RandomReveal" parent="AchievementsCanvas/CheevosContainer" instance=ExtResource("16_w7hqe")]
-layout_mode = 2
-id = "reveal"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
 layout_mode = 0
@@ -290,6 +237,46 @@ offset_bottom = 934.0
 layout_mode = 2
 theme_override_constants/separation = 35
 
+[node name="Tooltip" parent="." instance=ExtResource("2_atu00")]
+layout_mode = 1
+offset_left = 1110.0
+offset_top = 2.0
+offset_right = 1513.0
+offset_bottom = 256.0
+
+[node name="AchievementsContainer" type="GridContainer" parent="."]
+layout_mode = 0
+offset_left = 1248.0
+offset_top = 561.0
+offset_right = 1761.0
+offset_bottom = 1019.0
+theme_override_constants/h_separation = 75
+theme_override_constants/v_separation = 75
+columns = 5
+
+[node name="RevealOne" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "reveal"
+
+[node name="Eclipse" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "eclipse"
+
+[node name="Smartflag" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "smartflag"
+
+[node name="Bright Future" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "brightfuture"
+
+[node name="Study" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "study"
+
+[node name="Gamer Mode" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "gamermode"
+
 [connection signal="button_up" from="RestartButton" to="." method="_on_restart_button_button_up"]
 [connection signal="timeout" from="TriggerPostClicksTimer" to="." method="_on_trigger_post_clicks_timer_timeout"]
-[connection signal="pressed" from="Trophy/AchievementsPageButton" to="." method="_on_achievements_page_button_pressed"]

@@ -17,6 +17,7 @@ var was_revealed_when_opened: bool
 static var main: Main
 static var propery_names := init_properties()
 
+
 static func init_properties() -> Array[String]:
 	var control_properties := Control.new().get_property_list()
 	var box_properties = Box.new().get_property_list()
@@ -68,12 +69,12 @@ func set_custom_num(val):
 func hide_custom_num():
 	$Number.visible = false
 	customNum = -1
-	$Number.text = "15"
+	$Number.text = "BUG"
 
 func on_open() -> void:
 	pass
 
-func on_other_box_opened() -> void:
+func on_other_box_opened(_box: Box) -> void:
 	pass
 
 func on_other_box_opened_immediate(_box: Box) -> void:
@@ -104,6 +105,12 @@ func on_type_about_to_change(_new_type: String) -> void:
 	pass
 
 func on_type_changed(_old_type: String) -> void:
+	pass
+
+func on_other_box_type_changed(_other_box: Box) -> void:
+	pass
+
+func on_close() -> void:
 	pass
 
 func should_hide_custom_num() -> bool:
@@ -149,6 +156,9 @@ func loadType(new_type: String) -> void:
 		load_text()
 		load_img()
 		on_type_changed(old_type)
+		if !main.loadingGame:
+			for box in main.boxes:
+				box.on_other_box_type_changed(self)
 
 func revealBox():
 	if !destroyed:
@@ -188,6 +198,7 @@ func closeBox():
 		open = false
 		if should_hide_custom_num():
 			hide_custom_num()
+		on_close()
 		$Outline.texture = load("res://boxImgs/outlineRevealed.png")
 
 func updateTooltipForMe():
@@ -212,14 +223,14 @@ func updateTooltipForMe():
 			curDesc = tooltipText
 	main.get_node("Tooltip").setup(curName, curStatus, curDesc)
 
-var cursorTransmog = load("res://cursorTransmog.png")
-var cursorDestroy = load("res://cursorDestroy.png")
-var cursorClose = load("res://cursorClose.png")
-var cursorReveal = load("res://cursorReveal.png")
-var cursorUse = load("res://cursorUse.png")
-var cursorNo = load("res://cursorNo.png")
-var cursorOpen = load("res://cursorOpen.png")
-var cursorNormal = load("res://cursorNormal.png")
+var cursorTransmog = load("res://cursorImgs/cursorTransmog.png")
+var cursorDestroy = load("res://cursorImgs/cursorDestroy.png")
+var cursorClose = load("res://cursorImgs/cursorClose.png")
+var cursorReveal = load("res://cursorImgs/cursorReveal.png")
+var cursorUse = load("res://cursorImgs/cursorUse.png")
+var cursorNo = load("res://cursorImgs/cursorNo.png")
+var cursorOpen = load("res://cursorImgs/cursorOpen.png")
+var cursorNormal = load("res://cursorImgs/cursorNormal.png")
 
 func updateCursorForMe():
 	if !Input.is_action_pressed("pan"):
@@ -254,12 +265,13 @@ func updateCursorForMe():
 				Input.set_custom_mouse_cursor(cursorNormal)
 
 func _process(_delta):
-	var mousePos = get_viewport().get_mouse_position()
-	if mousePos.x >= global_position.x - 37.5 and mousePos.x <= global_position.x + 37.5 and mousePos.y >= global_position.y - 37.5 and mousePos.y <= global_position.y + 37.5:
-		if !destroyed:
-			updateTooltipForMe()
-		if main.gameRunning:
-			updateCursorForMe()
+	if !main.big_bossfight:
+		var mousePos = get_viewport().get_mouse_position()
+		if mousePos.x >= global_position.x - 37.5 and mousePos.x <= global_position.x + 37.5 and mousePos.y >= global_position.y - 37.5 and mousePos.y <= global_position.y + 37.5:
+			if !destroyed:
+				updateTooltipForMe()
+			if main.gameRunning:
+				updateCursorForMe()
 
 func get_adjacent_boxes(notRevealed, notOpen):
 	var result = []
@@ -352,7 +364,7 @@ func lg(text):
 	main.logToLog($Sprite2D.texture, text, id)
 
 func _on_button_pressed() -> void:
-	if main.gameRunning && !main.awaiting_post_click:
+	if main.gameRunning && !main.awaiting_post_click and !main.big_bossfight:
 		if main.has_status(StatusTypes.DEMOLISH):
 			var owned = main
 			main.destroy_box(self)
@@ -386,3 +398,17 @@ func _on_button_pressed() -> void:
 	else:
 		if !main.gameRunning:
 			main.startGame()
+
+func win():
+	main.win()
+	if !main.statsMap[id].has("wins"):
+		main.statsMap[id]["wins"] = 1
+	else:
+		main.statsMap[id]["wins"] += 1
+
+func lose():
+	main.lose()
+	if !main.statsMap[id].has("losses"):
+		main.statsMap[id]["losses"] = 1
+	else:
+		main.statsMap[id]["losses"] += 1

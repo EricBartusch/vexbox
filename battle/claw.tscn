@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://c4d80m1m0qvx1"]
+
+[ext_resource type="Script" path="res://battle/claw.gd" id="1_pybbi"]
+[ext_resource type="Texture2D" uid="uid://ybwp3oqnk086" path="res://battle/claw.png" id="1_rgs7t"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_w4tks"]
+radius = 74.0
+height = 240.0
+
+[node name="Claw" type="Node2D"]
+script = ExtResource("1_pybbi")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_rgs7t")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_w4tks")
+
+[connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]

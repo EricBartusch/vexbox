@@ -30,7 +30,7 @@ box.shadow.desc;On Open: Close a random other opened box.
 box.jumpscare.name;Jumpscare Box
 box.jumpscare.desc;On Open: If this was the first box you opened this game, lose.
 box.fire.name;Flaming Box
-box.fire.desc;On Open: Transform a random adjacent closed box into a Flaming Box.
+box.fire.desc;On Open: Transform a random adjacent box into a Flaming Box.
 box.threegold.name;Golden Box
 box.threegold.desc;On Open: Gain 3 Gold.
 box.spendtowin.name;Crown Box
@@ -58,7 +58,7 @@ box.sacrifice.desc;On Click: Destroy a random box, then reveal a random box. Usa
 box.income.name;Bank Box
 box.income.desc;Whenever you open another box, 1/3 chance to gain 1 Gold.
 box.boss.name;Boss Box
-box.boss.desc;On Open: After you open 12 boxes, win.
+box.boss.desc;On Open: After you open 13 boxes, win.
 box.shy.name;Shy Box
 box.shy.desc;Whenever you open another box, 1/3 chance to close this.
 box.mimic.name;Mimic Box
@@ -209,6 +209,51 @@ box.exp.name;EXP Box
 box.exp.desc;On Open: After you open 9 unrevealed boxes, win.
 box.ivy.name;Ivy Box
 box.ivy.desc;On Open: Transform the boxes above this into Ivy Boxes.
+box.flower.name;Flower Box
+box.flower.desc;Whenever a box is transformed, reveal and close it.
+box.finalboss.name;Strange Box
+box.finalboss.desc;On Open: 1/20 chance to ...?
+box.compass.name;Compass Box
+box.compass.desc;Points to the Winner Box.
+box.slots.name;Slots Box
+box.slots.desc;On Click: Spend 2 gold to transform 4 random unrevealed boxes into Winner Boxes.
+box.scrap.name;Scrap Box
+box.scrap.desc;Whenever a box is destroyed, this gains a use. On Click: Spend a use to reveal a random box.
+box.info.name;Info Box
+box.info.desc;On Open: Reveal 2 random adjacent boxes.
+box.ladder.name;Ladder Box
+box.ladder.desc;On Click: If exactly one box in each row is open, win.
+box.portal.name;Portal Box
+box.portal.desc;On Open: The next time you click a box, swap it with this.
+box.winter.name;Winter Box
+box.winter.desc;On Open: Transform 5 random boxes into Ice Boxes.
+box.dice.name;Dice Box
+box.dice.desc;On Click: Transform all adjacent boxes randomly. Usable only once.
+box.darts.name;Darts Box
+box.darts.desc;On Click: If the total numbers on boxes is 20 or more, win.
+box.spike.name;Spike Box
+box.spike.desc;On Open: If 3 or more Spike Boxes are open, lose.
+box.dungeon.name;Dungeon Box
+box.dungeon.desc;After you open a box, transform 2 boxes adjacent to the opened box into Spike Boxes.
+box.cauldron.name;Cauldron Box
+box.cauldron.desc;On Open: Increase the numbers on all numbered boxes by 1.
+box.alpahbet.name;Alphabox
+box.alphabet.desc;After you open a box, put all letters in its name in this. If this has the entire alphabet, win.
 badge.reveal.name;Reveal One
 badge.reveal.desc;Start Of Run: Reveal a random box.
 badge.reveal.unlock;Win 5 times.
+badge.eclipse.name;Eclipse
+badge.eclipse.desc;After you open 3 boxes, close all boxes.
+badge.eclipse.unlock;Win 50 times.
+badge.smartflag.name;Flag Seeker
+badge.smartflag.desc;If you open a box adjacent to the Winner Box, it reveals itself.
+badge.smartflag.unlock;Win with the Winner Box 15 times.
+badge.brightfuture.name;Bright Future
+badge.brightfuture.desc;Replace the Loser and Jumpscare boxes with Book Boxes.
+badge.brightfuture.unlock;Lose on the first open 10 times.
+badge.study.name;Study
+badge.study.desc;Every 5 opens, reveal a random box.
+badge.study.unlock;Open 500 boxes.
+badge.gamermode.name;Gamer Mode
+badge.gamermode.desc;Start Of Run: Transform random boxes into Gamer Boxes equal to your winstreak (max 5).
+badge.gamermode.unlock;Get a winstreak of 10.

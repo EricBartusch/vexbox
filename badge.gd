@@ -11,6 +11,16 @@ var unlockText = ""
 static var main: Main
 static var propery_names := init_properties()
 
+var number = -1
+
+func setup_number(newNumber):
+	number = newNumber
+	$Number.visible = true
+
+func hide_number():
+	number = -1
+	$Number.visible = false
+
 func _ready():
 	loadImg()
 	loadText()
@@ -53,9 +63,10 @@ static func get_badge_img(type: String) -> Texture2D:
 	return load("res://badgeImgs/"+type+".png")
 
 func _process(delta):
-	var mousePos = get_viewport().get_mouse_position()
-	if mousePos.x >= global_position.x - 37.5 and mousePos.x <= global_position.x + 37.5 and mousePos.y >= global_position.y - 37.5 and mousePos.y <= global_position.y + 37.5:
-		updateTooltipForMe()
+	if !main.big_bossfight:
+		var mousePos = get_viewport().get_mouse_position()
+		if mousePos.x >= global_position.x - 37.5 and mousePos.x <= global_position.x + 37.5 and mousePos.y >= global_position.y - 37.5 and mousePos.y <= global_position.y + 37.5:
+			updateTooltipForMe()
 
 func updateTooltipForMe():
 	main.get_node("Tooltip").setup(hoverName, unlockText, hoverDesc)
@@ -74,20 +85,27 @@ func refreshOutline():
 		$Outline.texture = load("res://boxImgs/outlineClosed.png")
 
 func _on_button_button_up() -> void:
-	if unlocked:
-		if enabled:
-			enabled = false
-			refreshOutline()
-		else:
-			enabled = true
-			refreshOutline()
-			for badge in get_parent().get_children():
-				if badge != self:
-					badge.enabled = false
-					badge.refreshOutline()
+	if !main.big_bossfight and main.opens == 0:
+		if unlocked:
+			if enabled:
+				enabled = false
+				refreshOutline()
+			else:
+				enabled = true
+				refreshOutline()
+				for badge in get_parent().get_children():
+					if badge != self:
+						badge.enabled = false
+						badge.refreshOutline()
+
+func get_cost() -> int:
+	return 1
 
 func onRunStart() -> void:
 	pass
 
 func postGameEnd() -> void:
+	pass
+
+func onOpenBox(box) -> void:
 	pass

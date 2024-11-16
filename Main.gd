@@ -23,23 +23,26 @@ var opens = 0
 var wins = 0
 var winstreak = 0
 var bestWinstreak = 0
-var instantLosses = 0
 var rng = RandomNumberGenerator.new()
 var resetTimer = 0
 var last_opened: Box
 var pan_x = 0
 var pan_y = 0
-var sliding_achievement_panel = false
-var slide_amount = 0
 
 var PAN_MIN_X = -500
 var PAN_MIN_Y = -500
 var PAN_MAX_X = 500
 var PAN_MAX_Y = 500
 
+var statsMap = {}
+
 func _init() -> void:
 	Box.main = self
 	Badge.main = self
+
+func setupStatsMap():
+	for box in all_boxes:
+		statsMap[box] = {"opens": 0}
 
 func addVfx(vfx):
 	add_child(vfx)
@@ -48,26 +51,27 @@ func addVfx(vfx):
 func removeVfx(vfx):
 	remove_child(vfx)
 	vfxList.erase(vfx)
+	vfx.queue_free()
 
 func save():
 	var save_file = FileAccess.open("user://savegame.save", FileAccess.WRITE)
-	var unlocked_badges = {}
-	for badge in $AchievementsCanvas/CheevosContainer.get_children():
-		if badge.unlocked:
-			unlocked_badges[badge.type] = true
 	var save_dict = {
 		"wins": wins,
 		"winstreak": winstreak,
 		"bestWinstreak": bestWinstreak,
 		"unlockedRows": unlockedRows,
 		"winsToNext": winsToNext,
-		"unlocked_badges": unlocked_badges
+		"statsMap": statsMap
 	}
 	var json_string = JSON.stringify(save_dict)
 	save_file.store_line(json_string)
 
+func init_save():
+	setupStatsMap()
+
 func load_save():
 	if not FileAccess.file_exists("user://savegame.save"):
+		init_save()
 		return
 	
 	var save_file = FileAccess.open("user://savegame.save", FileAccess.READ)
@@ -78,16 +82,7 @@ func load_save():
 	
 	var data = json.data
 	for key in data.keys():
-		if key == "unlocked_badges":
-			for second in data[key]:
-				for badge in $BadgeList.get_children():
-					if int(second) == badge.type:
-						badge.unlocked = true
-						badge.refreshOutline()
-						break
-		else:	
 			set(key, data[key])
-	
 	
 	unlockedBoxes = (unlockedRows * (unlockedRows + 1)) / 2
 
@@ -96,9 +91,18 @@ func _ready():
 	startGame()
 	$WinsToNextText.text = "Reach " + str(winsToNext) + " wins for a NEW ROW."
 
+var loadingGame = false
+
 func startGame():
+	var start = Time.get_ticks_usec()
+	loadingGame = true
+	if curBossfightStatus != null:
+		cleanBoss()
 	for item in vfxList:
-		removeVfx(item)
+		if is_instance_valid(item):
+			remove_child(item)
+			item.queue_free()
+	vfxList.clear()
 	$GameStatusSubtext.visible = false
 	last_opened = null
 	won = false
@@ -145,10 +149,11 @@ func startGame():
 			row += 1
 			rows.append(curRow)
 			curRow = []
-	
-	for badge in $AchievementsCanvas/CheevosContainer.get_children():
-		badge.onRunStart()
 	update_stat_texts()
+	loadingGame = false
+	var end = Time.get_ticks_usec()
+	var worker_time = (end-start)/1000000.0	
+	print(worker_time)
 
 func reveal_random():
 	var validBoxes = []
@@ -194,7 +199,7 @@ func trigger_on_click():
 		status.on_click()
 	for box in boxes:
 		if box.open and not box.just_opened and not box.destroyed and gameRunning:
-			box.on_other_box_opened()
+			box.on_other_box_opened(last_opened)
 		box.just_opened = false
 	for box in boxes:
 		if box.id == "virus":
@@ -276,7 +281,6 @@ func internal_win():
 	$ColorRect.color = Color(0.2, 0.33, 0.2, 1)
 	logToLog(null, "You won!", null)
 	gameRunning = false
-	instantLosses = 0
 	$GameStatusText.text = "You won!"
 	wins += 1
 	if wins >= winsToNext and unlockedRows < MAX_ROWS:
@@ -290,7 +294,7 @@ func internal_win():
 	if (winstreak > bestWinstreak):
 		bestWinstreak = winstreak;
 		$BestWinstreakText.text = "Best Winstreak: " + str(bestWinstreak)
-	for badge in $AchievementsCanvas/CheevosContainer.get_children():
+	for badge in $AchievementsContainer.get_children():
 		badge.postGameEnd()
 	after_game_over()
 
@@ -340,30 +344,30 @@ func lose():
 		else:
 			qLog("Heart prevented your loss!")
 
-var dragCursor = load("res://cursorDrag.png")
-var normalCursor = load("res://cursorNormal.png")
+var dragCursor = load("res://cursorImgs/cursorDrag.png")
+var normalCursor = load("res://cursorImgs/cursorNormal.png")
+var fireCursor = load("res://cursorImgs/firecursor.png")
 
 func _process(delta: float) -> void:
 	already_played.clear()
 	if resetTimer > 0:
 		resetTimer -= delta
-	if sliding_achievement_panel:
-		if slide_amount < 1700:
-			slide_amount += 10
-			for node in get_children():
-				if node is Control and node != $Tooltip:
-					node.global_position.x -= 10
+	if big_bossfight and curBossfightStatus != BossStatus.OUTRO and !lost and !won:
+		Input.set_custom_mouse_cursor(fireCursor)
 	else:
-		if slide_amount > 0 and !sliding_achievement_panel:
-			slide_amount -= 10
-			for node in get_children():
-				if node is Control and node != $Tooltip:
-					node.global_position.x += 10
+		if Input.is_action_pressed("pan"):
+			Input.set_custom_mouse_cursor(dragCursor)
 		else:
-			if Input.is_action_pressed("pan"):
-				Input.set_custom_mouse_cursor(dragCursor)
-			else:
-				Input.set_custom_mouse_cursor(normalCursor)
+			Input.set_custom_mouse_cursor(normalCursor)
+	if big_bossfight:
+		if showingHealthbars:
+			bossHealthbar.global_position.y += delta * 150
+			playerHealthbar.global_position.y -= delta * 120
+			if bossHealthbar.global_position.y >= 130:
+				showingHealthbars = false
+				curBossfightStatus = BossStatus.COMBAT
+				boss.state = 1
+				boss.timer = 0.2
 
 func logToLog(sourceImg, sourceText, ID):
 	var newLogEntry = logEntryScene.instantiate()
@@ -398,12 +402,7 @@ func resetGame():
 		startGame()
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and (event.keycode == KEY_S or event.keycode == KEY_Q or event.keycode == KEY_W or event.keycode == KEY_A):
-		if won or lost:
-			startGame()
-		else:
-			resetGame()
-	if event is InputEventMouseMotion and Input.is_action_pressed("pan"):
+	if event is InputEventMouseMotion and Input.is_action_pressed("pan") and !big_bossfight:
 		var result = event.relative
 		pan_x += result.x
 		pan_y += result.y
@@ -441,7 +440,142 @@ func play_sfx(type):
 				$TransmogFXPlayer.play()
 	already_played.append(type)
 
+var big_bossfight = false
 
-func _on_achievements_page_button_pressed() -> void:
-	sliding_achievement_panel = !sliding_achievement_panel
-	play_sfx(SFXTypes.ACTIVATE)
+enum BossStatus {
+	DROP_BOSS,
+	SHOW_HEALTHBARS,
+	COMBAT,
+	OUTRO
+}
+
+var dakka = []
+
+func add_dakka(toAdd):
+	toAdd.z_index = 2
+	add_child(toAdd)
+	dakka.append(toAdd)
+
+var curBossfightStatus
+var gameSource
+var protag
+var boss
+var protagScene = preload("res://battle/protag.tscn")
+var bossScene = preload("res://battle/boss.tscn")
+var healthbarScene = preload("res://battle/healthbar.tscn")
+var bossHealthbar
+var playerHealthbar : HBoxContainer
+var showingHealthbars = false
+var heartImg = preload("res://statusImgs/heart.png")
+var playerHealth = 3
+
+var startCombatSound = preload("res://sfx/battle/combatstart.ogg")
+
+func start_big_bossfight(source):
+	$OneshotSoundPlayer.stream = startCombatSound
+	$OneshotSoundPlayer.play()
+	$RestartButton.visible = false
+	gameSource = source
+	source.get_node("Outline").texture = load("res://boxImgs/outlineClosed.png")
+	big_bossfight = true
+	curBossfightStatus = BossStatus.DROP_BOSS
+	var newChar = protagScene.instantiate()
+	newChar.global_position.x = source.global_position.x
+	newChar.global_position.y = source.global_position.y
+	var newBoss = bossScene.instantiate()
+	newBoss.global_position.x = 1600
+	newBoss.global_position.y = 400
+	protag = newChar
+	boss = newBoss
+	add_dakka(newChar)
+	add_dakka(newBoss)
+
+
+var absorbingBoxImitator = preload("res://vfx/vfxAbsorbingBoxImitator.tscn")
+
+func cleanBoss():
+	curBossfightStatus = null
+	gameSource = null
+	protag = null
+	boss = null
+	if bossHealthbar != null:
+		remove_child(bossHealthbar)
+		bossHealthbar.queue_free()
+	if playerHealthbar != null:
+		remove_child(playerHealthbar)
+		playerHealthbar.queue_free()
+	bossHealthbar = null
+	playerHealthbar = null
+	showingHealthbars = false
+	playerHealth = 3
+	for boolet in dakka:
+		if is_instance_valid(boolet):
+			remove_child(boolet)
+			boolet.queue_free()
+	dakka.clear()
+	big_bossfight = false
+
+func show_health_bars():
+	showingHealthbars = true
+	curBossfightStatus = BossStatus.SHOW_HEALTHBARS
+	var newHealthbar = healthbarScene.instantiate()
+	newHealthbar.global_position.x = 900
+	newHealthbar.global_position.y = -100
+	bossHealthbar = newHealthbar
+	add_dakka(bossHealthbar)
+	bossHealthbar.z_index = 0
+	var secondHealthbar = HBoxContainer.new()
+	playerHealthbar = secondHealthbar
+	playerHealthbar.add_theme_constant_override("separation", 75)
+	for i in playerHealth:
+		var heart = TextureRect.new()
+		heart.texture = heartImg
+		playerHealthbar.add_child(heart)
+	playerHealthbar.global_position.x = 200
+	playerHealthbar.global_position.y = 1150
+	add_dakka(playerHealthbar)
+	playerHealthbar.z_index = 0
+	for box in boxes:
+		if box != gameSource:
+			if box.destroyed:
+				box.customNum = -3
+			else:
+				box.get_node("Outline").texture = load("res://boxImgs/outlineClosed.png")
+				var new_bullet = absorbingBoxImitator.instantiate()
+				new_bullet.load(box)
+				new_bullet.position = box.global_position
+				(new_bullet as AbsorbingBoxImitator).velocity = (new_bullet as AbsorbingBoxImitator).velocity.rotated(box.global_position.direction_to(protag.position).angle())
+				addVfx(new_bullet)
+				box.destroyBox()
+
+func postBoss():
+	$RestartButton.visible = true
+	if won:
+		pass
+	else:
+		remove_child(protag)
+
+func remove_dakka(toRemove):
+	dakka.erase(toRemove)
+	remove_child(toRemove)
+	toRemove.queue_free()
+
+var flyingBoxScene = preload("res://vfx/vfxFlyingBoxImitator.tscn")
+
+func hurtPlayer():
+	if big_bossfight and gameRunning and playerHealth > 0 and boss.health > 0:
+		$OneshotSoundPlayer.play()
+		playerHealth -= 1
+		playerHealthbar.remove_child(playerHealthbar.get_children()[playerHealth])
+		protag.whenHit()
+		if playerHealth == 0:
+			lose()
+			var flying_thing = flyingBoxScene.instantiate()
+			flying_thing.loadFromBox(gameSource)
+			flying_thing.global_position = protag.global_position
+			addVfx(flying_thing)
+			postBoss()
+		
+
+func update_boss_healthbar():
+	bossHealthbar.updateInfo(boss.health)

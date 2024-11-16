@@ -1,4 +1,11 @@
 extends Box
 
 func on_open() -> void:
-    main.add_status(StatusTypes.POISON, 8)
+	set_custom_num(8)
+
+func on_other_box_opened(other):
+	set_custom_num(customNum - 1)
+	if customNum <= 0:
+		lose()
+		if main.gameRunning:
+			hide_custom_num()
