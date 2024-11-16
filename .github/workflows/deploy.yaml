@@ -27,6 +27,11 @@ jobs:
       run: gdlint .
       continue-on-error: true         
 
+    - name: Setup Godot
+      run: |
+        mkdir -v -p ~/.local/share/godot/export_templates/
+        mv /root/.local/share/godot/export_templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable   
+
     - name: Build
       run: |
         mkdir -v -p build/web
