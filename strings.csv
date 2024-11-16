@@ -12,7 +12,7 @@ box.revealrow.desc;On Open: Reveal all boxes in this row.
 box.onegold.name;Cheap Box
 box.onegold.desc;On Open: Gain 1 Gold.
 box.poison.name;Poison Box
-box.poison.desc;On Open: Become Poisoned. After you open 8 boxes, lose.
+box.poison.desc;After you open 8 boxes, lose.
 box.antidote.name;Antidote Box
 box.antidote.desc;On Open: If you're Poisoned, remove your Poison. If this is adjacent to an open Viral Box, win.
 box.exploding.name;Boom Box
