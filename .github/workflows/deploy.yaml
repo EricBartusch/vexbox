@@ -5,7 +5,7 @@ on:
 
 jobs:
   call-build-and-upload:
-    uses: ericbartusch/godot-container-builder/.github/workflows/reusable-godot-deploy.yaml@v1
+    uses: EricBartusch/godot-container-builder/.github/workflows/reusable-godot-deploy.yaml@v1
     with:
       GAME_NAME: VexBox
     secrets:
