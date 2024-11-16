@@ -3,8 +3,6 @@ name: Build and Upload VexBox to itch.io
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main 
 
 jobs:
   call-build-and-upload:
