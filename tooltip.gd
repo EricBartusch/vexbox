@@ -15,6 +15,10 @@ func setup(name, status, desc):
 	$BPText.visible = false
 	$WinsTexture.visible = false
 	$WinsText.visible = false
+	$OpensTexture.visible = false
+	$OpensText.visible = false
+	$WinsTexture.visible = false
+	$WinsText.visible = false
 
 func setupProgressBar(cur, max, bp):
 	if max > -1:
