@@ -206,6 +206,7 @@ func _process(delta: float) -> void:
 					if timer <= 0:
 						state = BossState.DEATH_FLYOFF
 						get_parent().get_node("GameStatusSubtext").text = "You did it. Use the restart button!"
+						get_parent().modBoxStat("finalboss", "wins", 1)
 						get_parent().internal_win()
 						get_parent().postBoss()
 						vX = get_parent().rng.randf_range(-10, 10)

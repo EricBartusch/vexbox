@@ -236,7 +236,6 @@ vertical_scroll_mode = 2
 
 [node name="LogContainer" type="VBoxContainer" parent="ScrollContainer"]
 layout_mode = 2
-theme_override_constants/separation = 35
 
 [node name="Tooltip" parent="." instance=ExtResource("2_atu00")]
 z_index = 1
@@ -307,7 +306,7 @@ texture = ExtResource("19_erv68")
 layout_mode = 0
 offset_left = 1193.0
 offset_top = 433.0
-offset_right = 1868.0
+offset_right = 1718.0
 offset_bottom = 891.0
 theme_override_constants/h_separation = 75
 theme_override_constants/v_separation = 75
@@ -372,6 +371,27 @@ id = "trigazeimprove"
 [node name="Windy" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
 layout_mode = 2
 id = "windy"
+
+[node name="AchievementsFront" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 1140.0
+offset_top = 324.0
+offset_right = 1781.0
+offset_bottom = 942.0
+mouse_filter = 2
+color = Color(0.67451, 0, 0, 0.490196)
+
+[node name="AchievementEquipInfo" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1135.0
+offset_top = 942.0
+offset_right = 1783.0
+offset_bottom = 992.0
+theme_override_fonts/font = ExtResource("4_ito2v")
+theme_override_font_sizes/font_size = 30
+text = "Equip Achievement Badges after the run ends!"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [connection signal="button_up" from="RestartButton" to="." method="_on_restart_button_button_up"]
 [connection signal="timeout" from="TriggerPostClicksTimer" to="." method="_on_trigger_post_clicks_timer_timeout"]

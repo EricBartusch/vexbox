@@ -5,7 +5,8 @@ func postGameEnd():
 		unlock()
 
 func onRunStart():
-	main.reveal_random()
+	if enabled:
+		main.reveal_random()
 
 func getProgress():
 	return main.wins

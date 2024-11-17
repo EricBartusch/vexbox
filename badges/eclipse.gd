@@ -5,7 +5,8 @@ func postGameEnd():
 		unlock()
 
 func onRunStart():
-	main.add_status(StatusTypes.ECLIPSE, 3)
+	if enabled:
+		main.add_status(StatusTypes.ECLIPSE, 3)
 
 func getProgress():
 	return main.wins

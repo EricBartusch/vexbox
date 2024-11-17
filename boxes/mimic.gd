@@ -8,11 +8,12 @@ func on_open() -> void:
 		lose()
 
 func on_reveal(_was_already_revealed: bool) -> void:
-	if disguise == null:
+	if disguise == null or disguise == "":
 		var replacement = id
 		while replacement == id:
 			replacement = main.all_boxes[main.rng.randi_range(0, main.unlockedBoxes - 1)]
 			disguise = replacement
+	print(disguise)
 	var orig_type := id
 	id = disguise
 	load_img()

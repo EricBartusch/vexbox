@@ -156,10 +156,13 @@ func loadType(new_type: String) -> void:
 			set(i, properties[i])
 		load_text()
 		load_img()
+		just_opened = true
 		on_type_changed(old_type)
 		if !main.loadingGame:
 			for box in main.boxes:
 				box.on_other_box_type_changed(self)
+			for badge in main.get_node("AchievementsContainer").get_children():
+				badge.onBoxTypeChanged(self)
 
 func revealBox():
 	if !destroyed:
@@ -170,7 +173,7 @@ func revealBox():
 			$Outline.texture = load("res://boxImgs/outlineRevealed.png")
 		on_reveal(was_already_revealed)
 		if !was_already_revealed:
-			$Sprite2D.modulate = Color(0.66, 0.66, 0.66, 1)
+			$Sprite2D.modulate = Color(0.6, 0.6, 0.6, 1)
 			main.play_sfx(SFXTypes.REVEAL)
 			lg(nameText + " was revealed!")
 			for box in main.boxes:
@@ -190,7 +193,8 @@ func openBox():
 		lg("Opened " + nameText)
 		on_open()
 		for box in main.boxes:
-			box.on_other_box_opened_immediate(self)
+			if box != self:
+				box.on_other_box_opened_immediate(self)
 
 func closeBox():
 	if open:
@@ -336,6 +340,8 @@ func box_is_open(id):
 	return false
 
 func canOpen():
+	if !main.gameRunning or main.loadingGame:
+		return false
 	var can_open = true
 	if box_is_open("territory"):
 		can_open = false
@@ -356,14 +362,16 @@ func canOpen():
 	return can_open
 
 func canClick():
-	if main.has_status(StatusTypes.DEMOLISH):
-		return true
-	if main.has_status(StatusTypes.DEMOLISH) and revealed:
-		return true
-	if open:
-		if main.has_status(StatusTypes.CLOSENEXT) and id != "closenext":
+	if main.gameRunning and !main.loadingGame:
+		if main.has_status(StatusTypes.DEMOLISH):
 			return true
-	return canOpen() or can_use()
+		if main.has_status(StatusTypes.DEMOLISH) and revealed:
+			return true
+		if open:
+			if main.has_status(StatusTypes.CLOSENEXT) and id != "closenext":
+				return true
+		return canOpen() or can_use()
+	return false
 
 func tryOpen():
 	if canOpen():
@@ -434,6 +442,9 @@ func _on_button_pressed() -> void:
 						if can_use():
 							on_self_clicked()
 							main.update_stat_texts()
+							for box in main.boxes:
+								if box.open:
+									box.on_other_box_click_activated(self)
 	else:
 		if !main.gameRunning:
 			main.startGame()
@@ -454,3 +465,9 @@ func lose():
 
 func modStat(statId, val):
 	main.modBoxStat(id, statId, val)
+
+func badgeEquipped(id):
+	return main.hasBadge(id)
+
+func on_other_box_click_activated(box) -> void:
+	pass

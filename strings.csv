@@ -36,7 +36,7 @@ box.threegold.desc;On Open: Gain 3 Gold.
 box.spendtowin.name;Crown Box
 box.spendtowin.desc;On Click: Spend 6 Gold to win.
 box.revealcorners.name;Tri-Gaze Box
-box.revealcorners.desc;On Open: Reveal the corner boxes.
+box.revealcorners.desc;On Open: Reveal the top row and the left and rightmost boxes in the bottom row.
 box.sword.name;Sword Box
 box.sword.desc;Lets you slay the Dragon.
 box.dragon.name;Dragon Box
@@ -239,6 +239,38 @@ box.cauldron.name;Cauldron Box
 box.cauldron.desc;On Open: Increase the numbers on all numbered boxes by 1.
 box.alphabet.name;Alphabox
 box.alphabet.desc;After you open a box, this gets all letters in its name. If this has the entire alphabet, win.
+box.stamp.name;Stamp Box
+box.stamp.desc;On Open: Reveal all boxes with duplicates.
+box.clumsy.name;Clumsy Box
+box.clumsy.desc;After you open a box, destroy a random box adjacent to the opened box.
+box.crystalball.name;Crystal Ball Box
+box.crystalball.desc;When you open a box, if the Cloak, Hat, or Wand Boxes are adjacent to it, reveal them.
+box.badgebox.name;Badge Box
+box.badgebox.desc;Equip certain Badges to modify this box's effects!
+box.candy.name;Candy Box
+box.candy.desc;Whenever you use an On Click, reveal a random box.
+box.toolbox.name;Toolbox
+box.toolbox.desc;On Open: Transform the boxes above this into Demolition Boxes and below this into Tape Boxes.
+box.kettle.name;Kettle Box
+box.kettle.desc;After opening 3 adjacent boxes, reveal 5 random boxes.
+box.cannon.name;Cannon Box
+box.cannon.desc;On Click: Destroy the box right of this.
+box.otherworld.name;Otherworld Box
+box.otherworld.desc;On Click: Destroy this, then transform all revealed boxes randomly.
+box.rowgold.name;Rowgold Box
+box.rowgold.desc;On Open: Gain 1 Gold for each other open box in this row.
+box.smiley.name;Smiley Box
+box.smiley.desc;Smilies rain from the sky!
+box.gazer.name;Gazing Box
+box.gazer.desc;After you open 2 adjacent boxes, lose.
+box.firework.name;Firework Box
+box.firework.desc;On Open: Transform 5 random boxes into Smart Bomb Boxes.
+box.doubleup.name;Two Box
+box.doubleup.desc;On Click: If two or more adjacent boxes are the same, win.
+box.lonely.name;Lonely Box
+box.lonely.desc;On Open: If this box isn't surrounded, lose.
+box.underrated.name;Underrated Box
+box.underrated.desc;On Open: Reveal the unrevealed box you've opened the least.
 badge.reveal.name;Reveal One
 badge.reveal.desc;Start Of Run: Reveal a random box.
 badge.reveal.unlock;Win 5 times.
@@ -261,14 +293,14 @@ badge.adventurer.name;Adventurer
 badge.adventurer.desc;Start Of Run: Transform 2 random boxes into Fishing Boxes.
 badge.adventurer.unlock;Win with Fish Boxes 3 times.
 badge.contagion.name;Contagion
-badge.contagion.desc;If there's 24 or more Virus Boxes, you win.
-badge.contagion.unlock;Spread 500 Virus Boxes.
+badge.contagion.desc;If there's 24 or more open Viral Boxes, you win.
+badge.contagion.unlock;Spread 250 Viral Boxes.
 badge.gardener.name;Gardener
 badge.gardener.unlock;Open 100 Ivy Boxes.
 badge.gardener.desc;Ivy transforms both boxes above it instead of just one.
 badge.reroller.name;Recombination
 badge.reroller.desc;The DNA Box reactivates its effects every time you open a box.
-badge.reroller.unlock;Open the DNA Box 20 times.
+badge.reroller.unlock;Open the DNA Box 25 times.
 badge.slayer.name;Slayer
 badge.slayer.desc;The Strange Box reveals the Boss Box, and vice versa.
 badge.slayer.unlock;???

@@ -5,9 +5,10 @@ func postGameEnd():
 		unlock()
 
 func onRunStart():
-	for box in main.boxes:
-		if box.id == "loss" or box.id == "jumpscare":
-			box.loadType("books")
+	if enabled:
+		for box in main.boxes:
+			if box.id == "loss" or box.id == "jumpscare":
+				box.loadType("books")
 
 func getProgress():
 	return main.getStat("instantlosses")

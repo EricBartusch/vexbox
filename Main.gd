@@ -35,6 +35,8 @@ var PAN_MAX_X = 500
 var PAN_MAX_Y = 500
 
 var statsMap = {}
+var unlockedBadges = []
+var equippedBadges = []
 
 func _init() -> void:
 	Box.main = self
@@ -42,7 +44,7 @@ func _init() -> void:
 
 func setupStatsMap():
 	for box in all_boxes:
-		statsMap[box] = {"opens": 0, "wins": 0, "destroys": 0, "timesActivated": 0, "timesDestroyed": 0}
+		statsMap[box] = {"opens": 0, "wins": 0, "losses": 0, "destroys": 0, "timesActivated": 0, "timesDestroyed": 0}
 
 func addVfx(vfx):
 	add_child(vfx)
@@ -61,7 +63,9 @@ func save():
 		"bestWinstreak": bestWinstreak,
 		"unlockedRows": unlockedRows,
 		"winsToNext": winsToNext,
-		"statsMap": statsMap
+		"statsMap": statsMap,
+		"unlockedBadges": unlockedBadges,
+		"equippedBadges": equippedBadges
 	}
 	var json_string = JSON.stringify(save_dict)
 	save_file.store_line(json_string)
@@ -81,11 +85,23 @@ func load_save():
 			set(key, data[key])
 	
 	unlockedBoxes = (unlockedRows * (unlockedRows + 1)) / 2
+	$NumWinsText.text = ": " + str(wins)
+	$WinstreakText.text = "Winstreak: " + str(winstreak)
+	$BestWinstreakText.text = "Best Winstreak: " + str(bestWinstreak)
+	$WinsToNextText.text = "Reach " + str(winsToNext) + " wins for a NEW ROW." 
 
 func _ready():
 	load_save()
+	for badge in $AchievementsContainer.get_children():
+		if unlockedBadges.has(badge.id):
+			badge.unlock()
+			badge.refreshOutline()
+		if equippedBadges.has(badge.id):
+			badge.enabled = true
+			bpInUse += badge.getCost()
+			updateBadgePoints()
+			badge.refreshOutline()
 	startGame()
-	$WinsToNextText.text = "Reach " + str(winsToNext) + " wins for a NEW ROW."
 
 var loadingGame = false
 
@@ -116,6 +132,7 @@ func startGame():
 	rows.clear()
 	boxes.clear()
 	gameRunning = true
+	$AchievementsFront.modulate.a = 0.5
 	$GameStatusText.text =""
 	for node in $StatusList.get_children():
 		$StatusList.remove_child(node)
@@ -135,6 +152,7 @@ func startGame():
 			#toAdd = "winner"
 		#else:
 			#toAdd = "compass"
+		print(toAdd)
 		instance.load(toAdd, row, column)
 		add_child(instance)
 		boxes.append(instance)
@@ -153,8 +171,7 @@ func startGame():
 	update_stat_texts()
 	loadingGame = false
 	for badge in $AchievementsContainer.get_children():
-		if badge.enabled:
-			badge.onRunStart()
+		badge.onRunStart()
 	var end = Time.get_ticks_usec()
 	var worker_time = (end-start)/1000000.0	
 	print(worker_time)
@@ -171,25 +188,7 @@ func reveal_random():
 func reveal_row(row):
 	for box in rows[row]:
 		box.revealBox()
-
-func reveal_corners():
-	boxes[0].revealBox()
-	var bottomrow = unlockedRows - 1
-	var made_change = true
-	while made_change:
-		var valid_corner = true
-		if rows[bottomrow][0].destroyed:
-			valid_corner = false
-		if rows[bottomrow][bottomrow].destroyed:
-			valid_corner = false
-		if !valid_corner:
-			made_change = true
-			bottomrow -= 1
-		else:
-			made_change = false
-	rows[bottomrow][0].revealBox()
-	rows[bottomrow][bottomrow].revealBox()
-
+	
 func add_status(statusType, amount):
 	if has_status(statusType):
 		change_status_amount(statusType, amount)
@@ -202,15 +201,14 @@ func trigger_on_click():
 	for status in $StatusList.get_children():
 		status.on_click()
 	for box in boxes:
-		if box.open and not box.just_opened and not box.destroyed and gameRunning:
+		if box.open and not box.just_opened and not box.destroyed and gameRunning and box != last_opened:
 			box.on_other_box_opened(last_opened)
 		box.just_opened = false
 	for box in boxes:
 		if box.id == "virus":
 			box.thing = 0
 	for badge in $AchievementsContainer.get_children():
-		if badge.enabled:
-			badge.onOpenBox(last_opened)
+		badge.onOpenBox(last_opened)
 
 func has_status(type):
 	for status in $StatusList.get_children():
@@ -289,6 +287,7 @@ func internal_win():
 	$ColorRect.color = Color(0.2, 0.33, 0.2, 1)
 	logToLog(null, "You won!", null)
 	gameRunning = false
+	$AchievementsFront.modulate.a = 0
 	$GameStatusText.text = "You won!"
 	wins += 1
 	if wins >= winsToNext and unlockedRows < MAX_ROWS:
@@ -316,6 +315,7 @@ func internal_loss():
 	$ColorRect.color = Color(0.33, 0.2, 0.2, 1)
 	qLog("You lost!")
 	gameRunning = false
+	$AchievementsFront.modulate.a = 0
 	$GameStatusText.text = "You lost."
 	if opens == 1:
 		modStat("instantlosses", 1)
@@ -399,7 +399,9 @@ func logToLog(sourceImg, sourceText, ID):
 	newLogEntry.load(sourceImg, sourceText, ID)
 	var prevEntries = $ScrollContainer/LogContainer.get_children()
 	$ScrollContainer/LogContainer.add_child(newLogEntry)
-	$ScrollContainer/LogContainer.queue_sort()
+	await get_tree().process_frame
+	$ScrollContainer.scroll_vertical = $ScrollContainer.get_v_scroll_bar().max_value
+	$ScrollContainer.queue_sort()
 
 func qLog(sourceText):
 	logToLog(null, sourceText, null)
@@ -599,6 +601,7 @@ func hurtPlayer():
 		if playerHealth == 0:
 			$GameStatusSubtext.text = "Better luck next time. Use the restart button!"
 			internal_loss()
+			get_parent().modBoxStat("finalboss", "losses", 1)
 			var flying_thing = flyingBoxScene.instantiate()
 			flying_thing.loadFromBox(gameSource)
 			flying_thing.global_position = protag.global_position
@@ -680,3 +683,11 @@ func updateBadgePoints():
 			children[i].texture = usedBpImg
 		else:
 			children[i].texture = bpImg
+
+func hasBadge(id):
+	for badge in $AchievementsContainer.get_children():
+		if badge.id == id:
+			if badge.enabled:
+				return true
+			return false
+	return false

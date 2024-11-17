@@ -9,6 +9,11 @@ func on_open() -> void:
 		if rowAbove.size() > col:
 			result.append(rowAbove[col])
 		if result.size() > 0:
-			var box = result.pick_random()
-			if !box.destroyed:
-				box.loadType("ivy")
+			if badgeEquipped("gardener"):
+				for box in result:
+					if !box.destroyed:
+						box.loadType("ivy")
+			else:
+				var box = result.pick_random()
+				if !box.destroyed:
+					box.loadType("ivy")

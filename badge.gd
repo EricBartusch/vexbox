@@ -20,6 +20,7 @@ var number = -1
 func setup_number(newNumber):
 	number = newNumber
 	$Number.visible = true
+	$Number.text = str(number)
 
 func hide_number():
 	number = -1
@@ -95,6 +96,8 @@ static func tr_badge(type: String, key: String) -> String:
 
 func loadImg():
 	revealedImg = get_badge_img(id)
+	if seen:
+		$Sprite2D.texture = revealedImg
 
 static func get_badge_script(classname: String) -> GDScript:
 	return load("res://badges/" + classname.to_lower() + ".gd")
@@ -124,6 +127,8 @@ func updateTooltipForMe():
 
 func unlock():
 	unlocked = true
+	if !main.unlockedBadges.has(id):
+		main.unlockedBadges.append(id)
 	$Sprite2D.texture = revealedImg
 	refreshOutline()
 	for badge in get_parent().get_children():
@@ -143,15 +148,19 @@ func _on_button_button_up() -> void:
 		if unlocked:
 			if enabled:
 				enabled = false
+				main.equippedBadges.erase(id)
 				main.bpInUse -= getCost()
 				refreshOutline()
 				main.updateBadgePoints()
+				main.save()
 			else:
 				if main.badgePoints - main.bpInUse >= getCost():
 					enabled = true
+					main.equippedBadges.append(id)
 					main.bpInUse += getCost()
 					refreshOutline()
 					main.updateBadgePoints()
+					main.save()
 
 func getCost() -> int:
 	return 1
@@ -173,3 +182,9 @@ func getMaxProgress() -> int:
 
 func showDescWhenRevealed() -> bool:
 	return true
+
+func onBoxTypeChanged(box):
+	pass
+
+func qLog(text):
+	main.logToLog($Sprite2D.texture, text, null)

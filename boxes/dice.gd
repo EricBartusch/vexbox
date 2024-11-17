@@ -11,7 +11,7 @@ func on_self_clicked() -> void:
 	for box in get_adjacent_boxes(false, false):
 		var valids = []
 		for i in main.all_boxes:
-			if i != box.id:
+			if i != box.id and i != "max":
 				valids.append(i)
 		if valids.size() > 0:
 			box.loadType(valids.pick_random())
