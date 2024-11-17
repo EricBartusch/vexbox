@@ -5,6 +5,7 @@ func can_use() -> bool:
 
 func on_self_clicked() -> void:
 	if main.status_amount(StatusTypes.GOLD) >= 2:
+		modStat("timesActivated", 1)
 		main.play_sfx(SFXTypes.ACTIVATE)
 		main.change_status_amount(StatusTypes.GOLD, -2)
 		for i in 4:

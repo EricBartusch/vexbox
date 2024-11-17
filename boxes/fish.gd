@@ -6,4 +6,5 @@ func on_open() -> void:
 		if box.open and !box.destroyed and box.id == "fish":
 			count += 1
 	if count >= 3:
-		main.win()
+		lg("Fish victory - three or more!")
+		win()

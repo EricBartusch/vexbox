@@ -1,4 +1,4 @@
 extends Box
 
 func can_destroy() -> bool:
-	return !open and !main.big_bossfight
+	return !open or main.big_bossfight

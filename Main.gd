@@ -42,7 +42,7 @@ func _init() -> void:
 
 func setupStatsMap():
 	for box in all_boxes:
-		statsMap[box] = {"opens": 0}
+		statsMap[box] = {"opens": 0, "wins": 0, "destroys": 0, "timesActivated": 0, "timesDestroyed": 0}
 
 func addVfx(vfx):
 	add_child(vfx)
@@ -66,12 +66,8 @@ func save():
 	var json_string = JSON.stringify(save_dict)
 	save_file.store_line(json_string)
 
-func init_save():
-	setupStatsMap()
-
 func load_save():
 	if not FileAccess.file_exists("user://savegame.save"):
-		init_save()
 		return
 	
 	var save_file = FileAccess.open("user://savegame.save", FileAccess.READ)
@@ -134,7 +130,12 @@ func startGame():
 	var curRow = []
 	while not list.is_empty():
 		var instance = boxScene.instantiate()
-		instance.load(list.pop_front(), row, column)
+		var toAdd = list.pop_front()
+		#if row == 6 and column == 4:
+			#toAdd = "winner"
+		#else:
+			#toAdd = "compass"
+		instance.load(toAdd, row, column)
 		add_child(instance)
 		boxes.append(instance)
 		curRow.append(instance)
@@ -151,6 +152,9 @@ func startGame():
 			curRow = []
 	update_stat_texts()
 	loadingGame = false
+	for badge in $AchievementsContainer.get_children():
+		if badge.enabled:
+			badge.onRunStart()
 	var end = Time.get_ticks_usec()
 	var worker_time = (end-start)/1000000.0	
 	print(worker_time)
@@ -204,6 +208,9 @@ func trigger_on_click():
 	for box in boxes:
 		if box.id == "virus":
 			box.thing = 0
+	for badge in $AchievementsContainer.get_children():
+		if badge.enabled:
+			badge.onOpenBox(last_opened)
 
 func has_status(type):
 	for status in $StatusList.get_children():
@@ -241,6 +248,7 @@ var awaiting_post_click = false
 
 func await_postclick():
 	opens += 1
+	modStat("opens", 1)
 	awaiting_post_click = true
 	$TriggerPostClicksTimer.start()
 
@@ -309,14 +317,19 @@ func internal_loss():
 	qLog("You lost!")
 	gameRunning = false
 	$GameStatusText.text = "You lost."
+	if opens == 1:
+		modStat("instantlosses", 1)
 	reset_winstreak()
 	after_game_over()
 
 func win():
 	if gameRunning:
-		if has_status(StatusTypes.CURSE):
+		if hasCurse():
 			qLog("Curse prevented your victory.")
-			change_status_amount(StatusTypes.CURSE, -1)
+			for box in boxes:
+				if box.id == "curse" and !box.destroyed and box.open:
+					box.destroyBox()
+					break
 		else:
 			if has_status(StatusTypes.INVERSION):
 				qLog("You win - but it's inverted to a loss!")
@@ -324,9 +337,21 @@ func win():
 			else:
 				internal_win()
 
+func hasHeart():
+	for box in boxes:
+		if box.id == "heart" and box.customNum > 0 and !box.destroyed:
+			return true
+	return false
+
+func hasCurse():
+	for box in boxes:
+		if box.id == "curse" and !box.destroyed and box.open:
+			return true
+	return false
+
 func lose():
 	if gameRunning:
-		if !has_status(StatusTypes.HEART):
+		if !hasHeart():
 			var willDie = true
 			for box in boxes:
 				if box.id == "guardian" and !box.destroyed and box.open:
@@ -373,9 +398,8 @@ func logToLog(sourceImg, sourceText, ID):
 	var newLogEntry = logEntryScene.instantiate()
 	newLogEntry.load(sourceImg, sourceText, ID)
 	var prevEntries = $ScrollContainer/LogContainer.get_children()
-	if prevEntries.size() >= 10:
-		$ScrollContainer/LogContainer.remove_child(prevEntries[0])
 	$ScrollContainer/LogContainer.add_child(newLogEntry)
+	$ScrollContainer/LogContainer.queue_sort()
 
 func qLog(sourceText):
 	logToLog(null, sourceText, null)
@@ -394,6 +418,7 @@ func clear_central():
 				if (i != 0 and i != rows[x].size()-1):
 					if !rows[x][i].destroyed:
 						destroy_box(rows[x][i])
+						modBoxStat("armageddon", "destroys", 1)
 
 func resetGame():
 	if resetTimer <= 0:
@@ -472,6 +497,7 @@ var playerHealth = 3
 var startCombatSound = preload("res://sfx/battle/combatstart.ogg")
 
 func start_big_bossfight(source):
+	$Tooltip.z_index = 0
 	$OneshotSoundPlayer.stream = startCombatSound
 	$OneshotSoundPlayer.play()
 	$RestartButton.visible = false
@@ -494,6 +520,8 @@ func start_big_bossfight(source):
 var absorbingBoxImitator = preload("res://vfx/vfxAbsorbingBoxImitator.tscn")
 
 func cleanBoss():
+	$Tooltip.z_index = 1
+	$GameStatusSubtext.text = "Click any box to restart."
 	curBossfightStatus = null
 	gameSource = null
 	protag = null
@@ -569,13 +597,86 @@ func hurtPlayer():
 		playerHealthbar.remove_child(playerHealthbar.get_children()[playerHealth])
 		protag.whenHit()
 		if playerHealth == 0:
-			lose()
+			$GameStatusSubtext.text = "Better luck next time. Use the restart button!"
+			internal_loss()
 			var flying_thing = flyingBoxScene.instantiate()
 			flying_thing.loadFromBox(gameSource)
 			flying_thing.global_position = protag.global_position
 			addVfx(flying_thing)
 			postBoss()
 		
+func get_status(type):
+	for other in $StatusList.get_children():
+		if other.type == type:
+			return other
+	return null
 
 func update_boss_healthbar():
 	bossHealthbar.updateInfo(boss.health)
+
+func getStat(id):
+	if statsMap.has(id):
+		return statsMap[id]
+	else:
+		statsMap[id] = 0
+		return 0
+
+func setStat(id, val):
+	statsMap[id] = val
+
+func modStat(id, val):
+	if statsMap.has(id):
+		statsMap[id] += val
+	else:
+		statsMap[id] = val
+
+func initBoxStats(boxid):
+	statsMap[boxid] = {"opens": 0, "wins": 0, "losses": 0}
+	pass
+
+func getBoxStat(boxid, id):
+	if statsMap.has(boxid):
+		var boxStats = statsMap[boxid]
+		if boxStats.has(id):
+			return boxStats[id]
+		else:
+			boxStats[id] = 0
+			return 0
+	else:
+		initBoxStats(boxid)
+		return statsMap[boxid][id]
+
+func setBoxStat(boxid, id, val):
+	if statsMap.has(boxid):
+		var boxStats = statsMap[boxid]
+		if boxStats.has(id):
+			statsMap[boxid][id] = val
+		else:
+			statsMap[boxid][id] = val
+	else:
+		initBoxStats(boxid)
+		statsMap[boxid][id] = val
+
+func modBoxStat(boxid, id, val):
+	if statsMap.has(boxid):
+		var boxStats = statsMap[boxid]
+		if boxStats.has(id):
+			statsMap[boxid][id] += val
+		else:
+			statsMap[boxid][id] = val
+	else:
+		initBoxStats(boxid)
+		statsMap[boxid][id] = val
+
+var badgePoints = 3
+var bpInUse = 0
+var bpImg = load("res://uiImgs/orb.png")
+var usedBpImg = load("res://uiImgs/usedOrb.png")
+
+func updateBadgePoints():
+	var children = $BPContainer.get_children()
+	for i in badgePoints:
+		if i < bpInUse:
+			children[i].texture = usedBpImg
+		else:
+			children[i].texture = bpImg

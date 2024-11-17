@@ -8,6 +8,7 @@ func on_open() -> void:
 			result.append(rowAbove[col - 1])
 		if rowAbove.size() > col:
 			result.append(rowAbove[col])
-		for box in result:
+		if result.size() > 0:
+			var box = result.pick_random()
 			if !box.destroyed:
 				box.loadType("ivy")

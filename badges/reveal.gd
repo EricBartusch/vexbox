@@ -6,3 +6,12 @@ func postGameEnd():
 
 func onRunStart():
 	main.reveal_random()
+
+func getProgress():
+	return main.wins
+
+func getMaxProgress():
+	return 5
+
+func getCost():
+	return 2

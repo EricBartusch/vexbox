@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://vxgxgf0yenfm"
-path="res://.godot/imported/bossshot.png-1398e7a387d7e605c679bee1d66b3ae7.ctex"
+uid="uid://b03vhnh3cdgr8"
+path="res://.godot/imported/windy.png-fca6bced9e8fcbab42090f31c33c8b81.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://bossshot.png"
-dest_files=["res://.godot/imported/bossshot.png-1398e7a387d7e605c679bee1d66b3ae7.ctex"]
+source_file="res://badgeImgs/windy.png"
+dest_files=["res://.godot/imported/windy.png-fca6bced9e8fcbab42090f31c33c8b81.ctex"]
 
 [params]
 

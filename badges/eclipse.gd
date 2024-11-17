@@ -6,3 +6,9 @@ func postGameEnd():
 
 func onRunStart():
 	main.add_status(StatusTypes.ECLIPSE, 3)
+
+func getProgress():
+	return main.wins
+
+func getMaxProgress():
+	return 50

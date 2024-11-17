@@ -1,4 +1,8 @@
 extends Box
 
 func on_open() -> void:
-    main.add_status(StatusTypes.HEART, 3)
+	set_custom_num(3)
+
+func on_other_box_opened(box):
+	if customNum > 0:
+		set_custom_num(customNum-1)

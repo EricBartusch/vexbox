@@ -7,6 +7,7 @@ func can_use() -> bool:
 	return customNum > 0
 
 func on_self_clicked() -> void:
+	main.play_sfx(SFXTypes.ACTIVATE)
 	for box in get_adjacent_boxes(false, false):
 		var valids = []
 		for i in main.all_boxes:

@@ -16,4 +16,4 @@ func on_self_clicked() -> void:
 			count += 1
 	if count >= 10:
 		main.play_sfx(SFXTypes.ACTIVATE)
-		main.win()
+		win()

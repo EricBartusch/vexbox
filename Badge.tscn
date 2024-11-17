@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://dx3j5aid1cguw"]
 
 [ext_resource type="Script" path="res://Badge.gd" id="1_bp6re"]
-[ext_resource type="Texture2D" uid="uid://btp1ixn3wimn2" path="res://boxImgs/boxUnknown.png" id="2_p8o2a"]
+[ext_resource type="Texture2D" uid="uid://bpe6dvqnuc2ey" path="res://badgeImgs/locked.png" id="2_uwl54"]
 [ext_resource type="Texture2D" uid="uid://clyb6vyg758qp" path="res://boxImgs/outlineClosed.png" id="3_cl64a"]
 [ext_resource type="FontFile" uid="uid://drxqa43mwcvwa" path="res://Comic Sans MS.ttf" id="4_ndybg"]
 
@@ -29,7 +29,7 @@ offset_right = 38.0
 offset_bottom = 38.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_p8o2a")
+texture = ExtResource("2_uwl54")
 
 [node name="Outline" type="TextureRect" parent="."]
 layout_mode = 1

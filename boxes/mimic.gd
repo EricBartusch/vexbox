@@ -4,7 +4,8 @@ var disguise: String
 
 func on_open() -> void:
 	if main.rng.randi_range(1, 3) == 1:
-		main.lose()
+		lg("The Mimic attacks you viciously!")
+		lose()
 
 func on_reveal(_was_already_revealed: bool) -> void:
 	if disguise == null:

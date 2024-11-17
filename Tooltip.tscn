@@ -1,7 +1,14 @@
-[gd_scene load_steps=3 format=3 uid="uid://bhinpp6ankmnj"]
+[gd_scene load_steps=10 format=3 uid="uid://bhinpp6ankmnj"]
 
 [ext_resource type="Script" path="res://tooltip.gd" id="1_3cn56"]
 [ext_resource type="Texture2D" uid="uid://m4hfhsi5r3dh" path="res://Tooltip.png" id="1_7vupk"]
+[ext_resource type="FontFile" uid="uid://drxqa43mwcvwa" path="res://Comic Sans MS.ttf" id="3_igej3"]
+[ext_resource type="Texture2D" uid="uid://dve3v00v6iokk" path="res://uiImgs/badgeProgressBarOut.png" id="4_voqj7"]
+[ext_resource type="Texture2D" uid="uid://bc2u5523dww1j" path="res://uiImgs/badgeProgressBar.png" id="5_jx78i"]
+[ext_resource type="Texture2D" uid="uid://doma5ytnsnhpf" path="res://uiImgs/badgeProgressBarIn.png" id="6_nbs00"]
+[ext_resource type="Texture2D" uid="uid://4pftoq1uqi0k" path="res://uiImgs/statOpens.png" id="7_nkvee"]
+[ext_resource type="Texture2D" uid="uid://bo8ueors6raqo" path="res://uiImgs/statWins.png" id="8_k0qbh"]
+[ext_resource type="Texture2D" uid="uid://0h76v7rapjil" path="res://uiImgs/orb.png" id="9_k16ej"]
 
 [node name="Tooltip" type="Control"]
 layout_mode = 3
@@ -21,34 +28,132 @@ stretch_mode = 2
 
 [node name="Header" type="Label" parent="."]
 layout_mode = 0
-offset_left = 17.0
-offset_top = 9.0
-offset_right = 383.0
-offset_bottom = 43.0
+offset_left = 98.0
+offset_top = 10.0
+offset_right = 412.0
+offset_bottom = 57.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_fonts/font = ExtResource("3_igej3")
+theme_override_font_sizes/font_size = 30
 text = "NAME
 "
 horizontal_alignment = 1
 
 [node name="Status" type="Label" parent="."]
 layout_mode = 0
-offset_left = 15.0
-offset_top = 40.0
-offset_right = 356.0
-offset_bottom = 91.0
+offset_left = 12.0
+offset_top = 51.0
+offset_right = 481.0
+offset_bottom = 102.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_fonts/font = ExtResource("3_igej3")
+theme_override_font_sizes/font_size = 25
 text = "Revealed"
 autowrap_mode = 2
 
 [node name="Description" type="Label" parent="."]
 layout_mode = 0
-offset_left = 15.0
-offset_top = 100.0
-offset_right = 380.0
-offset_bottom = 225.0
+offset_left = 11.0
+offset_top = 155.0
+offset_right = 490.0
+offset_bottom = 290.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_fonts/font = ExtResource("3_igej3")
+theme_override_font_sizes/font_size = 25
 text = "This does blah blah blah"
 autowrap_mode = 2
+
+[node name="BadgeProgressBar" type="TextureProgressBar" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 12.0
+offset_top = 113.0
+offset_right = 487.0
+offset_bottom = 153.0
+texture_under = ExtResource("4_voqj7")
+texture_over = ExtResource("5_jx78i")
+texture_progress = ExtResource("6_nbs00")
+
+[node name="BadgeProgressText" type="Label" parent="BadgeProgressBar"]
+layout_mode = 0
+offset_left = 196.0
+offset_right = 270.0
+offset_bottom = 36.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = ExtResource("3_igej3")
+theme_override_font_sizes/font_size = 25
+text = "50/50"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="OpensTexture" type="TextureRect" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 21.0
+offset_top = 11.0
+offset_right = 61.0
+offset_bottom = 51.0
+texture = ExtResource("7_nkvee")
+
+[node name="OpensText" type="Label" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 70.0
+offset_top = 16.0
+offset_right = 110.0
+offset_bottom = 45.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_igej3")
+theme_override_font_sizes/font_size = 25
+text = "50
+"
+vertical_alignment = 1
+
+[node name="WinsTexture" type="TextureRect" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 402.0
+offset_top = 10.0
+offset_right = 442.0
+offset_bottom = 50.0
+texture = ExtResource("8_k0qbh")
+
+[node name="WinsText" type="Label" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 444.0
+offset_top = 16.0
+offset_right = 484.0
+offset_bottom = 45.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_igej3")
+theme_override_font_sizes/font_size = 25
+text = "50
+"
+vertical_alignment = 1
+
+[node name="BPTexture" type="TextureRect" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 401.0
+offset_top = 11.0
+offset_right = 441.0
+offset_bottom = 51.0
+texture = ExtResource("9_k16ej")
+
+[node name="BPText" type="Label" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 444.0
+offset_top = 16.0
+offset_right = 484.0
+offset_bottom = 45.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_igej3")
+theme_override_font_sizes/font_size = 25
+text = "50
+"
+vertical_alignment = 1

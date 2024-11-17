@@ -8,4 +8,4 @@ func on_other_box_opened(other) -> void:
 			willWin = false
 	if willWin:
 		lg("You've softlocked! Softlock Box activates!")
-		main.win()
+		win()

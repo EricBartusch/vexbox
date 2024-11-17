@@ -1,12 +1,16 @@
 class_name Badge extends Control
 
 @export var id : String
+var seen = false
 var unlocked = false
 var enabled = false
 
 var hoverName = ""
 var hoverDesc = ""
 var unlockText = ""
+var revealedImg
+var cursorOpen = load("res://cursorImgs/cursorOpen.png")
+var cursorNormal = load("res://cursorImgs/cursorNormal.png")
 
 static var main: Main
 static var propery_names := init_properties()
@@ -22,9 +26,42 @@ func hide_number():
 	$Number.visible = false
 
 func _ready():
+	var properties := {}
+	for i in propery_names:
+		properties[i] = get(i)
+	set_script(get_badge_script(id))
+	set_process(true)
+	for i in properties:
+		set(i, properties[i])
 	loadImg()
 	loadText()
+	refreshStatus()
 	refreshOutline()
+
+func get_adjacent_badges():
+	var adjacents = []
+	var badges = get_parent().get_children()
+	var location = badges.find(self)
+	# top
+	if location > 7:
+		adjacents.append(badges[location-8])
+	#left
+	if location % 8 != 0:
+		adjacents.append(badges[location-1])
+	#right
+	if location % 7 != 0:
+		adjacents.append(badges[location+1])
+	#down
+	if badges.size() > location+7:
+		adjacents.append(badges[location+7])
+	return adjacents
+
+func refreshStatus():
+	if !seen:
+		for badge in get_adjacent_badges():
+			if badge.unlocked:
+				seen = true
+				$Sprite2D.texture = revealedImg
 
 static func init_properties() -> Array[String]:
 	var control_properties := Control.new().get_property_list()
@@ -57,7 +94,10 @@ static func tr_badge(type: String, key: String) -> String:
 	return main.tr("badge." + type + "." + key)
 
 func loadImg():
-	$Sprite2D.texture = get_badge_img(id)
+	revealedImg = get_badge_img(id)
+
+static func get_badge_script(classname: String) -> GDScript:
+	return load("res://badges/" + classname.to_lower() + ".gd")
 
 static func get_badge_img(type: String) -> Texture2D:
 	return load("res://badgeImgs/"+type+".png")
@@ -67,13 +107,27 @@ func _process(delta):
 		var mousePos = get_viewport().get_mouse_position()
 		if mousePos.x >= global_position.x - 37.5 and mousePos.x <= global_position.x + 37.5 and mousePos.y >= global_position.y - 37.5 and mousePos.y <= global_position.y + 37.5:
 			updateTooltipForMe()
+			if !main.gameRunning:
+				if unlocked and (main.badgePoints - main.bpInUse >= getCost() or enabled):
+					Input.set_custom_mouse_cursor(cursorOpen)
+				else:
+					Input.set_custom_mouse_cursor(cursorNormal)
 
 func updateTooltipForMe():
-	main.get_node("Tooltip").setup(hoverName, unlockText, hoverDesc)
+	if seen or unlocked:
+		main.get_node("Tooltip").setup(hoverName, unlockText, "???" if !showDescWhenRevealed() else hoverDesc)
+		var progress = getProgress()
+		var maxProgress = getMaxProgress()
+		main.get_node("Tooltip").setupProgressBar(progress, maxProgress, getCost())
+	else:
+		main.get_node("Tooltip").setup("Unknown Achievement", "", "Unlock an adjacent achievement to see this one!")
 
 func unlock():
 	unlocked = true
+	$Sprite2D.texture = revealedImg
 	refreshOutline()
+	for badge in get_parent().get_children():
+		badge.refreshStatus()
 		
 func refreshOutline():
 	if unlocked:
@@ -85,20 +139,21 @@ func refreshOutline():
 		$Outline.texture = load("res://boxImgs/outlineClosed.png")
 
 func _on_button_button_up() -> void:
-	if !main.big_bossfight and main.opens == 0:
+	if !main.gameRunning:
 		if unlocked:
 			if enabled:
 				enabled = false
+				main.bpInUse -= getCost()
 				refreshOutline()
+				main.updateBadgePoints()
 			else:
-				enabled = true
-				refreshOutline()
-				for badge in get_parent().get_children():
-					if badge != self:
-						badge.enabled = false
-						badge.refreshOutline()
+				if main.badgePoints - main.bpInUse >= getCost():
+					enabled = true
+					main.bpInUse += getCost()
+					refreshOutline()
+					main.updateBadgePoints()
 
-func get_cost() -> int:
+func getCost() -> int:
 	return 1
 
 func onRunStart() -> void:
@@ -109,3 +164,12 @@ func postGameEnd() -> void:
 
 func onOpenBox(box) -> void:
 	pass
+
+func getProgress() -> int:
+	return -1
+	
+func getMaxProgress() -> int:
+	return -1
+
+func showDescWhenRevealed() -> bool:
+	return true

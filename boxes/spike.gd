@@ -6,4 +6,5 @@ func on_open() -> void:
 		if box.open and !box.destroyed and box.id == "spike":
 			count += 1
 	if count >= 3:
-		main.lose()
+		lg("Slain by spikes!")
+		lose()

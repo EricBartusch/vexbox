@@ -8,5 +8,3 @@ func on_other_box_opened(other) -> void:
 		if customNum == 1:
 			lg("Ice Box has thawed!")
 		set_custom_num(customNum - 1)
-		if customNum == 0:
-				hide_custom_num()

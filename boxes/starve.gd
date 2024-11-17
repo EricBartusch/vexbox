@@ -19,7 +19,7 @@ func on_other_box_opened(box) -> void:
 		else:
 			if customNum == 1:
 				lg("The Hungry Box starves!")
-				main.lose()
+				lose()
 			set_custom_num(customNum - 1)
 			if main.gameRunning and customNum == 0:
 				hide_custom_num()

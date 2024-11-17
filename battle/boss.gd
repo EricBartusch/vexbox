@@ -205,7 +205,8 @@ func _process(delta: float) -> void:
 					$BossImg.modulate.a -= delta / 6
 					if timer <= 0:
 						state = BossState.DEATH_FLYOFF
-						get_parent().win()
+						get_parent().get_node("GameStatusSubtext").text = "You did it. Use the restart button!"
+						get_parent().internal_win()
 						get_parent().postBoss()
 						vX = get_parent().rng.randf_range(-10, 10)
 						vY = get_parent().rng.randf_range(-20, -6)

@@ -1,7 +1,7 @@
 extends Badge
 
 func postGameEnd():
-	if main.winstreak >= 10:
+	if main.bestWinstreak >= 10:
 		unlock()
 
 func onRunStart():
@@ -12,3 +12,9 @@ func onRunStart():
 				valids.append(box)
 		var toChange = valids.pick_random()
 		toChange.loadType("gamer")
+
+func getProgress():
+	return main.bestWinstreak
+
+func getMaxProgress():
+	return 10

@@ -13,5 +13,7 @@ func can_use() -> bool:
 	return customNum > 0
 
 func on_self_clicked() -> void:
+	main.play_sfx(SFXTypes.ACTIVATE)
+	modStat("timesActivated", 1)
 	main.reveal_random()
 	set_custom_num(customNum-1)

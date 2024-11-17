@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://d1a1s0x7tsi1i"]
+[gd_scene load_steps=21 format=3 uid="uid://d1a1s0x7tsi1i"]
 
 [ext_resource type="Script" path="res://Main.gd" id="1_nfgpe"]
 [ext_resource type="PackedScene" uid="uid://bhinpp6ankmnj" path="res://Tooltip.tscn" id="2_atu00"]
@@ -19,6 +19,7 @@
 [ext_resource type="PackedScene" uid="uid://dx3j5aid1cguw" path="res://Badge.tscn" id="16_w7hqe"]
 [ext_resource type="AudioStream" uid="uid://dhkk0qhxn18n" path="res://sfx/battle/shot.ogg" id="17_hs86g"]
 [ext_resource type="AudioStream" uid="uid://c7ivejmduc7kc" path="res://sfx/battle/summon.ogg" id="18_fi0cd"]
+[ext_resource type="Texture2D" uid="uid://0h76v7rapjil" path="res://uiImgs/orb.png" id="19_erv68"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -42,10 +43,10 @@ theme_override_constants/separation = 100
 
 [node name="RestartButton" type="Button" parent="."]
 layout_mode = 0
-offset_left = 997.0
-offset_top = 275.0
-offset_right = 1138.0
-offset_bottom = 323.0
+offset_left = 1575.0
+offset_top = 182.0
+offset_right = 1716.0
+offset_bottom = 230.0
 text = "Restart Game
 "
 
@@ -142,6 +143,7 @@ horizontal_alignment = 1
 
 [node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4_x00mb")
+parameters/looping = true
 
 [node name="OpenFXPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4_g0kiw")
@@ -229,28 +231,87 @@ layout_mode = 0
 offset_left = 37.0
 offset_top = 572.0
 offset_right = 389.0
-offset_bottom = 934.0
+offset_bottom = 930.0
+vertical_scroll_mode = 2
 
 [node name="LogContainer" type="VBoxContainer" parent="ScrollContainer"]
 layout_mode = 2
 theme_override_constants/separation = 35
 
 [node name="Tooltip" parent="." instance=ExtResource("2_atu00")]
+z_index = 1
 layout_mode = 1
-offset_left = 1110.0
-offset_top = 2.0
-offset_right = 1513.0
-offset_bottom = 256.0
+offset_left = 1013.0
+offset_top = 13.0
+offset_right = 1517.0
+offset_bottom = 314.0
+
+[node name="BadgesTextureRect" type="ColorRect" parent="."]
+layout_mode = 2
+offset_left = 1140.0
+offset_top = 324.0
+offset_right = 1781.0
+offset_bottom = 942.0
+color = Color(0, 0, 0, 0.305882)
+
+[node name="BadgesHeader" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1244.0
+offset_top = 336.0
+offset_right = 1439.0
+offset_bottom = 379.0
+theme_override_fonts/font = ExtResource("4_ito2v")
+theme_override_font_sizes/font_size = 30
+text = "Achievements"
+
+[node name="PointsHeader" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1527.0
+offset_top = 330.0
+offset_right = 1722.0
+offset_bottom = 359.0
+theme_override_fonts/font = ExtResource("4_ito2v")
+theme_override_font_sizes/font_size = 20
+text = "Achievement Points"
+
+[node name="BPContainer" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 1578.0
+offset_top = 358.0
+offset_right = 1661.0
+offset_bottom = 383.0
+
+[node name="BP1" type="TextureRect" parent="BPContainer"]
+layout_mode = 2
+texture = ExtResource("19_erv68")
+
+[node name="BP2" type="TextureRect" parent="BPContainer"]
+layout_mode = 2
+texture = ExtResource("19_erv68")
+
+[node name="BP3" type="TextureRect" parent="BPContainer"]
+layout_mode = 2
+texture = ExtResource("19_erv68")
+
+[node name="BP4" type="TextureRect" parent="BPContainer"]
+visible = false
+layout_mode = 2
+texture = ExtResource("19_erv68")
+
+[node name="BP5" type="TextureRect" parent="BPContainer"]
+visible = false
+layout_mode = 2
+texture = ExtResource("19_erv68")
 
 [node name="AchievementsContainer" type="GridContainer" parent="."]
 layout_mode = 0
-offset_left = 1248.0
-offset_top = 561.0
-offset_right = 1761.0
-offset_bottom = 1019.0
+offset_left = 1193.0
+offset_top = 433.0
+offset_right = 1868.0
+offset_bottom = 891.0
 theme_override_constants/h_separation = 75
 theme_override_constants/v_separation = 75
-columns = 5
+columns = 8
 
 [node name="RevealOne" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
 layout_mode = 2
@@ -275,6 +336,42 @@ id = "study"
 [node name="Gamer Mode" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
 layout_mode = 2
 id = "gamermode"
+
+[node name="Adventurer" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "adventurer"
+
+[node name="Contagion" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "contagion"
+
+[node name="Gardener" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "gardener"
+
+[node name="Reroller" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "reroller"
+
+[node name="Slayer" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "slayer"
+
+[node name="Tape Start" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "tapestart"
+
+[node name="Telescope" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "telescope"
+
+[node name="Trigaze Improve" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "trigazeimprove"
+
+[node name="Windy" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "windy"
 
 [connection signal="button_up" from="RestartButton" to="." method="_on_restart_button_button_up"]
 [connection signal="timeout" from="TriggerPostClicksTimer" to="." method="_on_trigger_post_clicks_timer_timeout"]

@@ -125,7 +125,8 @@ func destroyBox():
 	hide_custom_num()
 	on_destroy()
 	for box in main.boxes:
-		on_other_box_destroyed(self)
+		if box.open and not box.just_opened and not box.destroyed and main.gameRunning:
+			box.on_other_box_destroyed(self)
 
 func reviveBox():
 	if destroyed:
@@ -178,6 +179,7 @@ func revealBox():
 func openBox():
 	if !destroyed and !open:
 		main.play_sfx(SFXTypes.OPEN)
+		main.modBoxStat(id, "opens", 1)
 		was_revealed_when_opened = revealed
 		revealed = true
 		just_opened = true
@@ -221,7 +223,12 @@ func updateTooltipForMe():
 			else:
 				curStatus = "Revealed"
 			curDesc = tooltipText
-	main.get_node("Tooltip").setup(curName, curStatus, curDesc)
+	main.get_node("Tooltip").setup(curName, curStatus, curDesc + addText())
+	if revealed:
+		main.get_node("Tooltip").setupStats(main.getBoxStat(id, "opens"), main.getBoxStat(id, "wins"))
+
+func addText() -> String:
+	return ""
 
 var cursorTransmog = load("res://cursorImgs/cursorTransmog.png")
 var cursorDestroy = load("res://cursorImgs/cursorDestroy.png")
@@ -316,9 +323,21 @@ func innerOpen():
 	openBox()
 	main.await_postclick()
 
+func get_box_counter(id):
+	for box in main.boxes:
+		if box.id == id and box.customNum >= 0 and !box.destroyed:
+			return box.customNum
+	return 0
+
+func box_is_open(id):
+	for box in main.boxes:
+		if box.id == id and box.open and !box.destroyed:
+			return true
+	return false
+
 func canOpen():
 	var can_open = true
-	if main.has_status(StatusTypes.TERRITORY):
+	if box_is_open("territory"):
 		can_open = false
 		for box in get_adjacent_boxes(false, false):
 			if box.open:
@@ -327,14 +346,13 @@ func canOpen():
 	for box in get_adjacent_boxes(false, false):
 		if box.id == "ice" and box.customNum > 0 and !box.destroyed and box.open:
 			can_open = false
-	for box in main.boxes:
-		if box.id == "program" and box.open and !box.destroyed:
-			for boxRow in main.rows:
-				for other in boxRow:
-					if !other.destroyed and !other.open:
-						if other.row < row:
-							can_open = false
-							break
+	if get_box_counter("program") > 0:
+		for boxRow in main.rows:
+			for other in boxRow:
+				if !other.destroyed and !other.open:
+					if other.row < row:
+						can_open = false
+						break
 	return can_open
 
 func canClick():
@@ -369,6 +387,26 @@ func _on_button_pressed() -> void:
 			var owned = main
 			main.destroy_box(self)
 			owned.change_status_amount(StatusTypes.DEMOLISH, -1)
+		elif main.has_status(StatusTypes.SWAP):
+			var oldPos = global_position
+			var oldOriginX = origPosX
+			var oldOriginY = origPosY
+			var oldRow = row
+			var oldCol = col
+			var other = main.get_status(StatusTypes.SWAP).stored
+			global_position = other.global_position
+			origPosX = other.origPosX
+			origPosY = other.origPosY
+			row = other.row
+			col = other.col
+			main.rows[other.row][other.col] = self
+			other.global_position = oldPos
+			other.origPosX = oldOriginX
+			other.origPosY = oldOriginY
+			other.row = oldRow
+			other.col = oldCol
+			main.rows[oldRow][oldCol] = other
+			main.change_status_amount(StatusTypes.SWAP, -1)
 		else:
 			if main.has_status(StatusTypes.TRANSMOG) and revealed:
 				var valids = []
@@ -393,8 +431,9 @@ func _on_button_pressed() -> void:
 						closeBox()
 						main.change_status_amount(StatusTypes.CLOSENEXT, -1)
 					else:
-						on_self_clicked()
-						main.update_stat_texts()
+						if can_use():
+							on_self_clicked()
+							main.update_stat_texts()
 	else:
 		if !main.gameRunning:
 			main.startGame()
@@ -412,3 +451,6 @@ func lose():
 		main.statsMap[id]["losses"] = 1
 	else:
 		main.statsMap[id]["losses"] += 1
+
+func modStat(statId, val):
+	main.modBoxStat(id, statId, val)
