@@ -5,7 +5,7 @@ func on_open():
 	var ids = []
 	for box in main.boxes:
 		if !box.destroyed:
-			if ids.has(box.id) and !dupeBoxes.has(box.id):
+			if ids.has(box.id) and !dupeBoxes.has(box.id) and box.id != "mimic":
 				dupeBoxes.append(box.id)
 			elif !ids.has(box.id):
 				ids.append(box.id)

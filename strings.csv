@@ -92,7 +92,7 @@ box.teacher.desc;Whenever you open another box, reveal a random adjacent box.
 box.armageddon.name;Armageddon Box
 box.armageddon.desc;After you open 3 boxes, destroy this and all but the outer rim of boxes.
 box.bedrock.name;Bedrock Box
-box.bedrock.desc;Can't be destroyed.
+box.bedrock.desc;Boxes can't be destroyed.
 box.cloak.name;Cloak Box
 box.cloak.desc;On Open: If the Wand and Hat Boxes are open, win.
 box.desert.name;Deserted Box
@@ -224,7 +224,7 @@ box.info.desc;On Open: Reveal 2 random adjacent boxes.
 box.ladder.name;Ladder Box
 box.ladder.desc;On Click: If exactly one box in each row is open, win.
 box.portal.name;Portal Box
-box.portal.desc;On Open: The next time you click a box, swap it with this.
+box.portal.desc;On Click: The next time you click a box, swap it with this. 2 Uses.
 box.winter.name;Winter Box
 box.winter.desc;On Open: Transform 5 random boxes into Ice Boxes.
 box.dice.name;Dice Box
@@ -254,7 +254,7 @@ box.toolbox.desc;On Open: Transform the boxes above this into Demolition Boxes a
 box.kettle.name;Kettle Box
 box.kettle.desc;After opening 3 adjacent boxes, reveal 5 random boxes.
 box.cannon.name;Cannon Box
-box.cannon.desc;On Click: Destroy the box right of this.
+box.cannon.desc;On Click: Destroy the box left of this.
 box.otherworld.name;Otherworld Box
 box.otherworld.desc;On Click: Destroy this, then transform all revealed boxes randomly.
 box.rowgold.name;Rowgold Box

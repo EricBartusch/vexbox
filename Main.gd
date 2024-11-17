@@ -91,8 +91,8 @@ func load_save():
 	$WinsToNextText.text = "Reach " + str(winsToNext) + " wins for a NEW ROW." 
 
 func _ready():
-	for id in all_boxes:
-		print("\"" + id + "\": preload(\"res://boxes/" + id + ".gd\"),")
+	#for id in all_boxes:
+		#print("\"" + id + "\": preload(\"res://boxes/" + id + ".gd\"),")
 	load_save()
 	for badge in $AchievementsContainer.get_children():
 		if unlockedBadges.has(badge.id):
@@ -154,8 +154,8 @@ func startGame():
 			#toAdd = "winner"
 		#else:
 			#toAdd = "compass"
-		print(toAdd)
-		instance.load(toAdd, row, column)
+		#print(toAdd)
+		instance.loadBox(toAdd, row, column)
 		add_child(instance)
 		boxes.append(instance)
 		curRow.append(instance)

@@ -366,6 +366,9 @@ func on_self_clicked() -> void:
 	pass
 
 func can_destroy() -> bool:
+	for box in main.boxes:
+		if box.id == "bedrock" and box.open and !box.destroyed:
+			return false
 	return true
 
 func on_destroy() -> void:
@@ -413,7 +416,7 @@ func reviveBox():
 		visible = true
 		closeBox()
 
-func load(new_type: String, new_row: int, new_col: int) -> void:
+func loadBox(new_type: String, new_row: int, new_col: int) -> void:
 	row = new_row
 	col = new_col
 	loadType(new_type)
@@ -513,14 +516,15 @@ func updateTooltipForMe():
 func addText() -> String:
 	return ""
 
-var cursorTransmog = load("res://cursorImgs/cursorTransmog.png")
-var cursorDestroy = load("res://cursorImgs/cursorDestroy.png")
-var cursorClose = load("res://cursorImgs/cursorClose.png")
-var cursorReveal = load("res://cursorImgs/cursorReveal.png")
-var cursorUse = load("res://cursorImgs/cursorUse.png")
-var cursorNo = load("res://cursorImgs/cursorNo.png")
-var cursorOpen = load("res://cursorImgs/cursorOpen.png")
-var cursorNormal = load("res://cursorImgs/cursorNormal.png")
+static var cursorTransmog = preload("res://cursorImgs/cursorTransmog.png")
+static var cursorDestroy = preload("res://cursorImgs/cursorDestroy.png")
+static var cursorClose = preload("res://cursorImgs/cursorClose.png")
+static var cursorReveal = preload("res://cursorImgs/cursorReveal.png")
+static var cursorUse = preload("res://cursorImgs/cursorUse.png")
+static var cursorNo = preload("res://cursorImgs/cursorNo.png")
+static var cursorOpen = preload("res://cursorImgs/cursorOpen.png")
+static var cursorNormal = preload("res://cursorImgs/cursorNormal.png")
+static var cursorPortal = preload("res://cursorImgs/cursorPortal.png")
 
 func updateCursorForMe():
 	if !Input.is_action_pressed("pan"):
@@ -529,6 +533,9 @@ func updateCursorForMe():
 			if main.has_status(StatusTypes.DEMOLISH):
 				normCursor = false
 				Input.set_custom_mouse_cursor(cursorDestroy)
+			elif main.has_status(StatusTypes.SWAP):
+				normCursor = false
+				Input.set_custom_mouse_cursor(cursorPortal)
 			else:
 				if revealed and main.has_status(StatusTypes.TRANSMOG):
 					normCursor = false
@@ -639,18 +646,6 @@ func canOpen():
 						can_open = false
 						break
 	return can_open
-
-func canClick():
-	if main.gameRunning and !main.loadingGame:
-		if main.has_status(StatusTypes.DEMOLISH):
-			return true
-		if main.has_status(StatusTypes.DEMOLISH) and revealed:
-			return true
-		if open:
-			if main.has_status(StatusTypes.CLOSENEXT) and id != "closenext":
-				return true
-		return canOpen() or can_use()
-	return false
 
 func tryOpen():
 	if canOpen():
