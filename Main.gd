@@ -207,7 +207,7 @@ func trigger_on_click():
 			box.on_other_box_opened(last_opened)
 		box.just_opened = false
 	for box in boxes:
-		if box.id == "virus":
+		if box.id == "virus" and box.open:
 			box.thing = 0
 	for badge in $AchievementsContainer.get_children():
 		badge.onOpenBox(last_opened)
@@ -426,7 +426,7 @@ func clear_central():
 
 func resetGame():
 	if resetTimer <= 0:
-		resetTimer = 1
+		resetTimer = 0.1
 		reset_winstreak()
 		startGame()
 
