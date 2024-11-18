@@ -66,7 +66,7 @@ box.mimic.desc;If revealed, is revealed as a random other box. On Open: 1/3 chan
 box.curse.name;Curse Box
 box.curse.desc;If you would win and this is open, destroy this instead.
 box.payforshield.name;Close Spender Box
-box.payforshield.desc;On Click: Spend 1 Gold to close a random open box.
+box.payforshield.desc;On Click: Spend 1 Gold to close a random other open box.
 box.heart.name;Heart Box
 box.heart.desc;On Open: For 3 opens, you can't lose.
 box.music.name;Music Box
@@ -136,7 +136,7 @@ box.princess.desc;On Open: If the Dragon is revealed, lose. Otherwise, gain 3 Go
 box.mine.name;Mine Box
 box.mine.desc;Whenever you open an adjacent box, gain 1 Gold.
 box.clone.name;Clone Box
-box.clone.desc;After you open 3 boxes, becomes a closed copy of a random box.
+box.clone.desc;After you open 3 boxes, reveals and becomes a closed copy of a random adjacent box.
 box.gamer.name;Gamer Box
 box.gamer.desc;On Open: If you won the last run, win.
 box.magnifying.name;Magnifying Box
@@ -146,13 +146,13 @@ box.virus.desc;After you open a box, transform adjacent open boxes into Viral Bo
 box.starve.name;Hungry Box
 box.starve.desc;On Open: Transform 5 random unrevealed boxes into Food Boxes. After you open 6 boxes without opening a Food Box, lose.
 box.spire.name;Ascended Box
-box.spire.desc;On Open: If you don't have a Badge equipped, transform the Empty Box into a Winner Box.
+box.spire.desc;On Open: If you have an unused Achievement Point, transform the Empty Box into a Winner Box.
 box.crumbling.name;Crumbling Box
 box.crumbling.desc;After you open a box, destroy the top box (right to left).
 box.tripleplay.name;Three Box
 box.tripleplay.desc;On Open: If this is the third time you've opened this box, win.
 box.food.name;Food Box
-box.food.desc;Yum.
+box.food.desc;On Click: Eat this box, destroying it. Yummy!
 box.allseeingeye.name;All Seeing Box
 box.allseeingeye.desc;On Open: Reveal 10 random boxes. After you open 3 boxes, lose.
 box.waterfall.name;Waterfall Box
@@ -224,19 +224,19 @@ box.info.desc;On Open: Reveal 2 random adjacent boxes.
 box.ladder.name;Ladder Box
 box.ladder.desc;On Click: If exactly one box in each row is open, win.
 box.portal.name;Portal Box
-box.portal.desc;On Click: The next time you click a box, swap it with this. 2 Uses.
+box.portal.desc;On Click: The next time you click a box, swap it with this. Usable 2 times.
 box.winter.name;Winter Box
 box.winter.desc;On Open: Transform 5 random boxes into Ice Boxes.
 box.dice.name;Dice Box
-box.dice.desc;On Click: Transform all adjacent boxes randomly. Usable only once.
+box.dice.desc;On Click: Transform all adjacent boxes randomly. Usable 2 times.
 box.darts.name;Darts Box
-box.darts.desc;On Click: If the total numbers on boxes is 20 or more, win.
+box.darts.desc;On Click: If the total numbers on boxes is 15 or more, win.
 box.spike.name;Spike Box
 box.spike.desc;On Open: If 3 or more Spike Boxes are open, lose.
 box.dungeon.name;Dungeon Box
 box.dungeon.desc;After you open a non-Spike box, transform 2 closed boxes adjacent to the opened box into Spike Boxes.
 box.cauldron.name;Cauldron Box
-box.cauldron.desc;On Open: Increase the numbers on all numbered boxes by 1.
+box.cauldron.desc;On Click: Increase the numbers on all numbered boxes by 1, then destroy this.
 box.alphabet.name;Alphabox
 box.alphabet.desc;After you open a box, this gets all letters in its name. If this has the entire alphabet, win.
 box.stamp.name;Stamp Box
@@ -305,7 +305,7 @@ badge.slayer.name;Slayer
 badge.slayer.desc;The Strange Box reveals the Boss Box, and vice versa.
 badge.slayer.unlock;???
 badge.tapestart.name;Closer
-badge.tapestart.desc;Start Of Run: Reveal the Tape Box.
+badge.tapestart.desc;Close the first open box you click each run.
 badge.tapestart.unlock;Win with the Three Box.
 badge.telescope.name;Telescope
 badge.telescope.desc;Start Of Run: Reveal the Stellar Box.

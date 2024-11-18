@@ -208,7 +208,7 @@ func trigger_on_click():
 		box.just_opened = false
 	for box in boxes:
 		if box.id == "virus" and box.open:
-			box.thing = 0
+			box.special = 0
 	for badge in $AchievementsContainer.get_children():
 		badge.onOpenBox(last_opened)
 
