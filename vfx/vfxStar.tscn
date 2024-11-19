@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://cn4a14tr8k8dn"]
 
 [ext_resource type="Texture2D" uid="uid://dqx63vd3waqe8" path="res://vfx/vfxImgs/star.png" id="1_pkq0l"]
-[ext_resource type="Script" path="res://vfx/vfx_star.gd" id="2_iamt7"]
+[ext_resource type="Script" uid="uid://cp7p1m0pmopw3" path="res://vfx/vfx_star.gd" id="2_iamt7"]
 
 [node name="VfxStar" type="TextureRect"]
 anchors_preset = 15

@@ -5,11 +5,11 @@ func on_open() -> void:
 		main.reveal_random()
 	set_custom_num(3)
 
-func on_other_box_opened() -> void:
+func on_other_box_opened(box) -> void:
 	if customNum > 0:
 		if customNum == 1:
 			lg("All Seeing Box activates!")
-			main.lose()
+			lose()
 		set_custom_num(customNum - 1)
 		if main.gameRunning and customNum == 0:
 				hide_custom_num()

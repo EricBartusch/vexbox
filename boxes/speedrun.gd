@@ -1,5 +1,5 @@
 extends Box
 
 func on_open() -> void:
-    if main.opens == 0:
-        main.win()
+	if main.opens == 0:
+		win()

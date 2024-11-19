@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3 uid="uid://u68hdjlbdd11"]
+
+[ext_resource type="Texture2D" uid="uid://cdrnlr322324t" path="res://vfx/vfxImgs/funnysmiley.png" id="1_qx0di"]
+[ext_resource type="Script" uid="uid://dgvny0ap623a7" path="res://vfx/vfx_falling_smiley.gd" id="2_du42a"]
+
+[node name="VfxFallingSmiley" type="TextureRect"]
+texture = ExtResource("1_qx0di")
+script = ExtResource("2_du42a")

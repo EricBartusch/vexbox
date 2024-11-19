@@ -1,0 +1,64 @@
+[gd_scene load_steps=5 format=3 uid="uid://bbepb603ffeo5"]
+
+[ext_resource type="Texture2D" uid="uid://b4t4gberbt8fb" path="res://battle/healthbar.png" id="1_sj5jh"]
+[ext_resource type="Texture2D" uid="uid://b0oaqmdq40i5u" path="res://battle/healthbarBack.png" id="2_o73l4"]
+[ext_resource type="Script" path="res://battle/healthbar.gd" id="3_0f2rn"]
+[ext_resource type="FontFile" uid="uid://drxqa43mwcvwa" path="res://Comic Sans MS.ttf" id="3_eat5j"]
+
+[node name="Healthbar" type="TextureProgressBar"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -420.0
+offset_bottom = -1005.0
+grow_horizontal = 2
+grow_vertical = 2
+max_value = 5000.0
+value = 5000.0
+texture_over = ExtResource("1_sj5jh")
+texture_progress = ExtResource("2_o73l4")
+script = ExtResource("3_0f2rn")
+
+[node name="HealthText" type="Label" parent="."]
+layout_mode = 0
+offset_right = 1511.0
+offset_bottom = 75.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = ExtResource("3_eat5j")
+theme_override_font_sizes/font_size = 50
+text = "5000/5000"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NameLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1.0
+offset_top = -115.0
+offset_right = 1512.0
+offset_bottom = -40.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = ExtResource("3_eat5j")
+theme_override_font_sizes/font_size = 50
+text = "Chromatos Forlim"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 2.0
+offset_top = -67.0
+offset_right = 1513.0
+offset_bottom = 8.0
+theme_override_colors/font_color = Color(0.699653, 0.699653, 0.699653, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = ExtResource("3_eat5j")
+theme_override_font_sizes/font_size = 30
+text = "- Grim Gaze From Above -"
+horizontal_alignment = 1
+vertical_alignment = 1

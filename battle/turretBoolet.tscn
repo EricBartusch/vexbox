@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://c5tn1hr1m6gni"]
+
+[ext_resource type="Script" path="res://battle/bossshot.gd" id="1_pwjft"]
+[ext_resource type="Texture2D" uid="uid://kds6uymgvds1" path="res://battle/turretshot.png" id="2_hiiar"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_7eupw"]
+radius = 26.0192
+
+[node name="TurretBoolet" type="Node2D"]
+script = ExtResource("1_pwjft")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_hiiar")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_7eupw")
+
+[connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]

@@ -7,7 +7,7 @@ func _ready() -> void:
 	vX = get_parent().rng.randf_range(-10, 10)
 	vY = get_parent().rng.randf_range(-20, -6)
 
-func _init(box):
+func loadFromBox(box):
 	global_position = box.global_position
 	$Sprite2D.texture = box.get_node("Sprite2D").texture
 	$Sprite2D.modulate = box.get_node("Sprite2D").modulate
@@ -17,6 +17,6 @@ func _process(delta: float) -> void:
 	global_position.x += vX * delta * 30
 	global_position.y += vY * delta * 30
 	vY += delta * 25
-	if global_position.y > DisplayServer.window_get_size().y or global_position.x < 0 or global_position.x > DisplayServer.window_get_size().x:
+	if global_position.y > DisplayServer.window_get_size().y + 75 or global_position.x < 0 or global_position.x > DisplayServer.window_get_size().x:
 		get_parent().removeVfx(self)
 		queue_free()
