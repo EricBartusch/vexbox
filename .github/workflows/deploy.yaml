@@ -4,14 +4,15 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
-      - fixthesus
+    - main
+    - fixthesus
 
 jobs:
   call-build-and-upload:
     uses: EricBartusch/godot-container-builder/.github/workflows/reusable-godot-deploy.yaml@v1
     with:
-      GAME_NAME: VexBox
+      game_name: VexBox
     secrets:
       USER: ${{ secrets.USER }}
       API_KEY: ${{ secrets.API_KEY }}
+
