@@ -13,7 +13,7 @@ jobs:
     uses: EricBartusch/godot-container-builder/.github/workflows/reusable-godot-deploy.yaml@feat/publish-release
     with:
       game_name: VexBox
-      version: v1.0.0
+      version: v1.0.1
     secrets:
       USER: ${{ secrets.USER }}
       API_KEY: ${{ secrets.API_KEY }}
