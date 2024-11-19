@@ -6,12 +6,14 @@ on:
     branches:
       - main
       - fixthesus
+      - testing/ver
 
 jobs:
   call-build-and-upload:
     uses: EricBartusch/godot-container-builder/.github/workflows/reusable-godot-deploy.yaml@v1
     with:
-      GAME_NAME: VexBox
+      game_name: VexBox
+      version: v1.0.0
     secrets:
       USER: ${{ secrets.USER }}
       API_KEY: ${{ secrets.API_KEY }}
