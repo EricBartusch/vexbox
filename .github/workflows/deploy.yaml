@@ -1,4 +1,4 @@
-name: Build and Upload VexBox to itch.io
+name: Build and Upload VexBox to itch.io 
 
 on:
   workflow_dispatch:
