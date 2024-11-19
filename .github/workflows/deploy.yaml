@@ -19,8 +19,9 @@ jobs:
     - name: Extract version from project.godot
       id: extract_version 
       run: | 
-        version=$(grep -Po '(?<=^config/version=").*(?="$)' project.godot) 
+        version=$(grep -Po '(?<=^config/version=).*' project.godot) 
         echo "version=$version" >> $GITHUB_ENV
+        echo "::set-output name=version::$version"
 
   call-build-and-upload:
     needs: extract-version
@@ -28,6 +29,4 @@ jobs:
     with:
       game_name: VexBox
       version: ${{ needs.extract-version.outputs.version }}
-    secrets:
-      USER: ${{ secrets.USER }}
-      API_KEY: ${{ secrets.API_KEY }}
+    secrets: inherit
