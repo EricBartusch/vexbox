@@ -28,7 +28,7 @@ box.star.desc;On Open: If you've opened every adjacent box, win.
 box.shadow.name;Shadow Box
 box.shadow.desc;On Open: Close a random other opened box.
 box.jumpscare.name;Jumpscare Box
-box.jumpscare.desc;On Open: If this was the first box you opened this game, lose.
+box.jumpscare.desc;On Open: If no other boxes are open, lose.
 box.fire.name;Flaming Box
 box.fire.desc;On Open: Transform a random adjacent box into a Flaming Box.
 box.threegold.name;Golden Box
@@ -74,7 +74,7 @@ box.music.desc;Plays music!
 box.sus.name;Sus Box
 box.sus.desc;On Open: Transform 2 random boxes into Mimic Boxes.
 box.speedrun.name;Speedrun Box
-box.speedrun.desc;On Open: If this was the first box you opened this game, win.
+box.speedrun.desc;On Open: If no other boxes are open, win.
 box.demolition.name;Demolition Box
 box.demolition.desc;On Open: Destroy the next box you click.
 box.heartbreak.name;Heartbreak Box
@@ -92,7 +92,7 @@ box.teacher.desc;Whenever you open another box, reveal a random adjacent box.
 box.armageddon.name;Armageddon Box
 box.armageddon.desc;After you open 3 boxes, destroy this and all but the outer rim of boxes.
 box.bedrock.name;Bedrock Box
-box.bedrock.desc;Boxes can't be destroyed.
+box.bedrock.desc;This and adjacent boxes can't be destroyed.
 box.cloak.name;Cloak Box
 box.cloak.desc;On Open: If the Wand and Hat Boxes are open, win.
 box.desert.name;Deserted Box
@@ -144,7 +144,7 @@ box.magnifying.desc;On Click: Spend 1 Gold to reveal a random box.
 box.virus.name;Viral Box
 box.virus.desc;After you open a box, transform adjacent open boxes into Viral Boxes.
 box.starve.name;Hungry Box
-box.starve.desc;On Open: Transform 5 random unrevealed boxes into Food Boxes. After you open 6 boxes without opening a Food Box, lose.
+box.starve.desc;On Open: Transform 5 random unrevealed boxes into Food Boxes. After you open 7 boxes without eating a Food Box, lose.
 box.spire.name;Ascended Box
 box.spire.desc;On Open: If you have an unused Achievement Point, transform the Empty Box into a Winner Box.
 box.crumbling.name;Crumbling Box
@@ -230,7 +230,7 @@ box.winter.desc;On Open: Transform 5 random boxes into Ice Boxes.
 box.dice.name;Dice Box
 box.dice.desc;On Click: Transform all adjacent boxes randomly. Usable 2 times.
 box.darts.name;Darts Box
-box.darts.desc;On Click: If the total numbers on boxes is 15 or more, win.
+box.darts.desc;On Click: If the total numbers on boxes is 10 or more, win.
 box.spike.name;Spike Box
 box.spike.desc;On Open: If 3 or more Spike Boxes are open, lose.
 box.dungeon.name;Dungeon Box
@@ -266,7 +266,7 @@ box.gazer.desc;After you open 2 adjacent boxes, lose.
 box.firework.name;Firework Box
 box.firework.desc;On Open: Transform 5 random boxes into Smart Bomb Boxes.
 box.doubleup.name;Two Box
-box.doubleup.desc;On Click: If two or more adjacent boxes are the same, win.
+box.doubleup.desc;On Click: If two or more adjacent revealed boxes are the same, win.
 box.lonely.name;Lonely Box
 box.lonely.desc;On Open: If this box isn't surrounded, lose.
 box.underrated.name;Underrated Box
@@ -284,10 +284,10 @@ badge.brightfuture.name;Bright Future
 badge.brightfuture.desc;Replace the Loser and Jumpscare boxes with Book Boxes.
 badge.brightfuture.unlock;Lose on the first open 10 times.
 badge.study.name;Study
-badge.study.desc;Every 5 opens, reveal a random box.
+badge.study.desc;Every 6 opens, reveal a random box.
 badge.study.unlock;Open 500 boxes.
 badge.gamermode.name;Gamer Mode
-badge.gamermode.desc;Start Of Run: Transform random boxes into Gamer Boxes equal to your winstreak (max 5).
+badge.gamermode.desc;Start Of Run: Transform random boxes into Gamer Boxes equal to your winstreak (max 6).
 badge.gamermode.unlock;Get a winstreak of 10.
 badge.adventurer.name;Adventurer
 badge.adventurer.desc;Start Of Run: Transform 2 random boxes into Fishing Boxes.
@@ -299,20 +299,86 @@ badge.gardener.name;Gardener
 badge.gardener.unlock;Open 100 Ivy Boxes.
 badge.gardener.desc;Ivy transforms both boxes above it instead of just one.
 badge.reroller.name;Recombination
-badge.reroller.desc;The DNA Box reactivates its effects every time you open a box.
+badge.reroller.desc;The DNA Box reactivates its effects every time you open a box until you open an adjacent box.
 badge.reroller.unlock;Open the DNA Box 25 times.
 badge.slayer.name;Slayer
 badge.slayer.desc;The Strange Box reveals the Boss Box, and vice versa.
-badge.slayer.unlock;???
+badge.slayer.unlock;No hints for this one...
 badge.tapestart.name;Closer
-badge.tapestart.desc;Close the first open box you click each run.
+badge.tapestart.desc;Start Of Run: Reveal the Tape Box.
 badge.tapestart.unlock;Win with the Three Box.
 badge.telescope.name;Telescope
 badge.telescope.desc;Start Of Run: Reveal the Stellar Box.
-badge.telescope.unlock;Open the Stellar Box 15 times.
+badge.telescope.unlock;Open the Stellar Box 20 times.
 badge.trigazeimprove.name;Trigaze+
 badge.trigazeimprove.desc;If the Trigaze Box reveals no boxes, win.
 badge.trigazeimprove.unlock;Reveal 30 boxes with the Trigaze Box.
 badge.windy.name;Windy
 badge.windy.desc;Start Of Run: Reveal the Flying Box.
-badge.windy.unlock;Destroy 50 boxes while the Flying Box is open.
+badge.windy.unlock;Open the Flying Box 20 times.
+badge.mitosis.name;Mitosis
+badge.mitosis.desc;The first time you open a box each run, transform the boxes left and right of it into copies of it.
+badge.mitosis.unlock;Win 250 times.
+badge.nightcap.name;Nightcap
+badge.nightcap.desc;Start Of Run: Reveal the Sleepy Box.
+badge.nightcap.unlock;Open the Sleepy Box 5 times.
+badge.mario.name;Plumber
+badge.mario.desc;Start Of Run: Reveal the Extra Life Box.
+badge.mario.unlock;Lose 250 times.
+badge.credit.name;Credit
+badge.credit.desc;Start runs with 3 Gold.
+badge.credit.unlock;Spend 100 Gold.
+badge.collapse.name;Collapser
+badge.collapse.desc;Start Of Run: Reveal the Demolition Box.
+badge.collapse.unlock;Destroy 500 boxes.
+badge.badgeboxup1.name;Badge Box: Reveal Mod
+badge.badgeboxup1.desc;The Badge Box now reveals all adjacent boxes.
+badge.badgeboxup1.unlock;Open the Badge Box once.
+badge.badgeboxup2.name;Badge Box: Close Mod
+badge.badgeboxup2.desc;The Badge Box now closes all adjacent boxes.
+badge.badgeboxup2.unlock;Open the Badge Box 15 times.
+badge.badgeboxup3.name;Badge Box: Reveal Mod
+badge.badgeboxup3.desc;The Badge Box now transforms 3 random closed boxes into Badge Boxes.
+badge.badgeboxup3.unlock;Open the Badge Box 50 times.
+badge.transmogrifier.name;Transmog Master
+badge.transmogrifier.desc;Start Of Run: Reveal the Transmog Box.
+badge.transmogrifier.unlock;Transform 500 boxes.
+badge.flyingbutterfly.name;Flying Butterflies
+badge.flyingbutterfly.desc;Whenever you open a Butterfly Box, transform a random box in the row above into a Butterfly Box.
+badge.flyingbutterfly.unlock;Win with the Butterfly Box 10 times.
+badge.heavenegg.name;Heaven Egg
+badge.heavenegg.desc;When you open the Egg Box, destroy the Dungeon, Heartbreak, Poison and Curse boxes.
+badge.heavenegg.unlock;Win with the Egg Box 10 times.
+badge.destroyinversion.name;Inversion OFF!
+badge.destroyinversion.desc;Replace the Inversion Box with an Espionage Box.
+badge.destroyinversion.unlock;Open the Inversion Box 5 times.
+badge.banishpandoras.name;Pandora Blocker
+badge.banishpandoras.desc;When 15 boxes are revealed, reveal Pandora's Box.
+badge.banishpandoras.unlock;Transform 100 boxes with Pandora's Box.
+badge.fivehundredwins.name;Five Hundred Wins.
+badge.fivehundredwins.desc;+1 Badge Point PERMANENTLY!
+badge.fivehundredwins.unlock;Win 500 times.
+badge.tenthousandboxes.name;Ten Thousand Boxes!
+badge.tenthousandboxes.desc;+1 Badge Point PERMANENTLY!
+badge.tenthousandboxes.unlock;Open 10,000 boxes.
+badge.maddii.name;Madd Scientist
+badge.maddii.desc;The Sacrifice Box now has 15 uses.
+badge.maddii.unlock;Use the Sacrifice Box 66 times.
+badge.widerow.name;Row Clearer
+badge.widerow.desc;You can now click the Rowwin Box to win if the row is fully open too.
+badge.widerow.unlock;Win with the Rowwin Box in a row with 10 or more boxes.
+badge.crumblingbuff.name;Crumbling Irony
+badge.crumblingbuff.desc;If the Crumbling Box destroys itself, you win!
+badge.crumblingbuff.unlock;Destroy 250 boxes with the Crumbling Box.
+badge.ocean.name;Ocean
+badge.ocean.desc;Opening a Fish Box reveals the Waterfall Box.
+badge.ocean.unlock;Win with the Waterfall Box while 10 or more Waterfall Boxes are open.
+badge.startheart.name;Start Heart
+badge.startheart.desc;Start with the Heart Box revealed.
+badge.startheart.unlock;Get a winstreak of 5.
+badge.flamingmask.name;Flaming Forever
+badge.flamingmask.desc;Fire Boxes can now only transform closed boxes.
+badge.flamingmask.unlock;Win with the Inferno Box 3 times.
+badge.relaxed.name;Relaxed
+badge.relaxed.desc;Replace the Clock Box with an Info Box.
+badge.relaxed.unlock;Open the Clock Box once.

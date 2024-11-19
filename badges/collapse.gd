@@ -1,19 +1,19 @@
 extends Badge
 
-func postGameEnd():
-	if !unlocked and main.getBoxStat("tripleplay", "wins") >= 1:
+func postDestroyBox(box):
+	if !unlocked and main.getStat("destroys") >= 500:
 		unlock()
 
 func getProgress():
-	return main.getBoxStat("tripleplay", "wins")
+	return main.getStat("destroys")
 
 func getMaxProgress():
-	return 1
+	return 500
 
 func onRunStart():
 	if enabled:
 		for box in main.boxes:
-			if box.id == "closenext":
+			if box.id == "demolition":
 				box.revealBox()
 
 func getCost():

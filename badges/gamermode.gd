@@ -6,7 +6,7 @@ func postGameEnd():
 
 func onRunStart():
 	if enabled:
-		for i in min(5, main.winstreak):
+		for i in min(6, main.winstreak):
 			var valids = []
 			for box in main.boxes:
 				if box.id != "gamer":
@@ -19,3 +19,6 @@ func getProgress():
 
 func getMaxProgress():
 	return 10
+
+func getCost():
+	return 2

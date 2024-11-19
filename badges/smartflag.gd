@@ -15,3 +15,6 @@ func getProgress():
 
 func getMaxProgress():
 	return 15
+
+func getCost():
+	return 2

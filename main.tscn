@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://d1a1s0x7tsi1i"]
+[gd_scene load_steps=23 format=3 uid="uid://d1a1s0x7tsi1i"]
 
 [ext_resource type="Script" path="res://Main.gd" id="1_nfgpe"]
 [ext_resource type="PackedScene" uid="uid://bhinpp6ankmnj" path="res://Tooltip.tscn" id="2_atu00"]
@@ -18,8 +18,10 @@
 [ext_resource type="AudioStream" uid="uid://0cnrrcwsdcqf" path="res://sfx/battle/zap.mp3" id="16_djc8j"]
 [ext_resource type="PackedScene" uid="uid://dx3j5aid1cguw" path="res://Badge.tscn" id="16_w7hqe"]
 [ext_resource type="AudioStream" uid="uid://dhkk0qhxn18n" path="res://sfx/battle/shot.ogg" id="17_hs86g"]
+[ext_resource type="AudioStream" uid="uid://jx61d5mr4mph" path="res://sfx/battle/killturret.ogg" id="18_18liu"]
 [ext_resource type="AudioStream" uid="uid://c7ivejmduc7kc" path="res://sfx/battle/summon.ogg" id="18_fi0cd"]
 [ext_resource type="Texture2D" uid="uid://0h76v7rapjil" path="res://uiImgs/orb.png" id="19_erv68"]
+[ext_resource type="Script" path="res://Log.gd" id="19_fwt0p"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -43,30 +45,29 @@ theme_override_constants/separation = 100
 
 [node name="RestartButton" type="Button" parent="."]
 layout_mode = 0
-offset_left = 1575.0
-offset_top = 182.0
-offset_right = 1716.0
-offset_bottom = 230.0
+offset_left = 1713.0
+offset_top = 220.0
+offset_right = 1854.0
+offset_bottom = 268.0
 text = "Restart Game
 "
 
 [node name="GameStatusText" type="Label" parent="."]
 layout_mode = 0
-offset_left = 468.0
-offset_top = 15.0
-offset_right = 690.0
-offset_bottom = 84.0
+offset_left = 754.0
+offset_top = 12.0
+offset_right = 976.0
+offset_bottom = 81.0
 theme_override_font_sizes/font_size = 50
 text = "You won!"
 horizontal_alignment = 1
 
 [node name="GameStatusSubtext" type="Label" parent="."]
-visible = false
 layout_mode = 0
-offset_left = 470.0
-offset_top = 74.0
-offset_right = 699.0
-offset_bottom = 102.0
+offset_left = 753.0
+offset_top = 75.0
+offset_right = 982.0
+offset_bottom = 103.0
 theme_override_colors/font_color = Color(0.89059, 0.89059, 0.89059, 1)
 theme_override_font_sizes/font_size = 20
 text = "Click any box to restart."
@@ -78,18 +79,18 @@ one_shot = true
 
 [node name="WinsIcon" type="TextureRect" parent="."]
 layout_mode = 0
-offset_left = 1593.0
-offset_top = 5.0
-offset_right = 1633.0
-offset_bottom = 45.0
+offset_left = 1735.0
+offset_top = 15.0
+offset_right = 1775.0
+offset_bottom = 55.0
 texture = ExtResource("3_8voak")
 
 [node name="NumWinsText" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1631.0
-offset_top = 4.0
-offset_right = 1688.0
-offset_bottom = 47.0
+offset_left = 1773.0
+offset_top = 14.0
+offset_right = 1830.0
+offset_bottom = 57.0
 theme_override_fonts/font = ExtResource("4_ito2v")
 theme_override_font_sizes/font_size = 30
 text = ": 0"
@@ -97,48 +98,57 @@ horizontal_alignment = 1
 
 [node name="WinsToNextText" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1521.0
-offset_top = 49.0
-offset_right = 1749.0
-offset_bottom = 76.0
+offset_left = 1663.0
+offset_top = 59.0
+offset_right = 1891.0
+offset_bottom = 86.0
 text = "Reach 5 wins for a NEW ROW"
 horizontal_alignment = 1
 
 [node name="WinstreakText" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1555.0
-offset_top = 76.0
-offset_right = 1719.0
-offset_bottom = 105.0
+offset_left = 1697.0
+offset_top = 86.0
+offset_right = 1861.0
+offset_bottom = 115.0
 text = "Winstreak: 0"
 horizontal_alignment = 1
 
 [node name="BestWinstreakText" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1556.0
-offset_top = 101.0
-offset_right = 1720.0
-offset_bottom = 130.0
+offset_left = 1698.0
+offset_top = 111.0
+offset_right = 1862.0
+offset_bottom = 140.0
 text = "Best Winstreak: 0"
 horizontal_alignment = 1
 
 [node name="CurOpenText" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1551.0
-offset_top = 123.0
-offset_right = 1715.0
-offset_bottom = 152.0
+offset_left = 1693.0
+offset_top = 133.0
+offset_right = 1857.0
+offset_bottom = 162.0
 text = "Currently Open: 0
 "
 horizontal_alignment = 1
 
 [node name="CurDestroyedText" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1553.0
-offset_top = 147.0
-offset_right = 1728.0
-offset_bottom = 176.0
+offset_left = 1695.0
+offset_top = 157.0
+offset_right = 1870.0
+offset_bottom = 186.0
 text = "Currently Destroyed: 0"
+horizontal_alignment = 1
+
+[node name="CurRevealedText" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1695.0
+offset_top = 182.0
+offset_right = 1870.0
+offset_bottom = 211.0
+text = "Currently Revealed: 0"
 horizontal_alignment = 1
 
 [node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
@@ -218,21 +228,26 @@ max_polyphony = 20
 volume_db = 3.66
 pitch_scale = 1.41
 
+[node name="KillTurretSoundPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("18_18liu")
+max_polyphony = 3
+
 [node name="TextureRect" type="ColorRect" parent="."]
 layout_mode = 2
-offset_left = 30.0
-offset_top = 565.0
-offset_right = 395.0
-offset_bottom = 941.0
+offset_left = 21.0
+offset_top = 432.0
+offset_right = 517.0
+offset_bottom = 808.0
 color = Color(0, 0, 0, 0.305882)
 
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
 layout_mode = 0
-offset_left = 37.0
-offset_top = 572.0
-offset_right = 389.0
-offset_bottom = 930.0
+offset_left = 28.0
+offset_top = 439.0
+offset_right = 507.0
+offset_bottom = 797.0
 vertical_scroll_mode = 2
+script = ExtResource("19_fwt0p")
 
 [node name="LogContainer" type="VBoxContainer" parent="ScrollContainer"]
 layout_mode = 2
@@ -240,16 +255,16 @@ layout_mode = 2
 [node name="Tooltip" parent="." instance=ExtResource("2_atu00")]
 z_index = 1
 layout_mode = 1
-offset_left = 1013.0
-offset_top = 13.0
-offset_right = 1517.0
-offset_bottom = 314.0
+offset_left = 1133.0
+offset_top = 11.0
+offset_right = 1637.0
+offset_bottom = 312.0
 
 [node name="BadgesTextureRect" type="ColorRect" parent="."]
 layout_mode = 2
-offset_left = 1140.0
+offset_left = 1200.0
 offset_top = 324.0
-offset_right = 1781.0
+offset_right = 1841.0
 offset_bottom = 942.0
 color = Color(0, 0, 0, 0.305882)
 
@@ -304,9 +319,9 @@ texture = ExtResource("19_erv68")
 
 [node name="AchievementsContainer" type="GridContainer" parent="."]
 layout_mode = 0
-offset_left = 1193.0
+offset_left = 1255.13
 offset_top = 433.0
-offset_right = 1718.0
+offset_right = 1780.13
 offset_bottom = 891.0
 theme_override_constants/h_separation = 75
 theme_override_constants/v_separation = 75
@@ -316,29 +331,37 @@ columns = 8
 layout_mode = 2
 id = "reveal"
 
-[node name="Eclipse" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
-layout_mode = 2
-id = "eclipse"
-
 [node name="Smartflag" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
 layout_mode = 2
 id = "smartflag"
-
-[node name="Bright Future" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
-layout_mode = 2
-id = "brightfuture"
 
 [node name="Study" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
 layout_mode = 2
 id = "study"
 
+[node name="Tape Start" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "tapestart"
+
 [node name="Gamer Mode" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
 layout_mode = 2
 id = "gamermode"
 
+[node name="BanishPandoras" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "banishpandoras"
+
+[node name="BadgeBoxUp1" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "badgeboxup1"
+
 [node name="Adventurer" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
 layout_mode = 2
 id = "adventurer"
+
+[node name="Collapse" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "collapse"
 
 [node name="Contagion" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
 layout_mode = 2
@@ -348,50 +371,127 @@ id = "contagion"
 layout_mode = 2
 id = "gardener"
 
+[node name="BadgeBoxUp3" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "badgeboxup3"
+
+[node name="Mario" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "mario"
+
+[node name="Eclipse" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "eclipse"
+
+[node name="BadgeBoxUp2" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "badgeboxup2"
+
+[node name="Bright Future" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "brightfuture"
+
 [node name="Reroller" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
 layout_mode = 2
 id = "reroller"
 
-[node name="Slayer" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+[node name="Widerow" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
 layout_mode = 2
-id = "slayer"
-
-[node name="Tape Start" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
-layout_mode = 2
-id = "tapestart"
-
-[node name="Telescope" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
-layout_mode = 2
-id = "telescope"
+id = "widerow"
 
 [node name="Trigaze Improve" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
 layout_mode = 2
 id = "trigazeimprove"
 
+[node name="Slayer" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "slayer"
+
+[node name="Telescope" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "telescope"
+
+[node name="FiveHundredWins" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "fivehundredwins"
+
+[node name="Heaven Egg" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "heavenegg"
+
+[node name="Credit" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "credit"
+
+[node name="Mitosis" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "mitosis"
+
 [node name="Windy" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
 layout_mode = 2
 id = "windy"
 
+[node name="FlamingMask" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "flamingmask"
+
+[node name="TenThousandBoxes" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "tenthousandboxes"
+
+[node name="Maddii" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "maddii"
+
+[node name="Flying Butterfly" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "flyingbutterfly"
+
+[node name="Nightcap" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "nightcap"
+
+[node name="StartHeart" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "startheart"
+
+[node name="Transmogrifier" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "transmogrifier"
+
+[node name="Destroy Inversion" parent="AchievementsContainer" instance=ExtResource("16_w7hqe")]
+layout_mode = 2
+id = "destroyinversion"
+
 [node name="AchievementsFront" type="ColorRect" parent="."]
 layout_mode = 0
-offset_left = 1140.0
+offset_left = 1200.0
 offset_top = 324.0
-offset_right = 1781.0
+offset_right = 1841.0
 offset_bottom = 942.0
 mouse_filter = 2
 color = Color(0.67451, 0, 0, 0.490196)
 
 [node name="AchievementEquipInfo" type="Label" parent="."]
 layout_mode = 0
-offset_left = 1135.0
-offset_top = 942.0
-offset_right = 1783.0
-offset_bottom = 992.0
+offset_left = 1198.0
+offset_top = 938.0
+offset_right = 1846.0
+offset_bottom = 988.0
 theme_override_fonts/font = ExtResource("4_ito2v")
 theme_override_font_sizes/font_size = 30
 text = "Equip Achievement Badges after the run ends!"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="VNumber" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1753.0
+offset_top = 1047.0
+offset_right = 1912.0
+offset_bottom = 1076.0
+theme_override_colors/font_color = Color(0.775063, 0.775063, 0.775063, 1)
+text = "version fun point oh"
 
 [connection signal="button_up" from="RestartButton" to="." method="_on_restart_button_button_up"]
 [connection signal="timeout" from="TriggerPostClicksTimer" to="." method="_on_trigger_post_clicks_timer_timeout"]

@@ -5,10 +5,12 @@ var maxHealth
 var speed = 666
 var lifetime = 0.9
 var velocity = Vector2.RIGHT * speed
+var flipped = false
 
 enum TurretState {
 	LAUNCHING,
-	LIVING
+	LIVING,
+	DYING
 }
 
 var state = TurretState.LAUNCHING
@@ -27,10 +29,13 @@ func _process(delta):
 		flashTimer -= delta
 		if flashTimer < 0:
 			$Sprite2D.modulate = Color(1, 1, 1, 1)
-	if !get_parent().lost and !get_parent().won and get_parent().boss.health > 0 and get_parent().playerHealth > 0:
+	if !get_parent().lost and !get_parent().won and is_instance_valid(get_parent().boss) and get_parent().boss.health > 0 and get_parent().playerHealth > 0:
 		match state:
 			TurretState.LAUNCHING:
 				position += velocity * delta
+				if (position.y <= 120 or position.y >= 1800) and !flipped:
+					flipped = true
+					position.y *= -1
 				velocity *= 0.995
 				lifetime -= delta
 				if lifetime <= 0:
@@ -51,24 +56,35 @@ func _process(delta):
 					new_bullet.position = position
 					new_bullet.velocity = new_bullet.velocity.rotated(new_bullet.rotation)
 					get_parent().add_dakka(new_bullet)
-
+			TurretState.DYING:
+				position.x += vX * delta * 30
+				position.y += vY * delta * 30
+				vY += delta * 25
 var flashTimer = 0
 
+var vX
+var vY
+
 func _on_area_2d_area_entered(area: Area2D) -> void:
-	if area.get_parent() is Bullet:
-		get_parent().get_node("RevealFXPlayer").play()
-		health -= get_parent().rng.randi_range(25, 50)
-		$TextureProgressBar.value = health
-		$TextureProgressBar/Label.text = str(health) + "/" + str(maxHealth)
-		area.get_parent().get_parent().remove_child(area.get_parent())
-		get_parent().update_boss_healthbar()
-		flashTimer = 0.1
-		$Sprite2D.modulate = Color(1, 1, 1, 0.6)
-		if health <= 0:
-			get_parent().remove_child(self)
-			queue_free()
-	elif area.get_parent() is Protag and (area.get_parent() as Protag).iframes <= 0:
-		touch_protag(area)
+	if state != TurretState.DYING:
+		if area.get_parent() is Bullet:
+			get_parent().get_node("RevealFXPlayer").play()
+			health -= get_parent().rng.randi_range(25, 50)
+			$TextureProgressBar.value = health
+			$TextureProgressBar/Label.text = str(health) + "/" + str(maxHealth)
+			area.get_parent().get_parent().remove_child(area.get_parent())
+			get_parent().update_boss_healthbar()
+			flashTimer = 0.1
+			$Sprite2D.modulate = Color(1, 1, 1, 0.6)
+			if health <= 0:
+				get_parent().get_node("KillTurretSoundPlayer").play()
+				state = TurretState.DYING
+				lifetime = 1
+				vX = get_parent().rng.randf_range(-10, 10)
+				vY = get_parent().rng.randf_range(-20, -6)
+				$TextureProgressBar.visible = false
+		elif area.get_parent() is Protag and (area.get_parent() as Protag).iframes <= 0:
+			touch_protag(area)
 
 func touch_protag(area):
 	area.get_parent().get_parent().hurtPlayer()

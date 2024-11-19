@@ -28,5 +28,4 @@ func _on_area_2d_area_entered(area: Area2D) -> void:
 
 func touch_protag(area):
 	area.get_parent().get_parent().hurtPlayer()
-	get_parent().remove_child(self)
-	queue_free()
+	get_parent().remove_dakka(self)

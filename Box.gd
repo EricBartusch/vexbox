@@ -64,7 +64,7 @@ func set_custom_num(val):
 func hide_custom_num():
 	$Number.visible = false
 	customNum = -1
-	$Number.text = "BUG"
+	$Number.text = ""
 
 func on_open() -> void:
 	match id:
@@ -220,15 +220,14 @@ func on_open() -> void:
 				lg("Four or more fairies - you win!")
 				win()
 		"finalboss":
-			if main.rng.randi_range(0, 19) == 0:
+			if main.rng.randi_range(0, 19) == 0 and main.getBoxStat("finalboss", "opens") > 2:
 				modStat("timesActivated", 1)
 				destroyBox()
 				lg("WHAT IS HAPPENING???")
 				lg("WASD TO... MOVE?")
-				lg("MOUSE TO... WHAT IS EVEN GOING ON!!??")
 				main.start_big_bossfight(self)
 		"fire":
-			var toChange = get_adjacent_boxes(false, false)
+			var toChange = get_adjacent_boxes(false, badgeEquipped("flamingmask"))
 			var result = []
 			for box in toChange:
 				if box.id != id:
@@ -250,6 +249,10 @@ func on_open() -> void:
 			for box in main.boxes:
 				if box.open and !box.destroyed and box.id == "fish":
 					count += 1
+			if badgeEquipped("ocean"):
+				for box in main.boxes:
+					if !box.destroyed and box.id == "waterfall":
+						box.revealBox()
 			if count >= 3:
 				lg("Fish victory - three or more!")
 				win()
@@ -259,11 +262,12 @@ func on_open() -> void:
 				for box in main.boxes:
 					if box.id != "fish" and !box.destroyed and !box.revealed:
 						list.append(box)
-					if list.size() > 0:
-						var toChange = list.pick_random()
-						toChange.loadType("fish")
+				if list.size() > 0:
+					var toChange = list.pick_random()
+					toChange.loadType("fish")
 		"gamer":
 			if main.winstreak > 0:
+				lg("What a gamer! That's a winstreaking GAMER VICTORY!")
 				win()
 		"gazer":
 			set_custom_num(2)
@@ -412,9 +416,10 @@ func on_open() -> void:
 					break
 				topRow += 1
 			for box in main.rows[topRow]:
-				revealedAny = true
-				box.revealBox()
-				modStat("timesActivated", 1)
+				if !box.revealed and !box.destroyed:
+					revealedAny = true
+					box.revealBox()
+					modStat("timesActivated", 1)
 			var bottomrow = main.unlockedRows - 1
 			var made_change = true
 			while made_change:
@@ -432,16 +437,20 @@ func on_open() -> void:
 			for box in main.rows[bottomrow]:
 				if !box.destroyed:
 					if !didFirst:
-						revealedAny = true
-						box.revealBox()
-						modStat("timesActivated", 1)
+						if !box.revealed:
+							revealedAny = true
+							box.revealBox()
+							modStat("timesActivated", 1)
 						didFirst = true
 					last = box.col
 			if last != -1:
-				revealedAny = true
-				main.rows[bottomrow][last].revealBox()
-				modStat("timesActivated", 1)
+				var target = main.rows[bottomrow][last]
+				if !target.revealed:
+					revealedAny = true
+					main.rows[bottomrow][last].revealBox()
+					modStat("timesActivated", 1)
 			if !revealedAny and badgeEquipped("trigazeimprove"):
+				lg("Trigaze+ activates - you win!")
 				win()
 		"revealrandom":
 			main.reveal_random()
@@ -470,10 +479,19 @@ func on_open() -> void:
 			for box in main.rows[row]:
 				if !box.open and !box.destroyed:
 					willWin = false
-				if willWin:
-					main.win()
+			if willWin:
+				lg("Full row -> Horizontal Win! Nicely done!")
+				win()
+				if row >= 9:
+					if !main.unlockedBadges.has("widerow"):
+						for badge in main.get_node("AchievementsContainer").get_children():
+							if badge.id == "widerow" and !badge.unlocked:
+								badge.unlock()
 		"sacrifice":
-			set_custom_num(5)
+			if badgeEquipped("maddii"):
+				set_custom_num(15)
+			else:
+				set_custom_num(5)
 		"safety":
 			main.add_status(StatusTypes.SAFETY, 1)
 		"scrap":
@@ -541,7 +559,7 @@ func on_open() -> void:
 				if list.size() > 0:
 					var toChange = list.pick_random()
 					toChange.loadType("food")
-			set_custom_num(6)
+			set_custom_num(7)
 		"sus":
 			for i in 2:
 				var list = []
@@ -625,6 +643,15 @@ func on_open() -> void:
 			if row == main.unlockedRows - 1:
 				lg("Waterfall victory!")
 				win()
+				if !main.unlockedBadges.has("ocean"):
+					var count = 0
+					for box in main.boxes:
+						if box.id == "waterfall" and box.open and !box.destroyed:
+							count += 1
+					if count >= 10:
+						for badge in main.get_node("AchievementsContainer").get_children():
+							if badge.id == "ocean" and !badge.unlocked:
+								badge.unlock()
 			else:
 				var valids = []
 				for box in main.rows[row+1]:
@@ -644,6 +671,20 @@ func on_open() -> void:
 				if valids.size() > 0:
 					var toChange = valids.pick_random()
 					toChange.loadType("ice")
+		"butterfly":
+			if badgeEquipped("flyingbutterfly") and row > 0:
+				var valids = []
+				for box in main.rows[row-1]:
+					if !box.destroyed:
+						valids.append(box)
+				if valids.size() > 0:
+					var toChange = valids.pick_random()
+					toChange.loadType("butterfly")
+		"egg":
+			if badgeEquipped("heavenegg"):
+				for box in main.boxes:
+					if (box.id == "poison" or box.id == "heartbreak" or box.id == "dungeon" or box.id == "curse") and !box.destroyed:
+						box.destroyBox()
 	pass
 
 func on_other_box_opened(box: Box) -> void:
@@ -703,6 +744,7 @@ func on_other_box_opened(box: Box) -> void:
 			if customNum > 0:
 				if customNum == 1:
 					var found = get_adjacent_boxes(false, false).pick_random()
+					found.revealBox()
 					loadType(found.id)
 					closeBox()
 				else:
@@ -712,6 +754,7 @@ func on_other_box_opened(box: Box) -> void:
 			for other in box.get_adjacent_boxes(false, false):
 				valids.append(other)
 			if valids.size() > 0:
+				lg("Clumsy Box is destroying a box!")
 				valids.pick_random().destroyBox()
 				modStat("destroys", 1)
 		"crumbling":
@@ -719,6 +762,9 @@ func on_other_box_opened(box: Box) -> void:
 				if !other.destroyed:
 					modStat("destroys", 1)
 					main.destroy_box(other)
+					if other.id == "crumbling" and badgeEquipped("crumblingbuff"):
+						lg("Crumbling Irony activates - YOU WIN!")
+						win()
 					break
 		"crystalball":
 			for other in box.get_adjacent_boxes(false, false):
@@ -728,7 +774,12 @@ func on_other_box_opened(box: Box) -> void:
 						modStat("timesActivated", 1)
 		"dna":
 			if badgeEquipped("reroller"):
-				dnaTransform()
+				for other in get_adjacent_boxes(false, false):
+					if other == box:
+						special = 1
+						break
+				if special == 0:
+					dnaTransform()
 		"dungeon":
 			if box.id != "spike":
 				for i in 2:
@@ -742,6 +793,7 @@ func on_other_box_opened(box: Box) -> void:
 			if open and !main.last_opened.was_revealed_when_opened and customNum > 0 and !just_opened:
 				set_custom_num(customNum-1)
 				if customNum == 0:
+					lg("Your exploration has resulted in an EXP Victory!")
 					win()
 					if main.gameRunning:
 						hide_custom_num()
@@ -778,13 +830,15 @@ func on_other_box_opened(box: Box) -> void:
 				lg(nameText + " generated 1 Gold!")
 				main.add_status(StatusTypes.GOLD, 1)
 		"kettle":
-			for other in get_adjacent_boxes(false, false):
-				if other == box:
-					set_custom_num(customNum-1)
-					if customNum == 0:
-						for i in 5:
-							main.reveal_random()
-						hide_custom_num()
+			if customNum > 0:
+				for other in get_adjacent_boxes(false, false):
+					if other == box:
+						set_custom_num(customNum-1)
+						if customNum == 0:
+							for i in 5:
+								main.reveal_random()
+							hide_custom_num()
+							break
 		"key":
 			if customNum > 0:
 				set_custom_num(customNum - 1)
@@ -873,6 +927,14 @@ func on_other_box_opened_immediate(box: Box) -> void:
 
 func can_use() -> bool:
 	match id:
+		"rowwin":
+			if badgeEquipped("widerow"):
+				var willWin = true
+				for box in main.rows[row]:
+					if !box.open and !box.destroyed:
+						willWin = false
+				return willWin
+			return false
 		"cannon":
 			for box in main.rows[row]:
 				if box.col > col and !box.destroyed:
@@ -889,13 +951,13 @@ func can_use() -> bool:
 			for box in main.boxes:
 				if box.customNum > 0 and !box.destroyed:
 					total += box.customNum
-			return total >= 15
+			return total >= 10
 		"dice":
 			return customNum > 0
 		"doubleup":
 			var ids = []
 			for box in get_adjacent_boxes(false, false):
-				if !box.destroyed:
+				if !box.destroyed and box.revealed:
 					if ids.has(box.id):
 						return true
 					else:
@@ -915,7 +977,7 @@ func can_use() -> bool:
 			var canGo = true
 			for row in main.rows:
 				var oneOpen = false
-				var anyBox = true
+				var anyBox = false
 				for box in row:
 					if !box.destroyed:
 						anyBox = true
@@ -925,7 +987,7 @@ func can_use() -> bool:
 							else:
 								oneOpen = false
 								break
-				if !oneOpen and !anyBox:
+				if !oneOpen and anyBox:
 					canGo = false
 					break
 			return canGo
@@ -959,6 +1021,10 @@ func can_use() -> bool:
 
 func on_self_clicked() -> void:
 	match id:
+		"rowwin":
+			main.play_sfx(SFXTypes.ACTIVATE)
+			lg("Full row -> Horizontal Win! Nicely done!")
+			win()
 		"cannon":
 			main.play_sfx(SFXTypes.ACTIVATE)
 			for box in main.rows[row]:
@@ -1008,8 +1074,8 @@ func on_self_clicked() -> void:
 		"food":
 			main.play_sfx(SFXTypes.ACTIVATE)
 			for box in main.boxes:
-				if box.type == "starve" and box.open and box.customNum > 0 and !box.destroyed:
-					box.customNum = 6
+				if box.id == "starve" and box.open and box.customNum > 0 and !box.destroyed:
+					box.set_custom_num(7)
 			destroyBox()
 		"inferno":
 			main.play_sfx(SFXTypes.ACTIVATE)
@@ -1073,6 +1139,7 @@ func on_self_clicked() -> void:
 					toClose.closeBox()
 		"portal":
 			if customNum > 0:
+				main.play_sfx(SFXTypes.ACTIVATE)
 				main.add_status(StatusTypes.SWAP, 1)
 				for status in main.get_node("StatusList").get_children():
 					if status.type == StatusTypes.SWAP:
@@ -1116,8 +1183,14 @@ func on_self_clicked() -> void:
 	pass
 
 func can_destroy() -> bool:
-	for box in main.boxes:
+	match id:
+		"bedrock":
+			if open:
+				lg("Bedrock Box can't be destroyed!")
+			return !open
+	for box in get_adjacent_boxes(false, false):
 		if box.id == "bedrock" and box.open and !box.destroyed:
+			lg(getName() + " can't be destroyed due to the Bedrock Box!")
 			return false
 	return true
 
@@ -1207,6 +1280,7 @@ func on_other_box_type_changed(box: Box) -> void:
 		"flower":
 			if open and !destroyed:
 				modStat("timesActivated", 1)
+				lg("Flower Box closes and reveals the transformed box!")
 				box.closeBox()
 				box.revealBox()
 	pass
@@ -1231,16 +1305,22 @@ func should_hide_custom_num() -> bool:
 	return !open
 
 func destroyBox():
-	if !can_destroy():
-		return
-	main.play_sfx(SFXTypes.DESTROY)
-	destroyed = true
-	visible = false
-	hide_custom_num()
-	on_destroy()
-	for box in main.boxes:
-		if box.open and not box.just_opened and not box.destroyed and main.gameRunning:
-			box.on_other_box_destroyed(self)
+	if !destroyed:
+		if !can_destroy():
+			return
+		main.play_sfx(SFXTypes.DESTROY)
+		if revealed:
+			lg(getName() + " was destroyed!")
+		destroyed = true
+		visible = false
+		hide_custom_num()
+		on_destroy()
+		for box in main.boxes:
+			if box.open and not box.destroyed and main.gameRunning:
+				box.on_other_box_destroyed(self)
+		main.modStat("destroys", 1)
+		for badge in main.get_node("AchievementsContainer").get_children():
+			badge.postDestroyBox(self)
 
 func reviveBox():
 	if destroyed:
@@ -1263,6 +1343,7 @@ func loadType(new_type: String) -> void:
 			remove_child(widget)
 		addedWidgets.clear()
 		on_type_about_to_change(new_type)
+		var oldName = getName()
 		id = new_type
 		#var properties := {}
 		#for i in propery_names:
@@ -1276,8 +1357,11 @@ func loadType(new_type: String) -> void:
 		just_opened = true
 		on_type_changed(old_type)
 		if !main.loadingGame:
+			if revealed:
+				lg(oldName + " was transformed into " + getName() + "!")
 			for box in main.boxes:
 				box.on_other_box_type_changed(self)
+			main.modStat("transforms", 1)
 			for badge in main.get_node("AchievementsContainer").get_children():
 				badge.onBoxTypeChanged(self)
 			postTransform()
@@ -1294,8 +1378,11 @@ func revealBox():
 			$Sprite2D.modulate = Color(0.6, 0.6, 0.6, 1)
 			main.play_sfx(SFXTypes.REVEAL)
 			lg(nameText + " was revealed!")
+			main.modStat("reveals", 1)
 			for box in main.boxes:
 				box.on_other_box_revealed(self)
+			for badge in main.get_node("AchievementsContainer").get_children():
+				badge.postRevealBox(self)
 
 func openBox():
 	if !destroyed and !open:
@@ -1308,7 +1395,7 @@ func openBox():
 		$Outline.texture = outlineOpen
 		load_img()
 		$Sprite2D.modulate = Color(1, 1, 1, 1)
-		lg("Opened " + nameText)
+		lg("Opened " + ("Mimic Box" if id=="mimic" else nameText))
 		on_open()
 		for box in main.boxes:
 			if box != self:
@@ -1316,7 +1403,7 @@ func openBox():
 
 func closeBox():
 	if open:
-		$Sprite2D.modulate = Color(0.8, 0.8, 0.8, 1)
+		$Sprite2D.modulate = Color(0.6, 0.6, 0.6, 1)
 		main.play_sfx(SFXTypes.CLOSE)
 		lg(nameText + " was closed.")
 		open = false
@@ -1327,6 +1414,19 @@ func closeBox():
 		addedWidgets.clear()
 		on_close()
 		$Outline.texture = outlineRevealed
+
+func getName():
+	var curName = "Unknown Box"
+	if revealed:
+		if id == "mimic" and get("disguise") != null and revealed and not open:
+			id = get("disguise")
+			load_text()
+			curName = nameText
+			id = "mimic"
+			load_text()
+		else:
+			curName = nameText
+	return curName
 
 func updateTooltipForMe():
 	var curName = "Unknown Box"
@@ -1376,7 +1476,7 @@ func updateCursorForMe():
 	if !Input.is_action_pressed("pan"):
 		var normCursor = true
 		if !destroyed:
-			if main.has_status(StatusTypes.DEMOLISH):
+			if main.has_status(StatusTypes.DEMOLISH) and can_destroy():
 				normCursor = false
 				Input.set_custom_mouse_cursor(cursorDestroy)
 			elif main.has_status(StatusTypes.SWAP):
@@ -1529,15 +1629,17 @@ func close_random_other():
 		toClose.closeBox()
 
 func lg(text):
-	main.logToLog($Sprite2D.texture, text, id)
+	main.logToLog($Sprite2D.texture, text, id if revealed else null)
 
 func _on_button_pressed() -> void:
 	if main.gameRunning && !main.awaiting_post_click and !main.big_bossfight:
-		if main.has_status(StatusTypes.DEMOLISH):
+		if main.has_status(StatusTypes.DEMOLISH) and can_destroy():
 			var owned = main
 			main.destroy_box(self)
 			owned.change_status_amount(StatusTypes.DEMOLISH, -1)
+			main.update_stat_texts()
 		elif main.has_status(StatusTypes.SWAP):
+			main.get_node("SpawnSoundPlayer").play()
 			var oldPos = global_position
 			var oldOriginX = origPosX
 			var oldOriginY = origPosY
@@ -1561,7 +1663,7 @@ func _on_button_pressed() -> void:
 			if main.has_status(StatusTypes.TRANSMOG) and revealed:
 				var valids = []
 				for newType in main.all_boxes:
-					if newType != id:
+					if newType != id and newType != "max":
 						valids.append(newType)
 				var typeToAdd = valids.pick_random()
 				loadType(typeToAdd)
@@ -1572,6 +1674,7 @@ func _on_button_pressed() -> void:
 						if not revealed:
 							revealBox()
 							main.change_status_amount(StatusTypes.SAFETY, -1)
+							main.update_stat_texts()
 						else:
 							tryOpen()
 					else:
@@ -1580,30 +1683,33 @@ func _on_button_pressed() -> void:
 					if main.has_status(StatusTypes.CLOSENEXT) and id != "closenext":
 						closeBox()
 						main.change_status_amount(StatusTypes.CLOSENEXT, -1)
+						main.update_stat_texts()
 					else:
 						if can_use():
 							on_self_clicked()
-							main.update_stat_texts()
 							for box in main.boxes:
 								if box.open:
 									box.on_other_box_click_activated(self)
+							for badge in main.get_node("AchievementsContainer").get_children():
+								badge.postUseBoxClick(self)
+							main.update_stat_texts()
 	else:
 		if !main.gameRunning:
 			main.startGame()
 
 func win():
-	main.win()
 	if !main.statsMap[id].has("wins"):
 		main.statsMap[id]["wins"] = 1
 	else:
 		main.statsMap[id]["wins"] += 1
+	main.win()
 
 func lose():
-	main.lose()
 	if !main.statsMap[id].has("losses"):
 		main.statsMap[id]["losses"] = 1
 	else:
 		main.statsMap[id]["losses"] += 1
+	main.lose()
 
 func modStat(statId, val):
 	main.modBoxStat(id, statId, val)
@@ -1619,11 +1725,12 @@ func on_other_box_click_activated(box) -> void:
 	pass
 
 func postTransform():
-	match id:
-		"compass":
-			on_open()
-		"music":
-			on_open()
+	if open:
+		match id:
+			"compass":
+				on_open()
+			"music":
+				on_open()
 	pass
 
 

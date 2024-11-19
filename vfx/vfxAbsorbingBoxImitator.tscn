@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://brsemdfw0g3fl"]
 
-[ext_resource type="Script" path="res://vfx/vfx_absorbing_box_imitator.gd" id="1_1d80u"]
+[ext_resource type="Script" uid="uid://bsp427c8tv3mo" path="res://vfx/vfx_absorbing_box_imitator.gd" id="1_1d80u"]
 [ext_resource type="Texture2D" uid="uid://btp1ixn3wimn2" path="res://boxImgs/boxUnknown.png" id="2_g1c21"]
 [ext_resource type="Texture2D" uid="uid://clyb6vyg758qp" path="res://boxImgs/outlineClosed.png" id="3_qtuak"]
 
@@ -11,6 +11,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("1_1d80u")
 
 [node name="Sprite2D" type="TextureRect" parent="."]
