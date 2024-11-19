@@ -1,15 +1,17 @@
-name: Build and Upload VexBox to itch.io 
+name: Build and Upload VexBox to itch.io
 
 on:
   workflow_dispatch:
   push:
+    branches:
+    - main
+    - fixthesus
 
 jobs:
   call-build-and-upload:
     uses: EricBartusch/godot-container-builder/.github/workflows/reusable-godot-deploy.yaml@v1
     with:
       game_name: VexBox
-      version: v1.0.2
     secrets:
       USER: ${{ secrets.USER }}
       API_KEY: ${{ secrets.API_KEY }}
