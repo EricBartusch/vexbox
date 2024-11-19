@@ -28,4 +28,6 @@ jobs:
     with:
       game_name: VexBox
       version: ${{ needs.extract-version.outputs.version }}
-      secrets: inherit
+    secrets:
+      USER: ${{ secrets.USER }}
+      API_KEY: ${{ secrets.API_KEY }}
