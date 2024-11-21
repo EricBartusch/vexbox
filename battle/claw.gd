@@ -29,7 +29,6 @@ func _process(delta: float) -> void:
 			timer = 1.33
 	
 
-
 func _on_area_2d_area_entered(area: Area2D) -> void:
 	if area.get_parent() is Protag and (area.get_parent() as Protag).iframes <= 0:
 		touch_protag(area)

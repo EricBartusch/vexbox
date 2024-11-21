@@ -3,7 +3,7 @@ extends Control
 var type
 var value
 var flval = 1
-var justApplied = false
+var justApplied = true
 var stored
 
 func setup(new_type, amount):
@@ -11,10 +11,6 @@ func setup(new_type, amount):
 	value = amount
 	load_image()
 	setupText()
-	if type != StatusTypes.ECLIPSE:
-		justApplied = true
-	else:
-		justApplied = false
 
 func load_image():
 	match (type):
@@ -26,8 +22,6 @@ func load_image():
 			$Image.texture = load("res://statusImgs/demolition.png")
 		StatusTypes.CLOSENEXT:
 			$Image.texture = load("res://statusImgs/closenext.png")
-		StatusTypes.ECLIPSE:
-			$Image.texture = load("res://statusImgs/eclipse.png")
 		StatusTypes.INVERSION:
 			$Image.texture = load("res://statusImgs/inversion.png")
 		StatusTypes.TRANSMOG:
@@ -45,8 +39,6 @@ func setupText():
 			$Description.text = "Destroy the next " + str(value) + " box you click."
 		StatusTypes.CLOSENEXT:
 			$Description.text = "Close the next " + str(value) + " open non-Tape box you click."
-		StatusTypes.ECLIPSE:
-			$Description.text = "In " + str(value) + " opens, close all boxes."
 		StatusTypes.INVERSION:
 			$Description.text = "Invert winning and losing! (Applies after other effects.)"
 		StatusTypes.TRANSMOG:
@@ -56,14 +48,7 @@ func setupText():
 
 func on_click():
 	if !justApplied:
-		match (type):
-			StatusTypes.ECLIPSE:
-				if value == 1:
-					lg("Eclipse closes all boxes!")
-					for box in get_parent().get_parent().boxes:
-						if box.open:
-							box.closeBox()
-				changeValue(-1)
+		pass
 	else:
 		justApplied = false
 

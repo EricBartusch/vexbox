@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://dqaxk2uwcykjf"]
+[gd_scene load_steps=4 format=3 uid="uid://dqaxk2uwcykjf"]
 
-[ext_resource type="Script" path="res://battle/bullet.gd" id="1_dvap1"]
+[ext_resource type="Script" uid="uid://b7l7o2voinqha" path="res://battle/bullet.gd" id="1_dvap1"]
+[ext_resource type="Texture2D" uid="uid://clyb6vyg758qp" path="res://boxImgs/outlineClosed.png" id="2_u1p7b"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7kkgc"]
 size = Vector2(75, 75)
@@ -14,3 +15,6 @@ script = ExtResource("1_dvap1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("RectangleShape2D_7kkgc")
+
+[node name="Outline" type="Sprite2D" parent="."]
+texture = ExtResource("2_u1p7b")

@@ -9,8 +9,9 @@ var hoverName = ""
 var hoverDesc = ""
 var unlockText = ""
 var revealedImg
-var cursorOpen = load("res://cursorImgs/cursorOpen.png")
-var cursorNormal = load("res://cursorImgs/cursorNormal.png")
+static var cursorOpen = preload("res://cursorImgs/cursorOpen.png")
+static var cursorNormal = preload("res://cursorImgs/cursorNormal.png")
+static var seenLockedImg = preload("res://badgeImgs/lockedadjacent.png")
 
 static var main: Main
 static var propery_names := init_properties()
@@ -50,19 +51,20 @@ func get_adjacent_badges():
 	if location % 8 != 0:
 		adjacents.append(badges[location-1])
 	#right
-	if location % 7 != 0:
-		adjacents.append(badges[location+1])
+	if (location+1) % 8 != 0:
+		if badges.size() > location+1:
+			adjacents.append(badges[location+1])
 	#down
-	if badges.size() > location+7:
-		adjacents.append(badges[location+7])
+	if badges.size() > location+8:
+		adjacents.append(badges[location+8])
 	return adjacents
 
 func refreshStatus():
-	if !seen:
+	if !seen and !unlocked:
 		for badge in get_adjacent_badges():
 			if badge.unlocked:
 				seen = true
-				$Sprite2D.texture = revealedImg
+				$Sprite2D.texture = seenLockedImg
 
 static func init_properties() -> Array[String]:
 	var control_properties := Control.new().get_property_list()
@@ -110,7 +112,7 @@ func _process(delta):
 		var mousePos = get_viewport().get_mouse_position()
 		if mousePos.x >= global_position.x - 37.5 and mousePos.x <= global_position.x + 37.5 and mousePos.y >= global_position.y - 37.5 and mousePos.y <= global_position.y + 37.5:
 			updateTooltipForMe()
-			if !main.gameRunning:
+			if (!main.gameRunning or main.opens == 0)and !isPassive():
 				if unlocked and (main.badgePoints - main.bpInUse >= getCost() or enabled):
 					Input.set_custom_mouse_cursor(cursorOpen)
 				else:
@@ -118,25 +120,29 @@ func _process(delta):
 
 func updateTooltipForMe():
 	if seen or unlocked:
-		main.get_node("Tooltip").setup(hoverName, unlockText, "???" if !showDescWhenRevealed() else hoverDesc)
+		main.get_node("Tooltip").setup(hoverName if unlocked else "???", unlockText, "???" if !unlocked else hoverDesc)
 		var progress = getProgress()
 		var maxProgress = getMaxProgress()
-		main.get_node("Tooltip").setupProgressBar(progress, maxProgress, getCost())
+		main.get_node("Tooltip").setupProgressBar(progress, maxProgress, -1 if !unlocked else getCost())
 	else:
-		main.get_node("Tooltip").setup("Unknown Achievement", "", "Unlock an adjacent achievement to see this one!")
+		main.get_node("Tooltip").setup("Unknown Achievement", "", "Unlock an adjacent achievement to see how to unlock this one!")
 
 func unlock():
-	unlocked = true
-	if !main.unlockedBadges.has(id):
-		main.unlockedBadges.append(id)
-	$Sprite2D.texture = revealedImg
-	refreshOutline()
-	for badge in get_parent().get_children():
-		badge.refreshStatus()
+	if !unlocked:
+		unlocked = true
+		if !main.unlockedBadges.has(id):
+			main.unlockedBadges.append(id)
+		$Sprite2D.texture = revealedImg
+		refreshOutline()
+		if isPassive():
+			applyPassive()
+		for badge in get_parent().get_children():
+			badge.refreshStatus()
+		main.save()
 		
 func refreshOutline():
 	if unlocked:
-		if enabled:
+		if enabled or isPassive():
 			$Outline.texture = load("res://boxImgs/outlineClicked.png")
 		else:
 			$Outline.texture = load("res://boxImgs/outlineRevealed.png")
@@ -144,15 +150,18 @@ func refreshOutline():
 		$Outline.texture = load("res://boxImgs/outlineClosed.png")
 
 func _on_button_button_up() -> void:
-	if !main.gameRunning:
+	if (!main.gameRunning or main.opens == 0) and !isPassive():
 		if unlocked:
 			if enabled:
 				enabled = false
+				hide_number()
 				main.equippedBadges.erase(id)
 				main.bpInUse -= getCost()
 				refreshOutline()
 				main.updateBadgePoints()
 				main.save()
+				if main.gameRunning:
+					main.startGame()
 			else:
 				if main.badgePoints - main.bpInUse >= getCost():
 					enabled = true
@@ -161,6 +170,8 @@ func _on_button_button_up() -> void:
 					refreshOutline()
 					main.updateBadgePoints()
 					main.save()
+					if main.gameRunning:
+						main.startGame()
 
 func getCost() -> int:
 	return 1
@@ -180,10 +191,22 @@ func getProgress() -> int:
 func getMaxProgress() -> int:
 	return -1
 
-func showDescWhenRevealed() -> bool:
-	return true
-
 func onBoxTypeChanged(box):
+	pass
+
+func postUseBoxClick(box):
+	pass
+
+func postDestroyBox(box):
+	pass
+
+func postRevealBox(box):
+	pass
+
+func isPassive() -> bool:
+	return false
+
+func applyPassive() -> void:
 	pass
 
 func qLog(text):
