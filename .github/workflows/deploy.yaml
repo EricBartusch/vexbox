@@ -20,9 +20,9 @@ jobs:
     - name: Extract version from project.godot
       id: extract_version 
       run: | 
-        version=$(grep -Po '(?<=^config/version=).*' project.godot) 
+        version=$(grep -Po '(?<=^config/version=).*' project.godot | tr -d '"')
         echo "version=$version" >> $GITHUB_ENV
-        echo "::set-output name=version::$version"
+        echo "version=$version" >> $GITHUB_OUTPUT
 
   call-build-and-upload:
     needs: extract-version
