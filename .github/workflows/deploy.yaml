@@ -8,11 +8,28 @@ on:
     - fixthesus
 
 jobs:
+  extract-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract_version.outputs.version }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+
+    - name: Extract version from project.godot
+      id: extract_version 
+      run: | 
+        version=$(grep -Po '(?<=^config/version=).*' project.godot | tr -d '"')
+        echo "version=$version" >> $GITHUB_ENV
+        echo "version=$version" >> $GITHUB_OUTPUT
+
   call-build-and-upload:
+    needs: extract-version
     uses: EricBartusch/godot-container-builder/.github/workflows/reusable-godot-deploy.yaml@v1
     with:
       game_name: VexBox
-    secrets:
-      USER: ${{ secrets.USER }}
-      API_KEY: ${{ secrets.API_KEY }}
-
+      version: ${{ needs.extract-version.outputs.version }}
+    secrets: inherit
