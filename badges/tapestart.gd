@@ -12,4 +12,19 @@ func getMaxProgress():
 
 func onRunStart():
 	if enabled:
-		main.add_status(StatusTypes.CLOSENEXT, 1)
+		setup_number(6)
+
+func getCost():
+	return 2
+
+func onOpenBox(box):
+	if enabled:
+		setup_number(number-1)
+		if number == 0:
+			qLog("Closer is activating!")
+			setup_number(6)
+			var valids = []
+			for other in main.boxes:
+				if other.open and !other.destroyed:
+					valids.append(other)
+			valids.pick_random().closeBox()

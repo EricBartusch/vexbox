@@ -7,6 +7,7 @@ func setup(name, status, desc):
 	hovered = true
 	reInitThisTurn = 5
 	$Header.text = name
+	$Header.position.x = 98
 	$Status.text = status
 	$Description.text = desc
 	$Description.position.y = 90
@@ -26,10 +27,12 @@ func setupProgressBar(cur, max, bp):
 		$BadgeProgressBar.value = cur
 		$BadgeProgressBar.max_value = max
 		$BadgeProgressBar/BadgeProgressText.text = str(cur) + "/" + str(max)
-	$BPTexture.visible = true
-	$BPText.visible = true
-	$BPText.text = str(bp)
+	if bp > -1:
+		$BPTexture.visible = true
+		$BPText.visible = true
+		$BPText.text = str(bp)
 	$Description.position.y = 155
+	$Header.position.x = 15
 
 func setupStats(opens, wins):
 	$OpensTexture.visible = true

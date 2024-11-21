@@ -46,9 +46,10 @@ offset_top = 51.0
 offset_right = 481.0
 offset_bottom = 102.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_constants/line_spacing = -10
 theme_override_fonts/font = ExtResource("3_igej3")
 theme_override_font_sizes/font_size = 25
-text = "Revealed"
+text = "Revealed blah blah this is TWO LINES of annoying ahh text"
 autowrap_mode = 2
 
 [node name="Description" type="Label" parent="."]
