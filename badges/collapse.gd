@@ -9,12 +9,3 @@ func getProgress():
 
 func getMaxProgress():
 	return 500
-
-func onRunStart():
-	if enabled:
-		for box in main.boxes:
-			if box.id == "demolition":
-				box.revealBox()
-
-func getCost():
-	return 2

@@ -12,6 +12,7 @@ func getMaxProgress():
 	return 1
 
 func onRunStart():
-	for box in main.boxes:
-		if box.type == "clock":
-			box.loadType("info")
+	if enabled:
+		for box in main.boxes:
+			if box.id == "clock":
+				box.loadType("info")

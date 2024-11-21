@@ -19,6 +19,8 @@ var arr = []
 var fNum : float = 0
 var special = 0
 var heldStr = ""
+var secondStr = ""
+var anything
 static var alphabet = "abcdefghijklmnopqrstuvwxyz"
 
 static var outlineClosed = preload("res://boxImgs/outlineClosed.png")
@@ -30,6 +32,10 @@ static var smileyScene = load("res://vfx/vfxFallingSmiley.tscn")
 static var starScene = preload("res://vfx/vfxStar.tscn")
 
 var addedWidgets = []
+
+func addWidget(widget):
+	add_child(widget)
+	addedWidgets.append(widget)
 
 func load_text() -> void:
 	var text := load_box_text(id)
@@ -48,7 +54,7 @@ func show_img():
 		$Sprite2D.texture = revealedImg
 
 static func get_box_img(type: String) -> Texture2D:
-	return imgTable[type]
+	return load("res://boxImgs/" + type + ".png")
 
 func tr_local(key: String) -> String:
 	return tr_box(id, key)
@@ -66,8 +72,58 @@ func hide_custom_num():
 	customNum = -1
 	$Number.text = ""
 
+var boxScene = preload("res://Box.tscn")
+
+func setupSpecial():
+	match id:
+		"eye":
+			var direction = main.rng.randi_range(0, 5)
+			special = direction
+			clearWidgets()
+			var newArrow = TextureRect.new();
+			newArrow.texture = load("res://uiImgs/eyelook.png")
+			newArrow.size = Vector2(44, 44)
+			newArrow.pivot_offset = Vector2(22, 22)
+			newArrow.anchor_left = 0.5
+			newArrow.anchor_right = 0.5
+			newArrow.anchor_top = 0.5
+			newArrow.anchor_bottom = 0.5
+			newArrow.offset_left = -22
+			newArrow.offset_right = -22
+			newArrow.offset_top = -22
+			newArrow.offset_bottom = -22
+			add_child(newArrow)
+			newArrow.rotation = special * 45
+			addedWidgets.append(newArrow)
+
 func on_open() -> void:
 	match id:
+		"multiwarp":
+			for i in 2:
+				var valids = []
+				for box in main.boxes:
+					if box != self and box.revealed and !box.destroyed:
+						valids.append(box)
+				if valids.size() > 0:
+					valids.pick_random().loadType("portal")
+		"bigbomb":
+			set_custom_num(1)
+		"inky":
+			set_custom_num(3)
+		"patterned":
+			var valids = []
+			for box in get_adjacent_boxes(false, false):
+				valids.append(box.id)
+			var transformable = []
+			for box in main.boxes:
+				if !valids.has(box.id) and !box.revealed:
+					transformable.append(box)
+			for idToChange in valids:
+				for i in 4:
+					if transformable.size() > 0:
+						var toChange = transformable.pick_random()
+						transformable.erase(toChange)
+						toChange.loadType(idToChange)
 		"allseeingeye":
 			for i in 10:
 				main.reveal_random()
@@ -115,7 +171,7 @@ func on_open() -> void:
 			for box in main.boxes:
 				if box.open and !box.destroyed:
 					count += 1
-			if count >= 11:
+			if count >= 15:
 				win()
 		"boss":
 			set_custom_num(13)
@@ -142,6 +198,9 @@ func on_open() -> void:
 		"clock":
 			set_custom_num(20)
 			fNum = 1
+		"quick":
+			set_custom_num(5)
+			fNum = 1
 		"clone":
 			set_custom_num(3)
 		"closeadjacent":
@@ -152,6 +211,7 @@ func on_open() -> void:
 		"closenext":
 			main.add_status(StatusTypes.CLOSENEXT, 1)
 		"compass":
+			clearWidgets()
 			for box in main.boxes:
 				if box.id == "winner" and !box.destroyed:
 					var newArrow = TextureRect.new();
@@ -174,7 +234,7 @@ func on_open() -> void:
 			for box in main.boxes:
 				if box.revealed and not box.destroyed:
 					count += 1
-			if count >= 18:
+			if count >= 24:
 				lg("Espionage victory!")
 				win()
 		"demolition":
@@ -188,7 +248,7 @@ func on_open() -> void:
 				lg("Desert sands victory!")
 				win()
 		"dice":
-			set_custom_num(2)
+			set_custom_num(4 if badgeEquipped("transmogrifier") else 2)
 		"dna":
 			dnaTransform()
 		"dragon":
@@ -219,9 +279,13 @@ func on_open() -> void:
 			if count >= 4:
 				lg("Four or more fairies - you win!")
 				win()
+		"flying":
+			if badgeEquipped("windy"):
+				set_custom_num(10)
 		"finalboss":
-			if main.rng.randi_range(0, 19) == 0 and main.getBoxStat("finalboss", "opens") > 2:
+			if main.rng.randi_range(0, 12) == 0 and main.getBoxStat("finalboss", "opens") > 2:
 				modStat("timesActivated", 1)
+				special = 111
 				destroyBox()
 				lg("WHAT IS HAPPENING???")
 				lg("WASD TO... MOVE?")
@@ -332,7 +396,7 @@ func on_open() -> void:
 				if box.open and !box.destroyed:
 					count += 1
 			if count == 1:
-				lg("SUPER UNLUCKY! That's a TERRIFYING Jumscare loss!")
+				lg("SUPER UNLUCKY! That's a TERRIFYING Jumspcare loss!")
 				lose()
 		"kettle":
 			set_custom_num(3)
@@ -373,17 +437,19 @@ func on_open() -> void:
 		"onegold":
 			main.add_status(StatusTypes.GOLD, 1)
 		"paint":
-			var result = Color(main.rng.randf_range(0, 0.5), main.rng.randf_range(0, 0.5), main.rng.randf_range(0.5, 1), 1)
+			var result = Color.from_ok_hsl(main.rng.randf_range(0.6, 0.8), 0.5, 0.3, 1)
 			main.get_node("ColorRect").color = result
 		"painttwo":
 			for box in main.boxes:
 				if !box.open and !box.destroyed and !box.revealed:
-					box.get_node("Sprite2D").modulate = Color(main.rng.randf_range(0, 1), main.rng.randf_range(0, 1), main.rng.randf_range(0, 1), 1)
+					box.get_node("Sprite2D").modulate = Color.from_ok_hsl(main.rng.randf_range(0, 1), main.rng.randf_range(0.5, 0.7), 0.7, 1)
 		"pandoras":
 			for box in main.boxes:
 				if box != self and box.revealed and not box.destroyed:
 					modStat("timesActivated", 1)
 					box.loadType("loss")
+		"payforshield":
+			set_custom_num(5)
 		"poison":
 			set_custom_num(8)
 		"portal":
@@ -403,6 +469,20 @@ func on_open() -> void:
 				main.add_status(StatusTypes.GOLD, 3)
 		"program":
 			set_custom_num(6)
+		"quiz":
+			var valids = []
+			for box in main.boxes:
+				if !box.destroyed:
+					valids.append(box)
+			var word = valids.pick_random().nameText
+			heldStr = word
+			secondStr = ""
+			for i in heldStr:
+				if heldStr[i] == " ":
+					secondStr = secondStr + " "
+				else:
+					secondStr = secondStr + "_"
+			set_custom_num(3)
 		"revealcorners":
 			var revealedAny = false
 			var topRow = 0
@@ -551,7 +631,7 @@ func on_open() -> void:
 				lg("Star is surrounded - you win!")
 				win()
 		"starve":
-			for i in 5:
+			for i in 7:
 				var list = []
 				for box in main.boxes:
 					if box.id != "food" and !box.destroyed and !box.revealed:
@@ -586,7 +666,7 @@ func on_open() -> void:
 					box.loadType("closenext")
 					box.revealBox()
 		"transmog":
-			main.add_status(StatusTypes.TRANSMOG, 2)
+			main.add_status(StatusTypes.TRANSMOG, 4 if badgeEquipped("transmogrifier") else 2)
 		"treasure":
 			var willWin = false
 			var seen = []
@@ -685,10 +765,72 @@ func on_open() -> void:
 				for box in main.boxes:
 					if (box.id == "poison" or box.id == "heartbreak" or box.id == "dungeon" or box.id == "curse") and !box.destroyed:
 						box.destroyBox()
+		"question":
+			if row > 0:
+				var result = []
+				var rowAbove = main.rows[row-1]
+				if col != 0:
+					result.append(rowAbove[col - 1])
+				if rowAbove.size() > col:
+					result.append(rowAbove[col])
+				if result.size() > 0:
+					var box = result.pick_random()
+					if !box.destroyed:
+						var valids = ["onegold", "twogold", "threegold", "guardian", "flower"]
+						valids.erase(box.id)
+						box.loadType(valids.pick_random())
+		"punished":
+			if get_adjacent_boxes(false, false).size() <= 4:
+				lg("Loner Box is sufficiently lonely! You win!")
+				win()
+		"fraidy":
+			set_custom_num(5)
+		"L":
+			for box in get_adjacent_boxes(false, false):
+				if box.open:
+					lg("L box is adjacent to an open box - oh no, L!")
+					lose()
+					break
+		"ritual":
+			set_custom_num(0)
+		"madscientist":
+			set_custom_num(12)
+		"searchlight":
+			set_custom_num(1)
 	pass
 
 func on_other_box_opened(box: Box) -> void:
 	match id:
+		"eye":
+			special += 1
+			special %= 6
+			clearWidgets()
+			var newArrow = TextureRect.new();
+			newArrow.texture = load("res://uiImgs/eyelook.png")
+			newArrow.size = Vector2(44, 44)
+			newArrow.pivot_offset = Vector2(22, 22)
+			newArrow.anchor_left = 0.5
+			newArrow.anchor_right = 0.5
+			newArrow.anchor_top = 0.5
+			newArrow.anchor_bottom = 0.5
+			newArrow.offset_left = -22
+			newArrow.offset_right = -22
+			newArrow.offset_top = -22
+			newArrow.offset_bottom = -22
+			add_child(newArrow)
+			newArrow.rotation = special * 45
+			addedWidgets.append(newArrow)
+		"playable":
+			var valids = get_adjacent_boxes(false, false)
+			swapWith(valids.pick_random())
+		"bigbomb":
+			if customNum > 0:
+				set_custom_num(customNum-1)
+				lg("Big Bomb Box exploded!")
+				for other in get_tworange_boxes():
+					other.destroyBox()
+				destroyBox()
+				hide_custom_num()
 		"allseeingeye":
 			if customNum > 0:
 				if customNum == 1:
@@ -738,6 +880,10 @@ func on_other_box_opened(box: Box) -> void:
 						hide_custom_num()
 		"checkbox":
 			if !main.last_opened.was_revealed_when_opened and open and !destroyed and !just_opened:
+				modStat("timesActivated", 1)
+				main.reveal_random()
+		"quick":
+			if open and !destroyed and !just_opened and customNum > 0:
 				modStat("timesActivated", 1)
 				main.reveal_random()
 		"clone":
@@ -848,6 +994,9 @@ func on_other_box_opened(box: Box) -> void:
 					lg("Mined some gold!")
 					modStat("timesActivated", 1)
 					main.add_status(StatusTypes.GOLD, 1)
+		"fraidy":
+			if customNum > 0:
+				set_custom_num(customNum-1)
 		"poison":
 			if customNum > 0:
 				set_custom_num(customNum - 1)
@@ -883,13 +1032,14 @@ func on_other_box_opened(box: Box) -> void:
 			modStat("destroys", 1)
 			main.destroy_box(self)
 		"starve":
-			if customNum > 0:
-				if customNum == 1:
+			if customNum > -1:
+				if customNum == 0:
 					lg("The Hungry Box starves!")
 					lose()
-				set_custom_num(customNum - 1)
-				if main.gameRunning and customNum == 0:
-					hide_custom_num()
+				if main.gameRunning:
+					set_custom_num(customNum - 1)
+					if main.gameRunning and customNum == -1:
+						hide_custom_num()
 		"stuck":
 			var willWin = true
 			for other in main.boxes:
@@ -912,6 +1062,45 @@ func on_other_box_opened(box: Box) -> void:
 						modStat("timesActivated", 1)
 						other.loadType("virus")
 						other.special = 1
+		"quiz":
+			if box.name == heldStr:
+				lg("You guessed Quiz Box's box! You win!")
+				win()
+			else:
+				if heldStr != secondStr:
+					set_custom_num(customNum-1)
+					if customNum == 0:
+						var valids = []
+						for i in heldStr.length():
+							if heldStr[i] != secondStr[i]:
+								valids.append(i)
+						if valids.size() > 0:
+							var trick = valids.pick_random()
+							secondStr[trick] = heldStr[trick]
+						set_custom_num(3)
+		"locust":
+			var valids = []
+			for other in main.boxes:
+				if other.id != "locust" and !other.destroyed:
+					valids.append(other)
+			if valids.size() > 0:
+				valids.pick_random().loadType("locust")
+		"ritual":
+			set_custom_num(customNum+1)
+		"pet":
+			swapWith(main.last_opened)
+		"monster":
+			var adjacents = get_adjacent_boxes(false, false)
+			if !adjacents.size() == 0:
+				var toEat = adjacents.pick_random()
+				lg("Consuming Box is consuming a box and moving!")
+				toEat.destroyBox()
+				swapWith(toEat)
+		"searchlight":
+			if !main.last_opened.was_revealed_when_opened and customNum > 0:
+				set_custom_num(customNum-1)
+				for other in box.get_adjacent_boxes(true, false):
+					other.revealBox()
 	pass
 
 func on_other_box_opened_immediate(box: Box) -> void:
@@ -927,6 +1116,12 @@ func on_other_box_opened_immediate(box: Box) -> void:
 
 func can_use() -> bool:
 	match id:
+		"goldenbug":
+			return true
+		"puzzle":
+			return true
+		"ritual":
+			return true
 		"rowwin":
 			if badgeEquipped("widerow"):
 				var willWin = true
@@ -943,7 +1138,7 @@ func can_use() -> bool:
 		"cauldron":
 			return true
 		"clock":
-			return true
+			return customNum > 0
 		"daredevil":
 			return true
 		"darts":
@@ -951,7 +1146,7 @@ func can_use() -> bool:
 			for box in main.boxes:
 				if box.customNum > 0 and !box.destroyed:
 					total += box.customNum
-			return total >= 10
+			return total >= 13
 		"dice":
 			return customNum > 0
 		"doubleup":
@@ -1006,7 +1201,7 @@ func can_use() -> bool:
 				if box.open and !box.destroyed and box != self:
 					otherBoxIsOpen = true
 					break
-			return main.status_amount(StatusTypes.GOLD) >= 1 and otherBoxIsOpen
+			return main.status_amount(StatusTypes.GOLD) >= 1 and otherBoxIsOpen and customNum > 0
 		"portal":
 			return customNum > 0
 		"sacrifice":
@@ -1021,6 +1216,23 @@ func can_use() -> bool:
 
 func on_self_clicked() -> void:
 	match id:
+		"goldenbug":
+			var threshold = 1
+			var weapons = ["cannon", "sword", "wand"]
+			for box in main.boxes:
+				if weapons.has(box.id) and box.open and !box.destroyed:
+					threshold += 2
+			var roll = main.rng.randi_range(0, 9)
+			if roll >= threshold:
+				lg("Lucky! You've beaten the Monster Box!")
+				win()
+			else:
+				lg("Unlucky! The Monster Box is destroyed!")
+				destroyBox()
+		"ritual":
+			for i in customNum:
+				main.reveal_random()
+			destroyBox()
 		"rowwin":
 			main.play_sfx(SFXTypes.ACTIVATE)
 			lg("Full row -> Horizontal Win! Nicely done!")
@@ -1055,7 +1267,7 @@ func on_self_clicked() -> void:
 				lg("Daredevil Box didn't do anything!")
 		"darts":
 			main.play_sfx(SFXTypes.ACTIVATE)
-			lg("More than 15 numbers - nice job!")
+			lg("More than 13 numbers - nice job!")
 			win()
 		"dice":
 			main.play_sfx(SFXTypes.ACTIVATE)
@@ -1074,7 +1286,7 @@ func on_self_clicked() -> void:
 		"food":
 			main.play_sfx(SFXTypes.ACTIVATE)
 			for box in main.boxes:
-				if box.id == "starve" and box.open and box.customNum > 0 and !box.destroyed:
+				if box.id == "starve" and box.open and box.customNum > -1 and !box.destroyed:
 					box.set_custom_num(7)
 			destroyBox()
 		"inferno":
@@ -1125,7 +1337,7 @@ func on_self_clicked() -> void:
 					var toReveal = valids.pick_random()
 					toReveal.revealBox()
 		"payforshield":
-			if main.status_amount(StatusTypes.GOLD) >= 1:
+			if main.status_amount(StatusTypes.GOLD) >= 1 and customNum > 0:
 				var valids = []
 				for box in main.boxes:
 					if !box.destroyed and box.open and box != self:
@@ -1137,6 +1349,7 @@ func on_self_clicked() -> void:
 					main.modStat("goldSpent", 1)
 					var toClose = valids.pick_random()
 					toClose.closeBox()
+					set_custom_num(customNum-1)
 		"portal":
 			if customNum > 0:
 				main.play_sfx(SFXTypes.ACTIVATE)
@@ -1145,6 +1358,21 @@ func on_self_clicked() -> void:
 					if status.type == StatusTypes.SWAP:
 						status.stored = self
 				set_custom_num(customNum - 1)
+		"puzzle":
+			modStat("timesActivated", 1)
+			main.play_sfx(SFXTypes.ACTIVATE)
+			if customNum >= 7:
+				lg("The puzzle is solved! You win... but at what cost?")
+				win()
+			else:
+				for i in 7:
+					var thingy = main
+					var toChange = thingy.get_random_box()
+					main.destroy_box(toChange)
+				if customNum == -1:
+					set_custom_num(1)
+				else:
+					set_custom_num(customNum + 1)
 		"sacrifice":
 			if customNum > 0:
 				modStat("timesActivated", 1)
@@ -1182,20 +1410,26 @@ func on_self_clicked() -> void:
 				win()
 	pass
 
-func can_destroy() -> bool:
+func can_destroy(forshow) -> bool:
 	match id:
 		"bedrock":
 			if open:
-				lg("Bedrock Box can't be destroyed!")
+				if !forshow:
+					lg("Bedrock Box can't be destroyed!")
 			return !open
 	for box in get_adjacent_boxes(false, false):
 		if box.id == "bedrock" and box.open and !box.destroyed:
-			lg(getName() + " can't be destroyed due to the Bedrock Box!")
+			if !forshow:
+				lg(getName() + " can't be destroyed due to the Bedrock Box!")
 			return false
 	return true
 
 func on_destroy() -> void:
 	match id:
+		"playable":
+			if open:
+				lg("The Rogue Box was destroyed!")
+				lose()
 		"egg":
 			if open:
 				lg("The Egg has hatched!")
@@ -1212,6 +1446,18 @@ func on_destroy() -> void:
 			if open:
 				lg("The Worldbearer has fallen!")
 				lose()
+		"desert":
+			if badgeEquipped("collapse"):
+				lg("The Deserted Box was destroyed - Destructor activates!")
+				var valids = []
+				for box in main.boxes:
+					if box.id != "desert" and !box.destroyed and !box.open:
+						valids.append(box)
+				valids.pick_random().loadType("desert")
+		"winner":
+			for box in main.boxes:
+				if box.id == "compass" and box.open and !box.destroyed:
+					box.on_open()
 	pass
 
 func on_other_box_destroyed(box: Box) -> void:
@@ -1222,6 +1468,13 @@ func on_other_box_destroyed(box: Box) -> void:
 				var replacement = flyingBoxScene.instantiate()
 				replacement.loadFromBox(box)
 				main.addVfx(replacement)
+				if customNum > 0 and badgeEquipped("windy"):
+					customNum -= 1
+					if customNum == 0:
+						lg("Windy Flying box + destroying 10 boxes = VICTORY!")
+						win()
+						if main.gameRunning:
+							hide_custom_num()
 		"scrap":
 			if open and !destroyed:
 				if customNum <= 0:
@@ -1258,6 +1511,10 @@ func on_other_box_revealed(box: Box) -> void:
 
 func on_type_about_to_change(_new_type: String) -> void:
 	match id:
+		"playable":
+			if open:
+				lg("The Rogue Box was transformed! You lose!")
+				lose()
 		"butterfly":
 			if open:
 				lg("The Butterfly has evolved!")
@@ -1272,17 +1529,30 @@ func on_type_about_to_change(_new_type: String) -> void:
 					main.get_node("MusicPlayer").stop()
 	pass
 
-func on_type_changed(_old_type: String) -> void:
+func on_type_changed(old_type: String) -> void:
+	match old_type:
+		"winner":
+			for box in main.boxes:
+				if box.id == "compass" and box.open and !box.destroyed:
+					box.on_open()
 	pass
 
 func on_other_box_type_changed(box: Box) -> void:
 	match id:
 		"flower":
-			if open and !destroyed:
+			if open and !destroyed and box != self:
 				modStat("timesActivated", 1)
 				lg("Flower Box closes and reveals the transformed box!")
 				box.closeBox()
 				box.revealBox()
+		"madscientist":
+			if open and !destroyed and customNum > 0:
+				set_custom_num(customNum-1)
+				if customNum == 0:
+					lg("Mad science victory!")
+					win()
+					if main.gameRunning:
+						hide_custom_num()
 	pass
 
 func on_close() -> void:
@@ -1306,13 +1576,14 @@ func should_hide_custom_num() -> bool:
 
 func destroyBox():
 	if !destroyed:
-		if !can_destroy():
+		if !can_destroy(false):
 			return
 		main.play_sfx(SFXTypes.DESTROY)
-		if revealed:
+		if revealed and !main.big_bossfight and special != 111:
 			lg(getName() + " was destroyed!")
 		destroyed = true
 		visible = false
+		#modulate.a = 0.025
 		hide_custom_num()
 		on_destroy()
 		for box in main.boxes:
@@ -1326,6 +1597,7 @@ func reviveBox():
 	if destroyed:
 		destroyed = false
 		visible = true
+		#modulate.a = 1
 		closeBox()
 
 func loadBox(new_type: String, new_row: int, new_col: int) -> void:
@@ -1333,15 +1605,18 @@ func loadBox(new_type: String, new_row: int, new_col: int) -> void:
 	col = new_col
 	loadType(new_type)
 
+func clearWidgets():
+	for widget in addedWidgets:
+		remove_child(widget)
+	addedWidgets.clear()
+
 func loadType(new_type: String) -> void:
 	if new_type != id:
 		if revealed:
 			main.play_sfx(SFXTypes.TRANSMOG)
 		hide_custom_num()
 		var old_type = id
-		for widget in addedWidgets:
-			remove_child(widget)
-		addedWidgets.clear()
+		clearWidgets()
 		on_type_about_to_change(new_type)
 		var oldName = getName()
 		id = new_type
@@ -1368,21 +1643,34 @@ func loadType(new_type: String) -> void:
 
 func revealBox():
 	if !destroyed:
-		var was_already_revealed = revealed
-		revealed = true
-		$Sprite2D.texture = revealedImg
-		if !open:
-			$Outline.texture = outlineRevealed
-		on_reveal(was_already_revealed)
-		if !was_already_revealed:
-			$Sprite2D.modulate = Color(0.6, 0.6, 0.6, 1)
-			main.play_sfx(SFXTypes.REVEAL)
-			lg(nameText + " was revealed!")
-			main.modStat("reveals", 1)
+		if get_box_counter("inky") > 0:
 			for box in main.boxes:
-				box.on_other_box_revealed(self)
-			for badge in main.get_node("AchievementsContainer").get_children():
-				badge.postRevealBox(self)
+				if box.id == "inky" and box.customNum > 0 and box.open and !box.destroyed:
+					box.set_custom_num(box.customNum-1)
+					break
+		var was_already_revealed = revealed
+		if !was_already_revealed and get_box_counter("inky") > 0:
+			for box in main.boxes:
+				if box.id == "inky" and box.customNum > 0 and box.open and !box.destroyed:
+					box.lg("Inky Box prevents the reveal!")
+					box.set_custom_num(box.customNum-1)
+					break
+		else:
+			revealed = true
+			$Sprite2D.texture = revealedImg
+			if !open:
+				$Outline.texture = outlineRevealed
+			on_reveal(was_already_revealed)
+			if !was_already_revealed:
+				$Sprite2D.modulate = Color(0.6, 0.6, 0.6, 1)
+				main.play_sfx(SFXTypes.REVEAL)
+				if id != "mimic":
+					lg(nameText + " was revealed!")
+				main.modStat("reveals", 1)
+				for box in main.boxes:
+					box.on_other_box_revealed(self)
+				for badge in main.get_node("AchievementsContainer").get_children():
+					badge.postRevealBox(self)
 
 func openBox():
 	if !destroyed and !open:
@@ -1397,9 +1685,15 @@ func openBox():
 		$Sprite2D.modulate = Color(1, 1, 1, 1)
 		lg("Opened " + ("Mimic Box" if id=="mimic" else nameText))
 		on_open()
+		setupSpecial()
 		for box in main.boxes:
 			if box != self:
 				box.on_other_box_opened_immediate(self)
+		#for i in 3:
+			#var newStar = starScene.instantiate()
+			#newStar.global_position.x = global_position.x
+			#newStar.global_position.y = global_position.y
+			#main.addVfx(newStar)
 
 func closeBox():
 	if open:
@@ -1448,7 +1742,7 @@ func updateTooltipForMe():
 			else:
 				curStatus = "Revealed"
 			curDesc = tooltipText
-	main.get_node("Tooltip").setup(curName, curStatus, curDesc + addText())
+	main.get_node("Tooltip").setup(curName, curStatus, curDesc + addText() if revealed else "")
 	if revealed:
 		main.get_node("Tooltip").setupStats(main.getBoxStat(id, "opens"), main.getBoxStat(id, "wins"))
 
@@ -1459,6 +1753,9 @@ func addText() -> String:
 			for letter in alphabet:
 				if !arr.has(letter):
 					result = result + letter
+			return result
+		"quiz":
+			var result = " The box name is: " + secondStr
 			return result
 	return ""
 
@@ -1476,7 +1773,7 @@ func updateCursorForMe():
 	if !Input.is_action_pressed("pan"):
 		var normCursor = true
 		if !destroyed:
-			if main.has_status(StatusTypes.DEMOLISH) and can_destroy():
+			if main.has_status(StatusTypes.DEMOLISH) and can_destroy(true):
 				normCursor = false
 				Input.set_custom_mouse_cursor(cursorDestroy)
 			elif main.has_status(StatusTypes.SWAP):
@@ -1510,7 +1807,8 @@ func updateCursorForMe():
 func _process(_delta):
 	if !main.big_bossfight:
 		var mousePos = get_viewport().get_mouse_position()
-		if mousePos.x >= global_position.x - 37.5 and mousePos.x <= global_position.x + 37.5 and mousePos.y >= global_position.y - 37.5 and mousePos.y <= global_position.y + 37.5:
+		var sizeOff = 37.5 * main.boxesScale
+		if mousePos.x >= global_position.x - sizeOff and mousePos.x <= global_position.x + sizeOff and mousePos.y >= global_position.y - sizeOff and mousePos.y <= global_position.y + sizeOff:
 			if !destroyed:
 				updateTooltipForMe()
 			if main.gameRunning:
@@ -1530,13 +1828,75 @@ func special_process(delta):
 						lose()
 						if main.gameRunning:
 							hide_custom_num()
+		"quick":
+			if !destroyed and open and main.gameRunning and customNum > 0:
+				fNum -= delta
+				if fNum <= 0:
+					fNum += 1
+					set_custom_num(customNum-1)
 		"smiley":
 			if !destroyed and open and main.gameRunning:
 				fNum -= delta
 				if fNum <= 0:
 					fNum += 0.3
 					var newSmiley = smileyScene.instantiate()
-					get_parent().addVfx(newSmiley)
+					main.addVfx(newSmiley)
+
+func get_tworange_boxes():
+	print(row)
+	print(col)
+	var result = []
+	var myRow = main.rows[row]
+	# left one
+	if col > 0:
+		result.append(myRow[col-1])
+	# left two
+	if col > 1:
+		result.append(myRow[col-2])
+	# right one
+	if col < myRow.size()-1:
+		result.append(myRow[col+1])
+	#right two
+	if col < myRow.size()-2:
+		result.append(myRow[col+2])
+	if row > 0:
+		var rowAbove = main.rows[row-1]
+		if col > 0:
+			result.append(rowAbove[col-1])
+		if col > 1:
+			result.append(rowAbove[col-2])
+		if rowAbove.size() > col:
+			result.append(rowAbove[col])
+		if rowAbove.size() > col+1:
+			result.append(rowAbove[col+1])
+	if row > 1:
+		var rowTwoAbove = main.rows[row-2]
+		if rowTwoAbove.size() > col:
+			result.append(rowTwoAbove[col])
+		if rowTwoAbove.size() > col-2 and col > 1:
+			result.append(rowTwoAbove[col-2])
+		if rowTwoAbove.size() > col-1 and col > 0:
+			result.append(rowTwoAbove[col-1])
+	if row < main.unlockedRows - 1:
+		var rowAbove = main.rows[row+1]
+		if col > 0:
+			result.append(rowAbove[col-1])
+		result.append(rowAbove[col])
+		if rowAbove.size() > col:
+			result.append(rowAbove[col+1])
+		if rowAbove.size() > col+2:
+			result.append(rowAbove[col+2])
+	if row < main.unlockedRows - 2:
+		var rowTwoAbove = main.rows[row + 2]
+		result.append(rowTwoAbove[col+1])
+		result.append(rowTwoAbove[col+2])
+		result.append(rowTwoAbove[col])
+	var holder = []
+	for box in result:
+		if !box.destroyed:
+			holder.append(box)
+	result = holder
+	return result
 
 func get_adjacent_boxes(notRevealed, notOpen):
 	var result = []
@@ -1603,6 +1963,41 @@ func canOpen():
 			if box.open:
 				can_open = true
 				break
+	if box_is_open("fraidy"):
+		var any_revealed_box = false
+		for box in main.boxes:
+			if box.revealed and !box.destroyed and !box.open:
+				any_revealed_box = true
+				break
+		if !any_revealed_box:
+			can_open = true
+		else:
+			can_open = revealed
+	for box in main.boxes:
+		if box.id == "eye" and box.open and !box.destroyed:
+			match box.special:
+				0:
+					if box.col == col:
+						can_open = false
+				1:
+					if box.row > row:
+						var rowDiff = box.row - row
+						if col == box.col - rowDiff:
+							can_open = false
+				2:
+					if box.row == row and box.col > col:
+						can_open = false
+				3:
+					if box.row < row and box.col == col:
+						can_open = false
+				4:
+					if box.row < row:
+						var rowDiff = row - box.row
+						if col == box.col + rowDiff:
+							can_open = false
+				5:
+					if box.row == row and box.col > col:
+						can_open = false
 	for box in get_adjacent_boxes(false, false):
 		if box.id == "ice" and box.customNum > 0 and !box.destroyed and box.open:
 			can_open = false
@@ -1631,33 +2026,35 @@ func close_random_other():
 func lg(text):
 	main.logToLog($Sprite2D.texture, text, id if revealed else null)
 
+func swapWith(other):
+	var oldPos = global_position
+	var oldOriginX = origPosX
+	var oldOriginY = origPosY
+	var oldRow = row
+	var oldCol = col
+	global_position = other.global_position
+	origPosX = other.origPosX
+	origPosY = other.origPosY
+	row = other.row
+	col = other.col
+	main.rows[other.row][other.col] = self
+	other.global_position = oldPos
+	other.origPosX = oldOriginX
+	other.origPosY = oldOriginY
+	other.row = oldRow
+	other.col = oldCol
+	main.rows[oldRow][oldCol] = other
+
 func _on_button_pressed() -> void:
 	if main.gameRunning && !main.awaiting_post_click and !main.big_bossfight:
-		if main.has_status(StatusTypes.DEMOLISH) and can_destroy():
+		if main.has_status(StatusTypes.DEMOLISH) and can_destroy(false):
 			var owned = main
 			main.destroy_box(self)
 			owned.change_status_amount(StatusTypes.DEMOLISH, -1)
 			main.update_stat_texts()
 		elif main.has_status(StatusTypes.SWAP):
 			main.get_node("SpawnSoundPlayer").play()
-			var oldPos = global_position
-			var oldOriginX = origPosX
-			var oldOriginY = origPosY
-			var oldRow = row
-			var oldCol = col
-			var other = main.get_status(StatusTypes.SWAP).stored
-			global_position = other.global_position
-			origPosX = other.origPosX
-			origPosY = other.origPosY
-			row = other.row
-			col = other.col
-			main.rows[other.row][other.col] = self
-			other.global_position = oldPos
-			other.origPosX = oldOriginX
-			other.origPosY = oldOriginY
-			other.row = oldRow
-			other.col = oldCol
-			main.rows[oldRow][oldCol] = other
+			swapWith(main.get_status(StatusTypes.SWAP).stored)
 			main.change_status_amount(StatusTypes.SWAP, -1)
 		else:
 			if main.has_status(StatusTypes.TRANSMOG) and revealed:
@@ -1688,7 +2085,7 @@ func _on_button_pressed() -> void:
 						if can_use():
 							on_self_clicked()
 							for box in main.boxes:
-								if box.open:
+								if box.open and !box.destroyed:
 									box.on_other_box_click_activated(self)
 							for badge in main.get_node("AchievementsContainer").get_children():
 								badge.postUseBoxClick(self)
@@ -1733,146 +2130,144 @@ func postTransform():
 				on_open()
 	pass
 
-
-static var imgTable = {
-	"winner": preload("res://boxImgs/winner.png"),
-	"empty": preload("res://boxImgs/empty.png"),
-	"loss": preload("res://boxImgs/loss.png"),
-	"revealrandom": preload("res://boxImgs/revealrandom.png"),
-	"revealrow": preload("res://boxImgs/revealrow.png"),
-	"onegold": preload("res://boxImgs/onegold.png"),
-	"poison": preload("res://boxImgs/poison.png"),
-	"antidote": preload("res://boxImgs/antidote.png"),
-	"exploding": preload("res://boxImgs/exploding.png"),
-	"payforreveals": preload("res://boxImgs/payforreveals.png"),
-	"star": preload("res://boxImgs/star.png"),
-	"shadow": preload("res://boxImgs/shadow.png"),
-	"jumpscare": preload("res://boxImgs/jumpscare.png"),
-	"safety": preload("res://boxImgs/safety.png"),
-	"twogold": preload("res://boxImgs/twogold.png"),
-	"fire": preload("res://boxImgs/fire.png"),
-	"threegold": preload("res://boxImgs/threegold.png"),
-	"spendtowin": preload("res://boxImgs/spendtowin.png"),
-	"revealcorners": preload("res://boxImgs/revealcorners.png"),
-	"dragon": preload("res://boxImgs/dragon.png"),
-	"sword": preload("res://boxImgs/sword.png"),
-	"ghost": preload("res://boxImgs/ghost.png"),
-	"clock": preload("res://boxImgs/clock.png"),
-	"books": preload("res://boxImgs/books.png"),
-	"sacrifice": preload("res://boxImgs/sacrifice.png"),
-	"poverty": preload("res://boxImgs/poverty.png"),
-	"closeadjacent": preload("res://boxImgs/closeadjacent.png"),
-	"threed": preload("res://boxImgs/threed.png"),
-	"income": preload("res://boxImgs/income.png"),
-	"boss": preload("res://boxImgs/boss.png"),
-	"shy": preload("res://boxImgs/shy.png"),
-	"mimic": preload("res://boxImgs/mimic.png"),
-	"curse": preload("res://boxImgs/curse.png"),
-	"payforshield": preload("res://boxImgs/payforshield.png"),
-	"heart": preload("res://boxImgs/heart.png"),
-	"music": preload("res://boxImgs/music.png"),
-	"sus": preload("res://boxImgs/sus.png"),
-	"speedrun": preload("res://boxImgs/speedrun.png"),
-	"demolition": preload("res://boxImgs/demolition.png"),
-	"heartbreak": preload("res://boxImgs/heartbreak.png"),
-	"rowbomb": preload("res://boxImgs/rowbomb.png"),
-	"closenext": preload("res://boxImgs/closenext.png"),
-	"autoopen": preload("res://boxImgs/autoopen.png"),
-	"rowwin": preload("res://boxImgs/rowwin.png"),
-	"teacher": preload("res://boxImgs/teacher.png"),
-	"armageddon": preload("res://boxImgs/armageddon.png"),
-	"bedrock": preload("res://boxImgs/bedrock.png"),
-	"cloak": preload("res://boxImgs/cloak.png"),
-	"desert": preload("res://boxImgs/desert.png"),
-	"fairy": preload("res://boxImgs/fairy.png"),
-	"hat": preload("res://boxImgs/hat.png"),
-	"invert": preload("res://boxImgs/invert.png"),
-	"selfdestruct": preload("res://boxImgs/selfdestruct.png"),
-	"wand": preload("res://boxImgs/wand.png"),
-	"instaopen": preload("res://boxImgs/instaopen.png"),
-	"blackjack": preload("res://boxImgs/blackjack.png"),
-	"egg": preload("res://boxImgs/egg.png"),
-	"inferno": preload("res://boxImgs/inferno.png"),
-	"key": preload("res://boxImgs/key.png"),
-	"lock": preload("res://boxImgs/lock.png"),
-	"match": preload("res://boxImgs/match.png"),
-	"pandoras": preload("res://boxImgs/pandoras.png"),
-	"revival": preload("res://boxImgs/revival.png"),
-	"smartbomb": preload("res://boxImgs/smartbomb.png"),
-	"territory": preload("res://boxImgs/territory.png"),
-	"worldbearer": preload("res://boxImgs/worldbearer.png"),
-	"princess": preload("res://boxImgs/princess.png"),
-	"mine": preload("res://boxImgs/mine.png"),
-	"clone": preload("res://boxImgs/clone.png"),
-	"gamer": preload("res://boxImgs/gamer.png"),
-	"magnifying": preload("res://boxImgs/magnifying.png"),
-	"virus": preload("res://boxImgs/virus.png"),
-	"starve": preload("res://boxImgs/starve.png"),
-	"spire": preload("res://boxImgs/spire.png"),
-	"crumbling": preload("res://boxImgs/crumbling.png"),
-	"tripleplay": preload("res://boxImgs/tripleplay.png"),
-	"food": preload("res://boxImgs/food.png"),
-	"allseeingeye": preload("res://boxImgs/allseeingeye.png"),
-	"waterfall": preload("res://boxImgs/waterfall.png"),
-	"meteor": preload("res://boxImgs/meteor.png"),
-	"daredevil": preload("res://boxImgs/daredevil.png"),
-	"paint": preload("res://boxImgs/paint.png"),
-	"ice": preload("res://boxImgs/ice.png"),
-	"bullseye": preload("res://boxImgs/bullseye.png"),
-	"confidential": preload("res://boxImgs/confidential.png"),
-	"fishingrod": preload("res://boxImgs/fishingrod.png"),
-	"impatient": preload("res://boxImgs/impatient.png"),
-	"transmog": preload("res://boxImgs/transmog.png"),
-	"stuck": preload("res://boxImgs/stuck.png"),
-	"fish": preload("res://boxImgs/fish.png"),
-	"dna": preload("res://boxImgs/dna.png"),
-	"guardian": preload("res://boxImgs/guardian.png"),
-	"painttwo": preload("res://boxImgs/painttwo.png"),
-	"moon": preload("res://boxImgs/moon.png"),
-	"butterfly": preload("res://boxImgs/butterfly.png"),
-	"map": preload("res://boxImgs/map.png"),
-	"treasure": preload("res://boxImgs/treasure.png"),
-	"checkbox": preload("res://boxImgs/checkbox.png"),
-	"stellar": preload("res://boxImgs/stellar.png"),
-	"flying": preload("res://boxImgs/flying.png"),
-	"underworld": preload("res://boxImgs/underworld.png"),
-	"program": preload("res://boxImgs/program.png"),
-	"sleepy": preload("res://boxImgs/sleepy.png"),
-	"exp": preload("res://boxImgs/exp.png"),
-	"ivy": preload("res://boxImgs/ivy.png"),
-	"flower": preload("res://boxImgs/flower.png"),
-	"finalboss": preload("res://boxImgs/finalboss.png"),
-	"compass": preload("res://boxImgs/compass.png"),
-	"slots": preload("res://boxImgs/slots.png"),
-	"scrap": preload("res://boxImgs/scrap.png"),
-	"info": preload("res://boxImgs/info.png"),
-	"ladder": preload("res://boxImgs/ladder.png"),
-	"portal": preload("res://boxImgs/portal.png"),
-	"winter": preload("res://boxImgs/winter.png"),
-	"dice": preload("res://boxImgs/dice.png"),
-	"darts": preload("res://boxImgs/darts.png"),
-	"spike": preload("res://boxImgs/spike.png"),
-	"dungeon": preload("res://boxImgs/dungeon.png"),
-	"cauldron": preload("res://boxImgs/cauldron.png"),
-	"alphabet": preload("res://boxImgs/alphabet.png"),
-	"stamp": preload("res://boxImgs/stamp.png"),
-	"clumsy": preload("res://boxImgs/clumsy.png"),
-	"smiley": preload("res://boxImgs/smiley.png"),
-	"crystalball": preload("res://boxImgs/crystalball.png"),
-	"badgebox": preload("res://boxImgs/badgebox.png"),
-	"candy": preload("res://boxImgs/candy.png"),
-	"toolbox": preload("res://boxImgs/toolbox.png"),
-	"kettle": preload("res://boxImgs/kettle.png"),
-	"cannon": preload("res://boxImgs/cannon.png"),
-	"otherworld": preload("res://boxImgs/otherworld.png"),
-	"rowgold": preload("res://boxImgs/rowgold.png"),
-	"gazer": preload("res://boxImgs/gazer.png"),
-	"firework": preload("res://boxImgs/firework.png"),
-	"doubleup": preload("res://boxImgs/doubleup.png"),
-	"lonely": preload("res://boxImgs/lonely.png"),
-	"underrated": preload("res://boxImgs/underrated.png")
-}
-
+#static var imgTable = {
+	#"winner": preload("res://boxImgs/winner.png"),
+	#"empty": preload("res://boxImgs/empty.png"),
+	#"loss": preload("res://boxImgs/loss.png"),
+	#"revealrandom": preload("res://boxImgs/revealrandom.png"),
+	#"revealrow": preload("res://boxImgs/revealrow.png"),
+	#"onegold": preload("res://boxImgs/onegold.png"),
+	#"poison": preload("res://boxImgs/poison.png"),
+	#"antidote": preload("res://boxImgs/antidote.png"),
+	#"exploding": preload("res://boxImgs/exploding.png"),
+	#"payforreveals": preload("res://boxImgs/payforreveals.png"),
+	#"star": preload("res://boxImgs/star.png"),
+	#"shadow": preload("res://boxImgs/shadow.png"),
+	#"jumpscare": preload("res://boxImgs/jumpscare.png"),
+	#"safety": preload("res://boxImgs/safety.png"),
+	#"twogold": preload("res://boxImgs/twogold.png"),
+	#"fire": preload("res://boxImgs/fire.png"),
+	#"threegold": preload("res://boxImgs/threegold.png"),
+	#"spendtowin": preload("res://boxImgs/spendtowin.png"),
+	#"revealcorners": preload("res://boxImgs/revealcorners.png"),
+	#"dragon": preload("res://boxImgs/dragon.png"),
+	#"sword": preload("res://boxImgs/sword.png"),
+	#"ghost": preload("res://boxImgs/ghost.png"),
+	#"clock": preload("res://boxImgs/clock.png"),
+	#"books": preload("res://boxImgs/books.png"),
+	#"sacrifice": preload("res://boxImgs/sacrifice.png"),
+	#"poverty": preload("res://boxImgs/poverty.png"),
+	#"closeadjacent": preload("res://boxImgs/closeadjacent.png"),
+	#"threed": preload("res://boxImgs/threed.png"),
+	#"income": preload("res://boxImgs/income.png"),
+	#"boss": preload("res://boxImgs/boss.png"),
+	#"shy": preload("res://boxImgs/shy.png"),
+	#"mimic": preload("res://boxImgs/mimic.png"),
+	#"curse": preload("res://boxImgs/curse.png"),
+	#"payforshield": preload("res://boxImgs/payforshield.png"),
+	#"heart": preload("res://boxImgs/heart.png"),
+	#"music": preload("res://boxImgs/music.png"),
+	#"sus": preload("res://boxImgs/sus.png"),
+	#"speedrun": preload("res://boxImgs/speedrun.png"),
+	#"demolition": preload("res://boxImgs/demolition.png"),
+	#"heartbreak": preload("res://boxImgs/heartbreak.png"),
+	#"rowbomb": preload("res://boxImgs/rowbomb.png"),
+	#"closenext": preload("res://boxImgs/closenext.png"),
+	#"autoopen": preload("res://boxImgs/autoopen.png"),
+	#"rowwin": preload("res://boxImgs/rowwin.png"),
+	#"teacher": preload("res://boxImgs/teacher.png"),
+	#"armageddon": preload("res://boxImgs/armageddon.png"),
+	#"bedrock": preload("res://boxImgs/bedrock.png"),
+	#"cloak": preload("res://boxImgs/cloak.png"),
+	#"desert": preload("res://boxImgs/desert.png"),
+	#"fairy": preload("res://boxImgs/fairy.png"),
+	#"hat": preload("res://boxImgs/hat.png"),
+	#"invert": preload("res://boxImgs/invert.png"),
+	#"selfdestruct": preload("res://boxImgs/selfdestruct.png"),
+	#"wand": preload("res://boxImgs/wand.png"),
+	#"instaopen": preload("res://boxImgs/instaopen.png"),
+	#"blackjack": preload("res://boxImgs/blackjack.png"),
+	#"egg": preload("res://boxImgs/egg.png"),
+	#"inferno": preload("res://boxImgs/inferno.png"),
+	#"key": preload("res://boxImgs/key.png"),
+	#"lock": preload("res://boxImgs/lock.png"),
+	#"match": preload("res://boxImgs/match.png"),
+	#"pandoras": preload("res://boxImgs/pandoras.png"),
+	#"revival": preload("res://boxImgs/revival.png"),
+	#"smartbomb": preload("res://boxImgs/smartbomb.png"),
+	#"territory": preload("res://boxImgs/territory.png"),
+	#"worldbearer": preload("res://boxImgs/worldbearer.png"),
+	#"princess": preload("res://boxImgs/princess.png"),
+	#"mine": preload("res://boxImgs/mine.png"),
+	#"clone": preload("res://boxImgs/clone.png"),
+	#"gamer": preload("res://boxImgs/gamer.png"),
+	#"magnifying": preload("res://boxImgs/magnifying.png"),
+	#"virus": preload("res://boxImgs/virus.png"),
+	#"starve": preload("res://boxImgs/starve.png"),
+	#"spire": preload("res://boxImgs/spire.png"),
+	#"crumbling": preload("res://boxImgs/crumbling.png"),
+	#"tripleplay": preload("res://boxImgs/tripleplay.png"),
+	#"food": preload("res://boxImgs/food.png"),
+	#"allseeingeye": preload("res://boxImgs/allseeingeye.png"),
+	#"waterfall": preload("res://boxImgs/waterfall.png"),
+	#"meteor": preload("res://boxImgs/meteor.png"),
+	#"daredevil": preload("res://boxImgs/daredevil.png"),
+	#"paint": preload("res://boxImgs/paint.png"),
+	#"ice": preload("res://boxImgs/ice.png"),
+	#"bullseye": preload("res://boxImgs/bullseye.png"),
+	#"confidential": preload("res://boxImgs/confidential.png"),
+	#"fishingrod": preload("res://boxImgs/fishingrod.png"),
+	#"impatient": preload("res://boxImgs/impatient.png"),
+	#"transmog": preload("res://boxImgs/transmog.png"),
+	#"stuck": preload("res://boxImgs/stuck.png"),
+	#"fish": preload("res://boxImgs/fish.png"),
+	#"dna": preload("res://boxImgs/dna.png"),
+	#"guardian": preload("res://boxImgs/guardian.png"),
+	#"painttwo": preload("res://boxImgs/painttwo.png"),
+	#"moon": preload("res://boxImgs/moon.png"),
+	#"butterfly": preload("res://boxImgs/butterfly.png"),
+	#"map": preload("res://boxImgs/map.png"),
+	#"treasure": preload("res://boxImgs/treasure.png"),
+	#"checkbox": preload("res://boxImgs/checkbox.png"),
+	#"stellar": preload("res://boxImgs/stellar.png"),
+	#"flying": preload("res://boxImgs/flying.png"),
+	#"underworld": preload("res://boxImgs/underworld.png"),
+	#"program": preload("res://boxImgs/program.png"),
+	#"sleepy": preload("res://boxImgs/sleepy.png"),
+	#"exp": preload("res://boxImgs/exp.png"),
+	#"ivy": preload("res://boxImgs/ivy.png"),
+	#"flower": preload("res://boxImgs/flower.png"),
+	#"finalboss": preload("res://boxImgs/finalboss.png"),
+	#"compass": preload("res://boxImgs/compass.png"),
+	#"slots": preload("res://boxImgs/slots.png"),
+	#"scrap": preload("res://boxImgs/scrap.png"),
+	#"info": preload("res://boxImgs/info.png"),
+	#"ladder": preload("res://boxImgs/ladder.png"),
+	#"portal": preload("res://boxImgs/portal.png"),
+	#"winter": preload("res://boxImgs/winter.png"),
+	#"dice": preload("res://boxImgs/dice.png"),
+	#"darts": preload("res://boxImgs/darts.png"),
+	#"spike": preload("res://boxImgs/spike.png"),
+	#"dungeon": preload("res://boxImgs/dungeon.png"),
+	#"cauldron": preload("res://boxImgs/cauldron.png"),
+	#"alphabet": preload("res://boxImgs/alphabet.png"),
+	#"stamp": preload("res://boxImgs/stamp.png"),
+	#"clumsy": preload("res://boxImgs/clumsy.png"),
+	#"smiley": preload("res://boxImgs/smiley.png"),
+	#"crystalball": preload("res://boxImgs/crystalball.png"),
+	#"badgebox": preload("res://boxImgs/badgebox.png"),
+	#"candy": preload("res://boxImgs/candy.png"),
+	#"toolbox": preload("res://boxImgs/toolbox.png"),
+	#"kettle": preload("res://boxImgs/kettle.png"),
+	#"cannon": preload("res://boxImgs/cannon.png"),
+	#"otherworld": preload("res://boxImgs/otherworld.png"),
+	#"rowgold": preload("res://boxImgs/rowgold.png"),
+	#"gazer": preload("res://boxImgs/gazer.png"),
+	#"firework": preload("res://boxImgs/firework.png"),
+	#"doubleup": preload("res://boxImgs/doubleup.png"),
+	#"lonely": preload("res://boxImgs/lonely.png"),
+	#"underrated": preload("res://boxImgs/underrated.png"),
+#}
 
 # specifics
 func dnaTransform():

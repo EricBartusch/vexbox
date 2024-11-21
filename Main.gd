@@ -4,8 +4,8 @@ var boxScene = preload("res://Box.tscn")
 var statusScene = preload("res://StatusEffect.tscn")
 var logEntryScene = preload("res://LogEntry.tscn")
 
-var PYRAMID_START_X = 760
-var PYRAMID_START_Y = 100
+var PYRAMID_START_X = 800
+var PYRAMID_START_Y = 50
 
 var boxes = []
 var rows = []
@@ -31,13 +31,16 @@ var pan_x = 0
 var pan_y = 0
 
 var PAN_MIN_X = -500
-var PAN_MIN_Y = -500
+var PAN_MIN_Y = -700
 var PAN_MAX_X = 500
-var PAN_MAX_Y = 500
+var PAN_MAX_Y = 400
 
 var statsMap = {}
 var unlockedBadges = []
 var equippedBadges = []
+var boxesHolderOrigPosX = 400
+var boxesHolderOrigPosY = 50
+var boxesScale : float = 1
 
 func _init() -> void:
 	Box.main = self
@@ -71,6 +74,7 @@ func save():
 	}
 	var json_string = JSON.stringify(save_dict)
 	save_file.store_line(json_string)
+	return(json_string)
 
 func load_save():
 	if not FileAccess.file_exists("user://savegame.save"):
@@ -85,7 +89,7 @@ func load_save():
 	var data = json.data
 	for key in data.keys():
 			set(key, data[key])
-	
+	unlockedRows = 17
 	unlockedBoxes = (unlockedRows * (unlockedRows + 1)) / 2
 	$NumWinsText.text = ": " + str(wins)
 	$WinstreakText.text = "Winstreak: " + str(winstreak)
@@ -109,6 +113,12 @@ func _ready():
 
 var loadingGame = false
 
+func get_unlocked_boxes():
+	var valids = []
+	for i in unlockedBoxes:
+		valids.append(all_boxes[i])
+	return valids
+
 func startGame():
 	#var start = Time.get_ticks_usec()
 	loadingGame = true
@@ -131,12 +141,11 @@ func startGame():
 	awaiting_post_click = false
 	opens = 0
 	for node in boxes:
-		remove_child(node)
+		$BoxesHolder.remove_child(node)
 		node.queue_free()
 	rows.clear()
 	boxes.clear()
 	gameRunning = true
-	$AchievementsFront.modulate.a = 0.5
 	$GameStatusText.text =""
 	for node in $StatusList.get_children():
 		$StatusList.remove_child(node)
@@ -149,18 +158,24 @@ func startGame():
 	var row = 0
 	var column = 0
 	var curRow = []
+	boxesScale = float(1050) / (unlockedRows * float(75))
+	if boxesScale > 1:
+		boxesScale = 1
+	$BoxesHolder.scale.x = boxesScale
+	$BoxesHolder.scale.y = boxesScale
+	var modAmt = 75 * boxesScale
 	while not list.is_empty():
 		var instance = boxScene.instantiate()
 		var toAdd = list.pop_front()
-		#if row % 2 == 0:
-			#toAdd = "sacrifice"
+		#if row == 0:
+			#toAdd = "monster"
 		#else:
-			#toAdd = "revealcorners"
+			#toAdd = "empty"
 		instance.loadBox(toAdd, row, column)
-		add_child(instance)
+		$BoxesHolder.add_child(instance)
 		boxes.append(instance)
 		curRow.append(instance)
-		(instance as Control).global_position = Vector2(PYRAMID_START_X - ((column * 75)) + (75/2 * row-1), PYRAMID_START_Y + (row * 75))
+		(instance as Control).global_position = Vector2(PYRAMID_START_X - ((column * modAmt)) + (modAmt/2 * row-1), PYRAMID_START_Y + (row * modAmt))
 		instance.origPosX = instance.global_position.x
 		instance.origPosY = instance.global_position.y
 		instance.global_position.x += pan_x
@@ -175,6 +190,7 @@ func startGame():
 	loadingGame = false
 	for badge in $AchievementsContainer.get_children():
 		badge.onRunStart()
+	$AchievementsFront.modulate.a = 0
 	update_stat_texts()
 	#var end = Time.get_ticks_usec()
 	#var worker_time = (end-start)/1000000.0	
@@ -251,6 +267,8 @@ var awaiting_post_click = false
 
 func await_postclick():
 	opens += 1
+	if opens == 1:
+		$AchievementsFront.modulate.a = 0.5
 	modStat("opens", 1)
 	awaiting_post_click = true
 	$TriggerPostClicksTimer.start()
@@ -372,6 +390,9 @@ func lose():
 					willDie = false
 					box.destroyBox()
 					break
+			if $AchievementsContainer/StartHeart.number > 0 and $AchievementsContainer/StartHeart.enabled:
+				qLog("You can't lose thanks to Start Heart!")
+				return
 			if willDie:
 				if has_status(StatusTypes.INVERSION):
 					qLog("You lose - but it's inverted to a win!")
@@ -440,26 +461,6 @@ func resetGame():
 		resetTimer = 0.1
 		reset_winstreak()
 		startGame()
-
-func _input(event: InputEvent) -> void:
-	if event is InputEventMouseMotion and Input.is_action_pressed("pan") and !big_bossfight:
-		var result = event.relative
-		pan_x += result.x
-		pan_y += result.y
-		for item in vfxList:
-			item.global_position.x += result.x
-			item.global_position.y += result.y
-		if pan_x > PAN_MAX_X:
-			pan_x = PAN_MAX_X
-		if pan_x < PAN_MIN_X:
-			pan_x = PAN_MIN_X
-		if pan_y > PAN_MAX_Y:
-			pan_y = PAN_MAX_Y
-		if pan_y < PAN_MIN_Y:
-			pan_y = PAN_MIN_Y
-		for box in boxes:
-			box.global_position.x = box.origPosX + pan_x
-			box.global_position.y = box.origPosY + pan_y
 
 var already_played = []
 
@@ -687,7 +688,7 @@ func modBoxStat(boxid, id, val):
 		initBoxStats(boxid)
 		statsMap[boxid][id] = val
 
-var badgePoints = 3
+var badgePoints = 1
 var bpInUse = 0
 var bpImg = load("res://uiImgs/orb.png")
 var usedBpImg = load("res://uiImgs/usedOrb.png")
@@ -708,3 +709,6 @@ func hasBadge(id):
 				return true
 			return false
 	return false
+
+func _on_options_button_pressed() -> void:
+	$OptionsMenu.show_options()

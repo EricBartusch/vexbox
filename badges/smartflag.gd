@@ -1,7 +1,7 @@
 extends Badge
 
 func postGameEnd():
-	if !unlocked and main.getBoxStat("winner", "wins") >= 15:
+	if !unlocked and main.getBoxStat("winner", "wins") >= 50:
 		unlock()
 
 func onOpenBox(box):
@@ -14,7 +14,7 @@ func getProgress():
 	return main.getBoxStat("winner", "wins")
 
 func getMaxProgress():
-	return 15
+	return 50
 
 func getCost():
 	return 2

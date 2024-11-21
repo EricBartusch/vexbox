@@ -1,0 +1,198 @@
+[gd_scene load_steps=14 format=3 uid="uid://dv2jpb8f2ii3w"]
+
+[ext_resource type="FontFile" uid="uid://drxqa43mwcvwa" path="res://Comic Sans MS.ttf" id="1_bkbc4"]
+[ext_resource type="Script" path="res://options_menu.gd" id="1_x7jhl"]
+[ext_resource type="Texture2D" uid="uid://bibdm8rmfpixw" path="res://uiImgs/checkbox_checked.png" id="2_2kn0u"]
+[ext_resource type="Texture2D" uid="uid://c356bj3ggtoho" path="res://uiImgs/checkbox_unchecked.png" id="3_8s0bj"]
+[ext_resource type="Texture2D" uid="uid://ho5w6vrrlqpg" path="res://uiImgs/slider.png" id="4_wr6yg"]
+[ext_resource type="Texture2D" uid="uid://bb157d7ym8a0c" path="res://uiImgs/sliderHovered.png" id="5_34y1l"]
+[ext_resource type="Texture2D" uid="uid://ce2gwabetd24j" path="res://uiImgs/grabber.png" id="6_e4tun"]
+[ext_resource type="Texture2D" uid="uid://b3t285xsy3d7u" path="res://uiImgs/exitButton.png" id="7_lhvm5"]
+[ext_resource type="Texture2D" uid="uid://bvok5e2hnq3ug" path="res://uiImgs/discordbutton.png" id="9_khxo8"]
+[ext_resource type="Texture2D" uid="uid://cvol0m0h5kr6u" path="res://uiImgs/closeOptionsbutton.png" id="10_w6i46"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_qqu5x"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1fkdm"]
+texture = ExtResource("6_e4tun")
+texture_margin_left = 10.0
+texture_margin_top = 8.0
+texture_margin_right = 10.0
+texture_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ery74"]
+
+[node name="OptionsMenu" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_x7jhl")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 1418.0
+offset_bottom = 893.0
+color = Color(0, 0.239359, 0.205581, 0.909804)
+
+[node name="OptionsMenuLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 544.0
+offset_top = 22.0
+offset_right = 864.0
+offset_bottom = 93.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = ExtResource("1_bkbc4")
+theme_override_font_sizes/font_size = 50
+text = "Options Menu!"
+
+[node name="FullscreenLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 343.0
+offset_top = 122.0
+offset_right = 582.0
+offset_bottom = 193.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = ExtResource("1_bkbc4")
+theme_override_font_sizes/font_size = 50
+text = "Fullscreen"
+
+[node name="FullscreenCheckbox" type="CheckBox" parent="."]
+layout_mode = 0
+offset_left = 608.0
+offset_top = 139.0
+offset_right = 658.0
+offset_bottom = 189.0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_qqu5x")
+theme_override_icons/checked = ExtResource("2_2kn0u")
+theme_override_icons/unchecked = ExtResource("3_8s0bj")
+
+[node name="SFXVolLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 337.0
+offset_top = 199.0
+offset_right = 576.0
+offset_bottom = 270.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = ExtResource("1_bkbc4")
+theme_override_font_sizes/font_size = 50
+text = "SFX Volume
+"
+
+[node name="SFXSlider" type="HSlider" parent="."]
+layout_mode = 0
+offset_left = 632.0
+offset_top = 231.0
+offset_right = 982.0
+offset_bottom = 256.0
+theme_override_icons/grabber = ExtResource("4_wr6yg")
+theme_override_icons/grabber_highlight = ExtResource("5_34y1l")
+theme_override_styles/slider = SubResource("StyleBoxTexture_1fkdm")
+value = 100.0
+
+[node name="MusicVolLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 331.0
+offset_top = 277.0
+offset_right = 645.0
+offset_bottom = 348.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = ExtResource("1_bkbc4")
+theme_override_font_sizes/font_size = 50
+text = "Music Volume"
+
+[node name="MusicSlider" type="HSlider" parent="."]
+layout_mode = 0
+offset_left = 661.0
+offset_top = 307.0
+offset_right = 1011.0
+offset_bottom = 332.0
+theme_override_icons/grabber = ExtResource("4_wr6yg")
+theme_override_icons/grabber_highlight = ExtResource("5_34y1l")
+theme_override_styles/slider = SubResource("StyleBoxTexture_1fkdm")
+value = 100.0
+
+[node name="ExitButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 1281.0
+offset_top = 22.0
+offset_right = 1399.0
+offset_bottom = 140.0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ery74")
+icon = ExtResource("7_lhvm5")
+flat = true
+
+[node name="DiscordLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 909.0
+offset_top = 459.0
+offset_right = 1310.0
+offset_bottom = 678.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = ExtResource("1_bkbc4")
+theme_override_font_sizes/font_size = 50
+text = "Box Ideas?
+Feedback?
+Join the Discord!"
+
+[node name="DiscordButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 1048.0
+offset_top = 689.0
+offset_right = 1166.0
+offset_bottom = 807.0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ery74")
+icon = ExtResource("9_khxo8")
+flat = true
+
+[node name="CloseOptionsButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 33.0
+offset_top = 19.0
+offset_right = 151.0
+offset_bottom = 137.0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ery74")
+icon = ExtResource("10_w6i46")
+flat = true
+
+[node name="ExportSaveToClipboardButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 645.0
+offset_right = 417.0
+offset_bottom = 785.0
+theme_override_fonts/font = ExtResource("1_bkbc4")
+theme_override_font_sizes/font_size = 25
+text = "Export Save To Clipboard!!!"
+
+[node name="LoadSaveFromClipboardButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 446.0
+offset_top = 644.0
+offset_right = 799.0
+offset_bottom = 784.0
+theme_override_fonts/font = ExtResource("1_bkbc4")
+theme_override_font_sizes/font_size = 25
+text = "Load Save FROM Clipboard!!!"
+
+[connection signal="toggled" from="FullscreenCheckbox" to="." method="_on_fullscreen_checkbox_toggled"]
+[connection signal="drag_ended" from="SFXSlider" to="." method="_on_sfx_slider_drag_ended"]
+[connection signal="drag_ended" from="MusicSlider" to="." method="_on_music_slider_drag_ended"]
+[connection signal="pressed" from="ExitButton" to="." method="_on_exit_button_pressed"]
+[connection signal="pressed" from="DiscordButton" to="." method="_on_discord_button_pressed"]
+[connection signal="pressed" from="CloseOptionsButton" to="." method="_on_close_options_button_pressed"]
+[connection signal="pressed" from="ExportSaveToClipboardButton" to="." method="_on_export_save_to_clipboard_button_pressed"]
+[connection signal="pressed" from="LoadSaveFromClipboardButton" to="." method="_on_load_save_from_clipboard_button_pressed"]

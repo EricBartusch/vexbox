@@ -6,9 +6,7 @@ func postGameEnd():
 
 func onRunStart():
 	if enabled:
-		for box in main.boxes:
-			if box.id == "heart":
-				box.revealBox()
+		setup_number(3)
 
 func getProgress():
 	return main.bestWinstreak
@@ -18,3 +16,7 @@ func getMaxProgress():
 
 func getCost():
 	return 2
+
+func onOpenBox(box):
+	if enabled and number > 0:
+		setup_number(number-1)

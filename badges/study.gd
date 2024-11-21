@@ -10,6 +10,7 @@ func onOpenBox(box):
 	if enabled:
 		setup_number(number-1)
 		if number == 0:
+			qLog("Study is activating!")
 			setup_number(6)
 			main.reveal_random()
 

@@ -25,7 +25,7 @@ func _ready() -> void:
 	$TextureProgressBar.top_level = true
 
 func _process(delta):
-	if flashTimer > 0:
+	if flashTimer > 0 and state != TurretState.DYING:
 		flashTimer -= delta
 		if flashTimer < 0:
 			$Sprite2D.modulate = Color(1, 1, 1, 1)
@@ -33,9 +33,9 @@ func _process(delta):
 		match state:
 			TurretState.LAUNCHING:
 				position += velocity * delta
-				if (position.y <= 120 or position.y >= 1800) and !flipped:
+				if (position.y <= 200 or position.y >= 1720) and !flipped:
 					flipped = true
-					position.y *= -1
+					velocity.y *= -1
 				velocity *= 0.995
 				lifetime -= delta
 				if lifetime <= 0:
@@ -77,6 +77,7 @@ func _on_area_2d_area_entered(area: Area2D) -> void:
 			flashTimer = 0.1
 			$Sprite2D.modulate = Color(1, 1, 1, 0.6)
 			if health <= 0:
+				$Sprite2D.modulate = Color(1, 1, 1, 0.3)
 				get_parent().get_node("KillTurretSoundPlayer").play()
 				state = TurretState.DYING
 				lifetime = 1

@@ -112,7 +112,7 @@ func _process(delta):
 		var mousePos = get_viewport().get_mouse_position()
 		if mousePos.x >= global_position.x - 37.5 and mousePos.x <= global_position.x + 37.5 and mousePos.y >= global_position.y - 37.5 and mousePos.y <= global_position.y + 37.5:
 			updateTooltipForMe()
-			if !main.gameRunning and !isPassive():
+			if (!main.gameRunning or main.opens == 0)and !isPassive():
 				if unlocked and (main.badgePoints - main.bpInUse >= getCost() or enabled):
 					Input.set_custom_mouse_cursor(cursorOpen)
 				else:
@@ -138,6 +138,7 @@ func unlock():
 			applyPassive()
 		for badge in get_parent().get_children():
 			badge.refreshStatus()
+		main.save()
 		
 func refreshOutline():
 	if unlocked:
@@ -149,15 +150,18 @@ func refreshOutline():
 		$Outline.texture = load("res://boxImgs/outlineClosed.png")
 
 func _on_button_button_up() -> void:
-	if !main.gameRunning and !isPassive():
+	if (!main.gameRunning or main.opens == 0) and !isPassive():
 		if unlocked:
 			if enabled:
 				enabled = false
+				hide_number()
 				main.equippedBadges.erase(id)
 				main.bpInUse -= getCost()
 				refreshOutline()
 				main.updateBadgePoints()
 				main.save()
+				if main.gameRunning:
+					main.startGame()
 			else:
 				if main.badgePoints - main.bpInUse >= getCost():
 					enabled = true
@@ -166,6 +170,8 @@ func _on_button_button_up() -> void:
 					refreshOutline()
 					main.updateBadgePoints()
 					main.save()
+					if main.gameRunning:
+						main.startGame()
 
 func getCost() -> int:
 	return 1
